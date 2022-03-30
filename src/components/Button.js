@@ -10,8 +10,8 @@ const StyledButton = styled.button`
   border: 1px solid tomato;
 `;
 
-export default function Button({main, text}) {
+export default function Button({main, text, handleClick}) {
   return(
-    <StyledButton main={main}>{text}</StyledButton>
+    <StyledButton main={main} onClick={handleClick}>{text}</StyledButton>
   )
 }
