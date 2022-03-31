@@ -36,19 +36,76 @@ export default function RangeGroup({option}) {
 
   const [isCalculated, setIsCalculated] = useState(false);
 
+  const [typeOfPizza, setTypeOfPizza] = useState("nyc");
+
+  const pizza = {
+
+    neapolitan: {
+      name: "Neapolitan",
+      flour: 1,
+      water: 0.6,
+      salt: 0.02,
+      yeast: 0.01,
+      sizeRatio: 25,
+    },
+
+    nyc: {
+      name: "New York",
+      flour: 1,
+      water: 0.65,
+      salt: 0.02,
+      sugar: 0.02,
+      oil: 0.02,
+      yeast: 0.01,
+      sizeRatio: 25
+    },
+
+    chicago: {
+      name: "Chicago Deep Dish",
+      flour: 1,
+      water: 0.55,
+      salt: 0.02,
+      sugar: 0.02,
+      oil: 0.2,
+      yeast: 0.01,
+      sizeRatio: 45
+    }
+  }
+
+  const pizzaOptions = [
+    {
+      label: "New York Style",
+      value: "nyc"
+    },
+    {
+      label: "Neapolitan",
+      value: "neapolitan"
+    },
+    {
+      label: "Chicago Deep Dish",
+      value: "chicago"
+    }
+  ]
+
+  function calculateTotalWeight(pizzaType, numberOfPizzas, pizzaSize) {
+    return pizzaType.sizeRatio * numberOfPizzas * pizzaSize;
+  }
+
   const handleCalculate = (e) => {
     e.preventDefault();
     setIsCalculated(true);
-    console.log(pizzaSize * numberOfPizzas * 25);
   }
 
+  const handlePizzaTypeChange = (e) => {
+    console.log(e.target.value);
+    setTypeOfPizza(e.target.value);
+    console.log(typeOfPizza);
+  }
   if (!isCalculated) {
-
     if (option === 0) {
-
       return (
         <RangeContainer>
-          <TextInput inputs={["Neapolitan Pizza", "NYC Style Pizza", "Chicago Deep Dish Pizza"]} />
+          <TextInput options={pizzaOptions} typeOfPizza={typeOfPizza} handleChange={e => setTypeOfPizza(e.target.value)} />
           <Range
             itemName = "Number of pizzas"
             onChange = {e => setNumberOfPizzas(e.target.value)}
@@ -74,7 +131,7 @@ export default function RangeGroup({option}) {
     } else if (option === 1) {
       return (
         <RangeContainer>
-          <TextInput inputs={["Neapolitan Pizza", "NYC Style Pizza", "Chicago Deep Dish Pizza"]} />
+          <TextInput options={pizzaOptions} typeOfPizza={typeOfPizza} handleChange={handlePizzaTypeChange} />
           <Range
             itemName ="Hydration %"
             onChange = {e => setWaterValue(e.target.value)}
@@ -149,12 +206,14 @@ export default function RangeGroup({option}) {
     }
   } else if (isCalculated) {
     return (
-      <Recipe>
-        <Ingredient name={"flour"} percentage={"percentage"} weight={flourValue}/>
-        <Ingredient name={"water"} percentage={"percentage"} weight={waterValue}/>
-        <Ingredient name={"salt"} percentage={"percentage"} weight={saltValue}/>
-        <Ingredient name={"yeast"} percentage={"percentage"} weight={yeastValue}/>
+      <Recipe numberOfPizzas={numberOfPizzas} typeOfPizza={pizza[typeOfPizza].name}>
+        <Ingredient name={"Flour"} percentage={Math.round(pizza[typeOfPizza].flour * 100) + "%"} weight={flourValue}/>
+        <Ingredient name={"Water"} percentage={Math.round(pizza[typeOfPizza].water * 100) + "%"} weight={waterValue}/>
+        <Ingredient name={"Salt"} percentage={Math.round(pizza[typeOfPizza].salt * 100) + "%"} weight={saltValue}/>
+        <Ingredient name={"Yeast"} percentage={Math.round(pizza[typeOfPizza].yeast * 100) + "%"} weight={yeastValue}/>
+        <Ingredient name={"TOTAL:"} percentage={""} weight={calculateTotalWeight(pizza.chicago, numberOfPizzas, pizzaSize)}/>
       </Recipe>
     )
   }
 }
+

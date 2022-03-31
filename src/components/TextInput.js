@@ -50,13 +50,13 @@ const CustomArrow = styled.span`
   }
 `;
 
-export default function TextInput({ inputs }) {
+export default function TextInput({ options, typeOfPizza, handleChange }) {
   return (
     <Container>
-      <Input>
-        {inputs.map((input, index) => (
-          <option value={Input} key={index}>
-            {input}
+      <Input value={typeOfPizza} onChange={handleChange}>
+        {options.map((option, index) => (
+          <option value={option.value} key={index}>
+            {option.label}
           </option>
         ))}
       </Input>
