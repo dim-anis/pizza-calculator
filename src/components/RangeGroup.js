@@ -24,7 +24,7 @@ const ButtonContainer = styled.div`
   margin: 0 auto;
 `;
 
-export default function RangeGroup({option}) {
+export default function RangeGroup({ option }) {
   const [flourValue, setFlourValue] = useState(0);
   const [waterValue, setWaterValue] = useState(0);
   const [saltValue, setSaltValue] = useState(0);
@@ -39,53 +39,58 @@ export default function RangeGroup({option}) {
   const [typeOfPizza, setTypeOfPizza] = useState("nyc");
 
   const pizza = {
-
     neapolitan: {
+      ingredients: {
+        flour: 1,
+        water: 0.6,
+        salt: 0.02,
+        yeast: 0.01,
+      },
       name: "Neapolitan",
-      flour: 1,
-      water: 0.6,
-      salt: 0.02,
-      yeast: 0.01,
       sizeRatio: 25,
     },
 
     nyc: {
+      ingredients: {
+        flour: 1,
+        water: 0.65,
+        salt: 0.02,
+        sugar: 0.02,
+        oil: 0.02,
+        yeast: 0.01,
+      },
       name: "New York",
-      flour: 1,
-      water: 0.65,
-      salt: 0.02,
-      sugar: 0.02,
-      oil: 0.02,
-      yeast: 0.01,
-      sizeRatio: 25
+      sizeRatio: 25,
     },
 
     chicago: {
+      ingredients: {
+        flour: 1,
+        water: 0.55,
+        salt: 0.02,
+        sugar: 0.02,
+        oil: 0.2,
+        yeast: 0.01,
+      },
       name: "Chicago Deep Dish",
-      flour: 1,
-      water: 0.55,
-      salt: 0.02,
-      sugar: 0.02,
-      oil: 0.2,
-      yeast: 0.01,
-      sizeRatio: 45
-    }
-  }
+      sizeRatio: 45,
+    },
+  };
 
   const pizzaOptions = [
     {
       label: "New York Style",
-      value: "nyc"
+      value: "nyc",
     },
     {
       label: "Neapolitan",
-      value: "neapolitan"
+      value: "neapolitan",
     },
     {
       label: "Chicago Deep Dish",
-      value: "chicago"
-    }
-  ]
+      value: "chicago",
+    },
+  ];
 
   function calculateTotalWeight(pizzaType, numberOfPizzas, pizzaSize) {
     return pizzaType.sizeRatio * numberOfPizzas * pizzaSize;
@@ -94,29 +99,33 @@ export default function RangeGroup({option}) {
   const handleCalculate = (e) => {
     e.preventDefault();
     setIsCalculated(true);
-  }
+  };
 
   const handlePizzaTypeChange = (e) => {
     console.log(e.target.value);
     setTypeOfPizza(e.target.value);
     console.log(typeOfPizza);
-  }
+  };
   if (!isCalculated) {
     if (option === 0) {
       return (
         <RangeContainer>
-          <TextInput options={pizzaOptions} typeOfPizza={typeOfPizza} handleChange={e => setTypeOfPizza(e.target.value)} />
+          <TextInput
+            options={pizzaOptions}
+            typeOfPizza={typeOfPizza}
+            handleChange={(e) => setTypeOfPizza(e.target.value)}
+          />
           <Range
-            itemName = "Number of pizzas"
-            onChange = {e => setNumberOfPizzas(e.target.value)}
+            itemName="Number of pizzas"
+            onChange={(e) => setNumberOfPizzas(e.target.value)}
             min="0"
             max="10"
             step="1"
             value={numberOfPizzas}
           />
           <Range
-            itemName ="Pizza size (in inches)"
-            onChange = {e => setPizzaSize(e.target.value)}
+            itemName="Pizza size (in inches)"
+            onChange={(e) => setPizzaSize(e.target.value)}
             min="0"
             max="21"
             step="1"
@@ -124,33 +133,41 @@ export default function RangeGroup({option}) {
           />
           <ButtonContainer>
             <Button text="Settings" />
-            <Button text="Calculate" main={true} handleClick={handleCalculate} />
+            <Button
+              text="Calculate"
+              main={true}
+              handleClick={handleCalculate}
+            />
           </ButtonContainer>
         </RangeContainer>
-      )
+      );
     } else if (option === 1) {
       return (
         <RangeContainer>
-          <TextInput options={pizzaOptions} typeOfPizza={typeOfPizza} handleChange={handlePizzaTypeChange} />
+          <TextInput
+            options={pizzaOptions}
+            typeOfPizza={typeOfPizza}
+            handleChange={handlePizzaTypeChange}
+          />
           <Range
-            itemName ="Hydration %"
-            onChange = {e => setWaterValue(e.target.value)}
+            itemName="Hydration %"
+            onChange={(e) => setWaterValue(e.target.value)}
             min="0"
             max="100"
             step="1"
             value={waterValue}
           />
           <Range
-            itemName ="Salt %"
-            onChange = {e => setSaltValue(e.target.value)}
+            itemName="Salt %"
+            onChange={(e) => setSaltValue(e.target.value)}
             min="0"
             max="10"
             step="0.5"
             value={saltValue}
           />
           <Range
-            itemName ="Oil %"
-            onChange = {e => setOilValue(e.target.value)}
+            itemName="Oil %"
+            onChange={(e) => setOilValue(e.target.value)}
             min="0"
             max="10"
             step="0.5"
@@ -158,40 +175,44 @@ export default function RangeGroup({option}) {
           />
           <ButtonContainer>
             <Button text="Settings" />
-            <Button text="Calculate" main={true} handleClick={handleCalculate} />
+            <Button
+              text="Calculate"
+              main={true}
+              handleClick={handleCalculate}
+            />
           </ButtonContainer>
         </RangeContainer>
-      )
+      );
     } else if (option === 2) {
       return (
         <RangeContainer>
           <Range
-            itemName = "Flour"
-            onChange = {e => setFlourValue(e.target.value)}
+            itemName="Flour"
+            onChange={(e) => setFlourValue(e.target.value)}
             min="0"
             max="100"
             step="1"
             value={flourValue}
           />
           <Range
-            itemName ="Water"
-            onChange = {e => setWaterValue(e.target.value)}
+            itemName="Water"
+            onChange={(e) => setWaterValue(e.target.value)}
             min="0"
             max="21"
             step="1"
             value={waterValue}
           />
           <Range
-            itemName ="Salt"
-            onChange = {e => setSaltValue(e.target.value)}
+            itemName="Salt"
+            onChange={(e) => setSaltValue(e.target.value)}
             min="0"
             max="21"
             step="1"
             value={saltValue}
           />
           <Range
-            itemName ="Yeast"
-            onChange = {e => setYeastValue(e.target.value)}
+            itemName="Yeast"
+            onChange={(e) => setYeastValue(e.target.value)}
             min="0"
             max="21"
             step="1"
@@ -199,21 +220,45 @@ export default function RangeGroup({option}) {
           />
           <ButtonContainer>
             <Button text="Settings" />
-            <Button text="Calculate" main={true} handleClick={handleCalculate} />
+            <Button
+              text="Calculate"
+              main={true}
+              handleClick={handleCalculate}
+            />
           </ButtonContainer>
         </RangeContainer>
-      )
+      );
     }
   } else if (isCalculated) {
     return (
-      <Recipe numberOfPizzas={numberOfPizzas} typeOfPizza={pizza[typeOfPizza].name}>
-        <Ingredient name={"Flour"} percentage={Math.round(pizza[typeOfPizza].flour * 100) + "%"} weight={flourValue}/>
-        <Ingredient name={"Water"} percentage={Math.round(pizza[typeOfPizza].water * 100) + "%"} weight={waterValue}/>
-        <Ingredient name={"Salt"} percentage={Math.round(pizza[typeOfPizza].salt * 100) + "%"} weight={saltValue}/>
-        <Ingredient name={"Yeast"} percentage={Math.round(pizza[typeOfPizza].yeast * 100) + "%"} weight={yeastValue}/>
-        <Ingredient name={"TOTAL:"} percentage={""} weight={calculateTotalWeight(pizza.chicago, numberOfPizzas, pizzaSize)}/>
+      <Recipe
+        numberOfPizzas={numberOfPizzas}
+        pizzaSize={pizzaSize}
+        typeOfPizza={pizza[typeOfPizza]["name"]}
+      >
+        {Object.keys(pizza[typeOfPizza]["ingredients"]).map(
+          (ingredient, index) => (
+            <Ingredient
+              name={ingredient}
+              percentage={
+                Math.round(
+                  pizza[typeOfPizza]["ingredients"][ingredient] * 100
+                ) + "%"
+              }
+              weight={""}
+            />
+          )
+        )}
+        <Ingredient
+          name={"TOTAL:"}
+          percentage={""}
+          weight={calculateTotalWeight(
+            pizza[typeOfPizza],
+            numberOfPizzas,
+            pizzaSize
+          )}
+        />
       </Recipe>
-    )
+    );
   }
 }
-
