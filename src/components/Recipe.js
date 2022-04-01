@@ -17,8 +17,12 @@ const RecipeBackground = styled.div`
   gap: 1rem;
 `;
 
-const RecipeHeading = styled.h2`
+const RecipeHeading = styled.h2``;
 
+const TextHighlight = styled.em`
+  background-image: linear-gradient(45deg, #f3ec78, #af4261);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const Table = styled.table`
@@ -26,10 +30,18 @@ const Table = styled.table`
   text-align: left;
 `;
 
-export default function Recipe({ children, numberOfPizzas, typeOfPizza }) {
+export default function Recipe({
+  children,
+  numberOfPizzas,
+  typeOfPizza,
+  pizzaSize,
+}) {
   return (
     <RecipeBackground>
-      <RecipeHeading>For {numberOfPizzas} {typeOfPizza} pizza(s) you'll need:</RecipeHeading>
+      <RecipeHeading>
+        For {numberOfPizzas} ({pizzaSize + "″"} sized) <TextHighlight>{typeOfPizza}</TextHighlight> pizza(s) you'll
+        need:
+      </RecipeHeading>
       <Table>
         <tbody>
           <tr>
