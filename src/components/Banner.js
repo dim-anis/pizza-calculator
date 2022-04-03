@@ -47,6 +47,10 @@ const Img = styled.img`
 const MenuItem = styled.a`
   text-decoration: none;
   color: var(--primary-text-color);
+  width: fit-content;
+  &:hover {
+    border-bottom: 1px solid var(--primary-text-color);
+  }
 `;
 
 export default function Banner() {
@@ -69,8 +73,7 @@ export default function Banner() {
           menuOpen={menuOpen}
         />
         <DropdownMenu menuOpen={menuOpen}>
-          <MenuItem href="/">About</MenuItem>
-          <MenuItem href="/">Contact Me</MenuItem>
+          <MenuItem href="https://github.com/dim-anis/pizza-calculator">Github</MenuItem>
         </DropdownMenu>
       </NavBar>
       <Img src={Pizza} alt="pizza" />
