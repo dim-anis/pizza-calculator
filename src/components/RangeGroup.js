@@ -44,7 +44,7 @@ export default function RangeGroup({ option }) {
         flour: 1,
         water: 0.6,
         salt: 0.02,
-        yeast: 0.01,
+        yeast: 0.005,
       },
       name: "Neapolitan",
       sizeRatio: 25,
@@ -57,7 +57,7 @@ export default function RangeGroup({ option }) {
         salt: 0.02,
         sugar: 0.02,
         oil: 0.02,
-        yeast: 0.01,
+        yeast: 0.005,
       },
       name: "New York",
       sizeRatio: 25,
@@ -70,7 +70,7 @@ export default function RangeGroup({ option }) {
         salt: 0.02,
         sugar: 0.02,
         oil: 0.2,
-        yeast: 0.01,
+        yeast: 0.005,
       },
       name: "Chicago Deep Dish",
       sizeRatio: 45,
@@ -92,13 +92,35 @@ export default function RangeGroup({ option }) {
     },
   ];
 
+  let ingredients = pizza[typeOfPizza]["ingredients"];
+  let ingredientNames = Object.keys(pizza[typeOfPizza]["ingredients"]);
+  let ingredientValues = Object.values(pizza[typeOfPizza]["ingredients"]);
+  let totalPercentages = calculateFlour(ingredientValues);
+  let totalWeight = calculateTotalWeight(
+    pizza[typeOfPizza],
+    numberOfPizzas,
+    pizzaSize
+  );
+  let flourWeight = (totalWeight / totalPercentages).toFixed(1);
+
   function calculateTotalWeight(pizzaType, numberOfPizzas, pizzaSize) {
     return pizzaType.sizeRatio * numberOfPizzas * pizzaSize;
   }
 
+  function calculateFlour(array) {
+    const result = array.reduce(
+      (prevValue, currentValue) => prevValue + currentValue
+    );
+    return result;
+  }
+
+  function calculateIngredient(ingredient) {
+    return (flourWeight * ingredient).toFixed(1);
+  }
+
   const handleCalculate = (e) => {
     e.preventDefault();
-    setIsCalculated(true);
+    setIsCalculated(isCalculated ? false : true);
   };
 
   const handlePizzaTypeChange = (e) => {
@@ -106,6 +128,7 @@ export default function RangeGroup({ option }) {
     setTypeOfPizza(e.target.value);
     console.log(typeOfPizza);
   };
+
   if (!isCalculated) {
     if (option === 0) {
       return (
@@ -235,28 +258,24 @@ export default function RangeGroup({ option }) {
         numberOfPizzas={numberOfPizzas}
         pizzaSize={pizzaSize}
         typeOfPizza={pizza[typeOfPizza]["name"]}
+        handleClick={handleCalculate}
       >
-        {Object.keys(pizza[typeOfPizza]["ingredients"]).map(
-          (ingredient, index) => (
-            <Ingredient
-              name={ingredient}
-              percentage={
-                Math.round(
-                  pizza[typeOfPizza]["ingredients"][ingredient] * 100
-                ) + "%"
-              }
-              weight={""}
-            />
-          )
-        )}
+        {ingredientNames.map((ingredient) => (
+          <Ingredient
+            name={ingredient}
+            percentage={(ingredients[ingredient] * 100).toFixed(1) + "%"}
+            weight={
+              ingredient === "flour"
+                ? flourWeight + "g"
+                : calculateIngredient(ingredients[ingredient]) + "g"
+            }
+          />
+        ))}
         <Ingredient
           name={"TOTAL:"}
           percentage={""}
-          weight={calculateTotalWeight(
-            pizza[typeOfPizza],
-            numberOfPizzas,
-            pizzaSize
-          )}
+          borderTop={true}
+          weight={totalWeight + "g"}
         />
       </Recipe>
     );
