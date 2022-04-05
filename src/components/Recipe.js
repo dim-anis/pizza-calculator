@@ -10,7 +10,7 @@ const RecipeBackground = styled.div`
   inset: 0 0 0 0;
   padding: 1rem;
   display: flex;
-  color: white;
+  color: var(--primary-text-color);
   background: hsl(0 0% 0% / 0.75);
   backdrop-filter: blur(0.3rem);
   z-index: 9999;
@@ -25,19 +25,42 @@ const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 60%;
+  }
 `;
 
-const TextHighlight = styled.em`
-  background-image: linear-gradient(45deg, #f3ec78, #af4261);
+const TitleH2 = styled.h2`
+  line-height: 2.2rem;
+  font-weight: normal;
+`;
+
+const PizzaNameHighlight = styled.em`
+  background-image: linear-gradient(90deg, #f3ec78, var(--color-tomato));
   background-clip: text;
+  font-size: 2.2rem;
+  font-weight: bold;
+  //border-top: 2px dashed var(--primary-text-color);
+  //border-bottom: 2px dashed var(--primary-text-color);
+  display: block;
   font-style: normal;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
 
+const PizzaQuantityHighlight = styled.em`
+  font-size: 2.5rem;
+  font-style: normal;
+  font-weight: bold;
+`;
+
 const Table = styled.table`
   width: 100%;
   text-align: left;
+  font-size: 1.1rem;
+  border-collapse: collapse;
 `;
 
 export default function Recipe({
@@ -45,16 +68,20 @@ export default function Recipe({
   numberOfPizzas,
   typeOfPizza,
   pizzaSize,
-  handleClick
+  handleClick,
 }) {
   return (
     <RecipeBackground>
-      <NavItem icon={ <CloseIcon /> } onClick={handleClick}/>
+      <NavItem icon={<CloseIcon />} onClick={handleClick} />
       <TextContainer>
-        <h2>
-          For {numberOfPizzas} ({pizzaSize + "″"} sized) <TextHighlight>{typeOfPizza}</TextHighlight> pizza(s) you'll
-          need:
-        </h2>
+        <TitleH2>
+          for <PizzaQuantityHighlight>{numberOfPizzas}</PizzaQuantityHighlight>{" "}
+          ({pizzaSize + "″"} sized)
+          <PizzaNameHighlight>
+            {typeOfPizza} {numberOfPizzas > 1 ? "Pizzas" : "Pizza"}
+          </PizzaNameHighlight>{" "}
+          you'll need:
+        </TitleH2>
         <Table>
           <tbody>
             <tr>

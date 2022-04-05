@@ -8,6 +8,11 @@ const StyledButton = styled.button`
   background-color: ${props => props.main ? "tomato" : "transparent"};
   color: ${props => props.main ? "white" : "tomato"};
   border: 1px solid tomato;
+  transition: 250ms all ease-in-out;
+
+  &:hover {
+    background-color: var(--primary-hover-color);
+  }
 `;
 
 export default function Button({main, text, handleClick}) {
