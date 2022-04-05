@@ -7,9 +7,14 @@ const Container = styled.div`
 const Input = styled.select`
   padding: 0.5em 0.5em;
   width: 100%;
-  border: 2px solid tomato;
+  border: 2px solid var(--primary-color);
   border-radius: 5px;
   background: none;
+  transition: 250ms all ease-in-out;
+
+  &:hover, &:active {
+    border: 2px solid var(--primary-hover-color);
+  }
 `;
 
 const CustomArrow = styled.span`
@@ -19,7 +24,7 @@ const CustomArrow = styled.span`
   right: 0;
   height: 100%;
   width: 3rem;
-  background: tomato;
+  background-color: var(--primary-color);
   border-radius: 0px 5px 5px 0px;
   pointer-events: none;
 

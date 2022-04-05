@@ -17,13 +17,6 @@ const RangeContainer = styled.div`
   flex-direction: column;
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  width: 90%;
-  justify-content: space-evenly;
-  margin: 0 auto;
-`;
-
 export default function RangeGroup({ option }) {
   const [flourValue, setFlourValue] = useState(0);
   const [waterValue, setWaterValue] = useState(0);
@@ -33,10 +26,9 @@ export default function RangeGroup({ option }) {
 
   const [numberOfPizzas, setNumberOfPizzas] = useState(0);
   const [pizzaSize, setPizzaSize] = useState(0);
+  const [typeOfPizza, setTypeOfPizza] = useState("nyc");
 
   const [isCalculated, setIsCalculated] = useState(false);
-
-  const [typeOfPizza, setTypeOfPizza] = useState("nyc");
 
   const pizza = {
     neapolitan: {
@@ -120,13 +112,7 @@ export default function RangeGroup({ option }) {
 
   const handleCalculate = (e) => {
     e.preventDefault();
-    setIsCalculated(isCalculated ? false : true);
-  };
-
-  const handlePizzaTypeChange = (e) => {
-    console.log(e.target.value);
-    setTypeOfPizza(e.target.value);
-    console.log(typeOfPizza);
+    setIsCalculated(!isCalculated);
   };
 
   if (!isCalculated) {
@@ -154,14 +140,11 @@ export default function RangeGroup({ option }) {
             step="1"
             value={pizzaSize}
           />
-          <ButtonContainer>
-            <Button text="Settings" />
-            <Button
+          <Button
               text="Calculate"
               main={true}
               handleClick={handleCalculate}
-            />
-          </ButtonContainer>
+          />
         </RangeContainer>
       );
     } else if (option === 1) {
@@ -170,7 +153,7 @@ export default function RangeGroup({ option }) {
           <TextInput
             options={pizzaOptions}
             typeOfPizza={typeOfPizza}
-            handleChange={handlePizzaTypeChange}
+            handleChange={(e) => setTypeOfPizza(e.target.value)}
           />
           <Range
             itemName="Hydration %"
@@ -196,14 +179,11 @@ export default function RangeGroup({ option }) {
             step="0.5"
             value={oilValue}
           />
-          <ButtonContainer>
-            <Button text="Settings" />
-            <Button
+          <Button
               text="Calculate"
               main={true}
               handleClick={handleCalculate}
-            />
-          </ButtonContainer>
+          />
         </RangeContainer>
       );
     } else if (option === 2) {
@@ -241,14 +221,11 @@ export default function RangeGroup({ option }) {
             step="1"
             value={yeastValue}
           />
-          <ButtonContainer>
-            <Button text="Settings" />
-            <Button
+          <Button
               text="Calculate"
               main={true}
               handleClick={handleCalculate}
-            />
-          </ButtonContainer>
+          />
         </RangeContainer>
       );
     }
@@ -262,6 +239,7 @@ export default function RangeGroup({ option }) {
       >
         {ingredientNames.map((ingredient) => (
           <Ingredient
+            key={ingredient}
             name={ingredient}
             percentage={(ingredients[ingredient] * 100).toFixed(1) + "%"}
             weight={
@@ -273,9 +251,8 @@ export default function RangeGroup({ option }) {
         ))}
         <Ingredient
           name={"TOTAL:"}
-          percentage={""}
-          borderTop={true}
-          weight={totalWeight + "g"}
+          weight={"≈ " +  totalWeight + "g"}
+          isFooter={true}
         />
       </Recipe>
     );
