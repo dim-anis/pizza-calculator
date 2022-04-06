@@ -30,11 +30,6 @@ const Button = styled.button`
       : "1px solid var(--gray-inactive-color)"};
   background-color: ${(props) =>
     props.active ? "var(--primary-selected)" : "transparent"};
-  transition: 250ms all ease-in-out;
-
-  &:hover {
-    border-color: var(--primary-hover-color);
-  }
 `;
 
 export default function OptionsButton({ name, className, onClick }) {

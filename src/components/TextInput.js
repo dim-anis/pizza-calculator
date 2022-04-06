@@ -7,14 +7,9 @@ const Container = styled.div`
 const Input = styled.select`
   padding: 0.5em 0.5em;
   width: 100%;
-  border: 2px solid var(--primary-color);
+  border: 2px solid tomato;
   border-radius: 5px;
   background: none;
-  transition: 250ms all ease-in-out;
-
-  &:hover, &:active {
-    border: 2px solid var(--primary-hover-color);
-  }
 `;
 
 const CustomArrow = styled.span`
@@ -24,7 +19,7 @@ const CustomArrow = styled.span`
   right: 0;
   height: 100%;
   width: 3rem;
-  background-color: var(--primary-color);
+  background: tomato;
   border-radius: 0px 5px 5px 0px;
   pointer-events: none;
 
@@ -59,9 +54,9 @@ export default function TextInput({ options, typeOfPizza, handleChange }) {
   return (
     <Container>
       <Input value={typeOfPizza} onChange={handleChange}>
-        {options.map((option, index) => (
-          <option value={option.value} key={index}>
-            {option.label}
+        {options.map((pizza, index) => (
+          <option value={pizza.label} key={index}>
+            {pizza.name}
           </option>
         ))}
       </Input>

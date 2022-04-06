@@ -1,6 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
 
+import pizzaOptions from "../utils/pizzaOptions";
+
 import TextInput from "./TextInput";
 import Range from "./Range";
 import Button from "./Button";
@@ -18,11 +20,14 @@ const RangeContainer = styled.div`
 `;
 
 export default function RangeGroup({ option }) {
-  const [flourValue, setFlourValue] = useState(0);
-  const [waterValue, setWaterValue] = useState(0);
-  const [saltValue, setSaltValue] = useState(0);
-  const [yeastValue, setYeastValue] = useState(0);
-  const [oilValue, setOilValue] = useState(0);
+
+  const [values, setValues] = useState({
+    flour: 0,
+    water: 0,
+    salt: 0,
+    yeast: 0,
+    oil: 0
+  })
 
   const [numberOfPizzas, setNumberOfPizzas] = useState(0);
   const [pizzaSize, setPizzaSize] = useState(0);
@@ -30,66 +35,13 @@ export default function RangeGroup({ option }) {
 
   const [isCalculated, setIsCalculated] = useState(false);
 
-  const pizza = {
-    neapolitan: {
-      ingredients: {
-        flour: 1,
-        water: 0.6,
-        salt: 0.02,
-        yeast: 0.005,
-      },
-      name: "Neapolitan",
-      sizeRatio: 25,
-    },
-
-    nyc: {
-      ingredients: {
-        flour: 1,
-        water: 0.65,
-        salt: 0.02,
-        sugar: 0.02,
-        oil: 0.02,
-        yeast: 0.005,
-      },
-      name: "New York",
-      sizeRatio: 25,
-    },
-
-    chicago: {
-      ingredients: {
-        flour: 1,
-        water: 0.55,
-        salt: 0.02,
-        sugar: 0.02,
-        oil: 0.2,
-        yeast: 0.005,
-      },
-      name: "Chicago Deep Dish",
-      sizeRatio: 45,
-    },
-  };
-
-  const pizzaOptions = [
-    {
-      label: "New York Style",
-      value: "nyc",
-    },
-    {
-      label: "Neapolitan",
-      value: "neapolitan",
-    },
-    {
-      label: "Chicago Deep Dish",
-      value: "chicago",
-    },
-  ];
-
-  let ingredients = pizza[typeOfPizza]["ingredients"];
-  let ingredientNames = Object.keys(pizza[typeOfPizza]["ingredients"]);
-  let ingredientValues = Object.values(pizza[typeOfPizza]["ingredients"]);
+  let currentPizza = pizzaOptions.find(x => x.label === typeOfPizza);
+  let ingredients = currentPizza.ingredients;
+  let ingredientNames = Object.keys(ingredients);
+  let ingredientValues = Object.values(ingredients);
   let totalPercentages = calculateFlour(ingredientValues);
   let totalWeight = calculateTotalWeight(
-    pizza[typeOfPizza],
+    currentPizza,
     numberOfPizzas,
     pizzaSize
   );
@@ -100,10 +52,9 @@ export default function RangeGroup({ option }) {
   }
 
   function calculateFlour(array) {
-    const result = array.reduce(
+    return array.reduce(
       (prevValue, currentValue) => prevValue + currentValue
     );
-    return result;
   }
 
   function calculateIngredient(ingredient) {
@@ -156,28 +107,31 @@ export default function RangeGroup({ option }) {
             handleChange={(e) => setTypeOfPizza(e.target.value)}
           />
           <Range
+            id = "water"
             itemName="Hydration %"
-            onChange={(e) => setWaterValue(e.target.value)}
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
             max="100"
             step="1"
-            value={waterValue}
+            value={values.water}
           />
           <Range
+            id = "salt"
             itemName="Salt %"
-            onChange={(e) => setSaltValue(e.target.value)}
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
             max="10"
             step="0.5"
-            value={saltValue}
+            value={values.salt}
           />
           <Range
+            id = "oil"
             itemName="Oil %"
-            onChange={(e) => setOilValue(e.target.value)}
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
             max="10"
             step="0.5"
-            value={oilValue}
+            value={values.oil}
           />
           <Button
               text="Calculate"
@@ -189,37 +143,37 @@ export default function RangeGroup({ option }) {
     } else if (option === 2) {
       return (
         <RangeContainer>
+          <TextInput
+            options={pizzaOptions}
+            typeOfPizza={typeOfPizza}
+            handleChange={(e) => setTypeOfPizza(e.target.value)}
+          />
           <Range
-            itemName="Flour"
-            onChange={(e) => setFlourValue(e.target.value)}
+            id = "water"
+            itemName="Hydration %"
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
             max="100"
             step="1"
-            value={flourValue}
+            value={values.water}
           />
           <Range
-            itemName="Water"
-            onChange={(e) => setWaterValue(e.target.value)}
+            id = "salt"
+            itemName="Salt %"
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
-            max="21"
-            step="1"
-            value={waterValue}
+            max="10"
+            step="0.5"
+            value={values.salt}
           />
           <Range
-            itemName="Salt"
-            onChange={(e) => setSaltValue(e.target.value)}
+            id = "oil"
+            itemName="Oil %"
+            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
             min="0"
-            max="21"
-            step="1"
-            value={saltValue}
-          />
-          <Range
-            itemName="Yeast"
-            onChange={(e) => setYeastValue(e.target.value)}
-            min="0"
-            max="21"
-            step="1"
-            value={yeastValue}
+            max="10"
+            step="0.5"
+            value={values.oil}
           />
           <Button
               text="Calculate"
@@ -234,7 +188,7 @@ export default function RangeGroup({ option }) {
       <Recipe
         numberOfPizzas={numberOfPizzas}
         pizzaSize={pizzaSize}
-        typeOfPizza={pizza[typeOfPizza]["name"]}
+        typeOfPizza={currentPizza.name}
         handleClick={handleCalculate}
       >
         {ingredientNames.map((ingredient) => (
