@@ -11,12 +11,11 @@ const BannerContainer = styled.div`
   width: 100%;
   height: 25%;
   border-radius: 0px 0px 15px 15px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-color: var(--primary-color);
+  background: linear-gradient(45deg, #FF6347, #FF7961);
   color: var(--primary-text-color);
   overflow: hidden;
   position: relative;

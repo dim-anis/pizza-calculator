@@ -10,6 +10,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-around;
   border-radius: 15px;
   width: 90%;
 `;
