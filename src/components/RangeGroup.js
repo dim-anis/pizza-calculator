@@ -12,22 +12,13 @@ import Ingredient from "./Ingredient";
 const RangeContainer = styled.div`
   width: 90%;
   border-radius: 10px;
-  justify-content: space-around;
-  height: 100%;
+  justify-content: space-evenly;
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
 `;
 
 export default function RangeGroup({ option }) {
-
-  const [values, setValues] = useState({
-    flour: 0,
-    water: 0,
-    salt: 0,
-    yeast: 0,
-    oil: 0
-  })
 
   const [numberOfPizzas, setNumberOfPizzas] = useState(0);
   const [pizzaSize, setPizzaSize] = useState(0);
@@ -64,6 +55,20 @@ export default function RangeGroup({ option }) {
   const handleCalculate = (e) => {
     e.preventDefault();
     setIsCalculated(!isCalculated);
+  };
+
+  const [values, setValues] = useState({
+    flour: ingredients.flour * 100,
+    water: ingredients.water * 100,
+    salt: ingredients.salt * 100,
+    yeast: ingredients.yeast * 100,
+    sugar: ingredients.sugar * 100,
+    oil: ingredients.oil * 100
+  });
+
+  function handleRange(event) {
+    setValues({...values, [event.target.id]: event.target.value});
+    console.log(values);
   };
 
   if (!isCalculated) {
@@ -106,33 +111,18 @@ export default function RangeGroup({ option }) {
             typeOfPizza={typeOfPizza}
             handleChange={(e) => setTypeOfPizza(e.target.value)}
           />
-          <Range
-            id = "water"
-            itemName="Hydration %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="100"
-            step="1"
-            value={values.water}
-          />
-          <Range
-            id = "salt"
-            itemName="Salt %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="10"
-            step="0.5"
-            value={values.salt}
-          />
-          <Range
-            id = "oil"
-            itemName="Oil %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="10"
-            step="0.5"
-            value={values.oil}
-          />
+          {Object.keys(ingredients).filter(value => value !== "flour").map((value, index) => (
+            <Range
+              id={value}
+              key={value}
+              itemName={value[0].toUpperCase() + value.slice(1)}
+              onChange={handleRange}
+              min={0}
+              max={ingredients[value] > 0.1 ? "100" : "10"}
+              step={ingredients[value] > 0.1 ? "1" : "0.5"}
+              value={values[value]}
+            />
+          ))}
           <Button
               text="Calculate"
               main={true}
@@ -143,38 +133,18 @@ export default function RangeGroup({ option }) {
     } else if (option === 2) {
       return (
         <RangeContainer>
-          <TextInput
-            options={pizzaOptions}
-            typeOfPizza={typeOfPizza}
-            handleChange={(e) => setTypeOfPizza(e.target.value)}
-          />
-          <Range
-            id = "water"
-            itemName="Hydration %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="100"
-            step="1"
-            value={values.water}
-          />
-          <Range
-            id = "salt"
-            itemName="Salt %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="10"
-            step="0.5"
-            value={values.salt}
-          />
-          <Range
-            id = "oil"
-            itemName="Oil %"
-            onChange={(e) => setValues({ ...values, [e.target.id]: e.target.value})}
-            min="0"
-            max="10"
-            step="0.5"
-            value={values.oil}
-          />
+          {Object.keys(ingredients).filter(value => value !== "flour").map((value, index) => (
+            <Range
+              id={value}
+              key={value}
+              itemName={value[0].toUpperCase() + value.slice(1)}
+              onChange={handleRange}
+              min={0}
+              max={ingredients[value] > 0.1 ? "100" : "10"}
+              step={ingredients[value] > 0.1 ? "1" : "0.5"}
+              value={values[value]}
+            />
+          ))}
           <Button
               text="Calculate"
               main={true}

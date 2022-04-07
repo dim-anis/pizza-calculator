@@ -5,8 +5,8 @@ const StyledButton = styled.button`
   border: none;
   border-radius: 5px;
   font-weight: ${props => props.main ? "600" : "400"};
-  background-color: ${props => props.main ? "tomato" : "transparent"};
-  color: ${props => props.main ? "white" : "tomato"};
+  background: ${props => props.main ? "linear-gradient(45deg, #FF6347, #F55F45)" : "transparent"};
+  color: ${props => props.main ? "white" : "var(--primary-color)"};
   border: 1px solid tomato;
   transition: 250ms all ease-in-out;
 
