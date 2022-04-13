@@ -7,7 +7,7 @@ const options = [
         flour: 1,
         water: 0.6,
         salt: 0.02,
-        yeast: 0.005
+        yeast: 0.003
       }
     },
     {
@@ -20,7 +20,7 @@ const options = [
         salt: 0.02,
         sugar: 0.02,
         oil: 0.02,
-        yeast: 0.005,
+        yeast: 0.003,
       }
     },
     {
@@ -33,8 +33,31 @@ const options = [
         salt: 0.02,
         sugar: 0.02,
         oil: 0.2,
-        yeast: 0.005,
+        yeast: 0.003,
       },
+    },
+    {
+      name: "Detroit Style",
+      label: "detroit",
+      sizeRatio: 20,
+      ingredients: {
+        flour: 1,
+        water: 0.75,
+        salt: 0.03,
+        yeast: 0.003
+      }
+    },
+    {
+      name: "Roman Style",
+      label: "roman",
+      sizeRatio: 25,
+      ingredients: {
+        flour: 1,
+        water: 0.8,
+        salt: 0.025,
+        oil: 0.02,
+        yeast: 0.003
+      }
     }
   ];
 
