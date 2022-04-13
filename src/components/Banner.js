@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { ReactComponent as MenuIcon } from "../static/menu-outline.svg";
 import { ReactComponent as CloseIcon } from "../static/close-outline.svg";
-import Pizza from "../static/pizza.png";
+import Pizza from "../static/pizza.svg";
 import DropdownMenu from "./DropdownMenu";
 import NavItem from "./NavItem";
 
