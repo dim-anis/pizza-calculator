@@ -69,7 +69,7 @@ export default function Recipe({
   typeOfPizza,
   pizzaSize,
   handleClick,
-  doughBallWeight
+  doughBallWeight,
 }) {
   return (
     <RecipeBackground>
@@ -77,10 +77,16 @@ export default function Recipe({
       <TextContainer>
         <TitleH2>
           for <PizzaQuantityHighlight>{numberOfPizzas}</PizzaQuantityHighlight>{" "}
-          ({pizzaSize ? pizzaSize + "″" : doughBallWeight + "gr"} sized)
+          (
+          {pizzaSize
+            ? pizzaSize + "″ "
+            : doughBallWeight
+            ? doughBallWeight + "gr "
+            : ""}
+          each)
           <PizzaNameHighlight>
-            {typeOfPizza} {numberOfPizzas > 1 ? "Pizzas" : "Pizza"}
-          </PizzaNameHighlight>{" "}
+            {typeOfPizza} {numberOfPizzas === "1" ? "Pizza" : "Pizzas"}
+          </PizzaNameHighlight>
           you'll need:
         </TitleH2>
         <Table>
