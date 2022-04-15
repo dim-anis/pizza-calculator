@@ -1,5 +1,5 @@
 export function addUpAllPercentages(array) {
-    return array.reduce((prevValue, currentValue) => prevValue + currentValue);
+    return array.reduce((prevValue, currentValue) => parseFloat(prevValue) + parseFloat(currentValue));
   }
 
 export function calculateIngredientWeight(ingredient, flourWeight) {

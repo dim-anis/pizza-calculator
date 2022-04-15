@@ -138,15 +138,15 @@ const Input = styled.input`
   text-align: center;
 `;
 
-export default function Range({itemName, max, min, step, value, onChange, id}) {
+export default function Range({itemName, max, min, step, value, handleChange, id}) {
   return (
     <ComponentContainer>
       <LabelContainer>
         <p>{itemName}</p>
-        <Input type="number" id={id} min={min} max={max} value={value} onChange={onChange} />
+        <Input type="number" id={id} min={min} max={max} value={value} onChange={handleChange} />
       </LabelContainer>
       <Slider type="range"
-              onChange={onChange}
+              onChange={handleChange}
               value={value}
               step={step}
               max={max}

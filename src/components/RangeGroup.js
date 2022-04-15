@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import pizzaOptions from "../utils/pizzaRecipes";
-import { addUpAllPercentages, calculateIngredientWeight } from "../utils/utilFuncs";
+import {
+  addUpAllPercentages,
+  calculateIngredientWeight,
+} from "../utils/utilFuncs";
 
 import SelectOption from "./SelectOption";
 import Range from "./Range";
@@ -61,6 +64,15 @@ export default function RangeGroup({ option }) {
     setValues({ ...ingredients });
   }, [ingredients]);
 
+  const [hardValues, setHardValues] = useState({
+    flour: 0,
+    water: 0,
+    salt: 0,
+    yeast: 0,
+    sugar: 0,
+    oil: 0
+  });
+
   if (option === 0) {
     if (!isCalculated) {
       return (
@@ -72,7 +84,7 @@ export default function RangeGroup({ option }) {
           />
           <Range
             itemName="Number of pizzas"
-            onChange={(e) => setNumberOfPizzas(e.target.value)}
+            handleChange={(e) => setNumberOfPizzas(e.target.value)}
             min="0"
             max="10"
             step="1"
@@ -80,7 +92,7 @@ export default function RangeGroup({ option }) {
           />
           <Range
             itemName="Pizza size (in inches)"
-            onChange={(e) => setPizzaSize(e.target.value)}
+            handleChange={(e) => setPizzaSize(e.target.value)}
             min="0"
             max="21"
             step="1"
@@ -131,7 +143,7 @@ export default function RangeGroup({ option }) {
           />
           <Range
             itemName="Weight of a doughball"
-            onChange={(e) => setDoughBallWeight(e.target.value)}
+            handleChange={(e) => setDoughBallWeight(e.target.value)}
             min="0"
             max="500"
             step="10"
@@ -139,15 +151,15 @@ export default function RangeGroup({ option }) {
           />
           <Range
             itemName="Number of pizzas"
-            onChange={(e) => setNumberOfPizzas(e.target.value)}
+            handleChange={(e) => setNumberOfPizzas(e.target.value)}
             min="0"
             max="20"
             value={numberOfPizzas}
           />
           <Range
-            itemName="Hydration %"
+            itemName="Hydration (%)"
             id={"water"}
-            onChange={handleRange}
+            handleChange={handleRange}
             min="0"
             max="1"
             step="0.05"
@@ -172,7 +184,10 @@ export default function RangeGroup({ option }) {
               weight={
                 ingredient === "flour"
                   ? flourTotalFromBall + "g"
-                  : calculateIngredientWeight(values[ingredient], flourTotalFromBall) + "g"
+                  : calculateIngredientWeight(
+                      values[ingredient],
+                      flourTotalFromBall
+                    ) + "g"
               }
             />
           ))}
@@ -185,11 +200,89 @@ export default function RangeGroup({ option }) {
       );
     }
   } else if (option === 2) {
-    return (
-      <RangeContainer>
-        To be implemented...
-        <Button text="Calculate" main={true} handleClick={handleCalculate} />
-      </RangeContainer>
-    );
+    if (!isCalculated) {
+      return (
+        <RangeContainer>
+          {Object.keys(hardValues).map((ingredient, index) => (
+            <Range
+              id={ingredient}
+              itemName={
+                ingredient === "flour"
+                  ? ingredient.slice(0, 1).toUpperCase() +
+                    ingredient.slice(1) +
+                    " (g)"
+                  : ingredient.slice(0, 1).toUpperCase() +
+                    ingredient.slice(1) +
+                    " (%)"
+              }
+              key={ingredient + index}
+              handleChange={(e) =>
+                setHardValues({
+                  ...hardValues,
+                  [e.target.id]: e.target.value,
+                })
+              }
+              min="0"
+              max={
+                ingredient === "water"
+                  ? "100"
+                  : ingredient === "flour"
+                  ? "1000"
+                  : ingredient === "yeast"
+                  ? "1"
+                  : "10"
+              }
+              step={
+                ingredient === "water"
+                  ? "5"
+                  : ingredient === "flour"
+                  ? "50"
+                  : ingredient === "yeast"
+                  ? "0.1"
+                  : "0.5"
+              }
+              value={hardValues[ingredient]}
+            />
+          ))}
+          <Button text="Calculate" main={true} handleClick={handleCalculate} />
+        </RangeContainer>
+      );
+    } else if (isCalculated) {
+      return (
+        <Recipe
+          numberOfPizzas={"?"}
+          typeOfPizza={"Custom"}
+          handleClick={handleCalculate}
+        >
+          {Object.keys(hardValues).map((ingredient) => (
+            <Ingredient
+              key={ingredient}
+              name={ingredient}
+              percentage={
+                ingredient === "flour" ? "100%" : hardValues[ingredient] + "%"
+              }
+              weight={
+                ingredient === "flour"
+                  ? hardValues.flour + "g"
+                  : calculateIngredientWeight(
+                      hardValues[ingredient] / 100,
+                      hardValues.flour
+                    ) + "g"
+              }
+            />
+          ))}
+          <Ingredient
+            name={"TOTAL:"}
+            weight={"≈ " +
+              (parseFloat(hardValues.flour) +
+              (addUpAllPercentages(Object.values(hardValues).slice(1)) / 100) *
+                hardValues.flour).toFixed() +
+              "g"
+            }
+            isFooter={true}
+          />
+        </Recipe>
+      );
+    }
   }
 }
