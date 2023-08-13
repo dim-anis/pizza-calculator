@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} max-w-7xl w-[min(100% - 3rem, 65ch)] mx-auto`}>
-        <nav className="flex flex-row justify-between p-8 py-6">
+        <nav className="flex flex-row justify-between py-6">
           <h1 className="tracking-tighter text-2xl">Pizza Calculator</h1>
           <Navbar />
         </nav>
