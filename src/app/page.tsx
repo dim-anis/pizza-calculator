@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <main className="grid grid-flow-col auto-cols-fr gap-10 mx-auto my-10">
+    <main className="grid sm:grid-flow-col sm:auto-cols-fr gap-10 mx-auto my-10">
       <Calculator onSubmit={handleSubmit} onChange={handleChange} values={values} />
       <div>
         <h2 className="mb-5 text-xl font-semibold text-gray-900">Instructions:</h2>
