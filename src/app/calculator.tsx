@@ -65,7 +65,7 @@ const IngredientSchema = z.object({
       message: "Can't make pizza with no water!"
     })
     .lt(MAX_VAL, {
-      message: "Come on, this much flour?"
+      message: "Come on, this much water?"
     })
   ,
   salt: z
