@@ -17,12 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} w-[min(100%-3rem,_75ch)] mx-auto`}>
-        <nav className="flex flex-row justify-between py-6">
-          <h1 className="tracking-tighter text-2xl">Pizza Calculator</h1>
-          <Navbar />
-        </nav>
-        {children}
+      <body>
+        <div className={`${inter.className} w-[min(100%-3rem,_75ch)] mx-auto`}>
+          <nav className="flex flex-row justify-between py-6">
+            <h1 className="tracking-tighter text-2xl">Pizza Calculator</h1>
+            <Navbar />
+          </nav>
+          {children}
+        </div>
       </body>
     </html>
   )
