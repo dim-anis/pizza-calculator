@@ -23,96 +23,126 @@ import {
 } from "@/components/ui/select"
 
 export const pizzaStyles = {
-  neapolitan: {
-    flour: 1000,
-    water: 850,
-    salt: 10
+  "neapolitan_brick_oven": {
+    "flour": 100,
+    "water": 60,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
   },
-  new_york: {
-    flour: 1000,
-    water: 700,
-    salt: 10,
-    oil: 10
+  "neapolitan_home_oven": {
+    "flour": 100,
+    "water": 68,
+    "salt": 2.5,
+    "yeast": 0.4,
+    "oil": 1.5
   },
-  detroit: {
-    flour: 1000,
-    water: 650,
-    salt: 15
+  "new_york": {
+    "flour": 100,
+    "water": 63,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
+  },
+  "chicago": {
+    "flour": 100,
+    "water": 53,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
+  },
+  "detroit": {
+    "flour": 100,
+    "water": 62,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
+  },
+  "al_taglio": {
+    "flour": 100,
+    "water": 73,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
+  },
+  "calzone": {
+    "flour": 100,
+    "water": 63,
+    "salt": 2.5,
+    "yeast": 0.3,
+    "oil": 1.5
   }
 }
 
-function capitalizeEveryFirstChar(expression: string) {
+export type PizzaStyles = typeof pizzaStyles;
+export type PizzaStyleName = keyof PizzaStyles;
+export type RecipeType<T extends PizzaStyleName> = PizzaStyles[T];
+
+export function capitalizeEveryFirstChar(expression: string) {
   return expression.split("_").map(word => word.slice(0, 1).toLocaleUpperCase() + word.slice(1)).join(" ");
 }
 
 const MAX_VAL = 99999;
 
-const IngredientSchema = z.object({
-  flour: z
+const errors = {
+  negativeValue: "Value must be positive.",
+  valueExceeds: (val: number) => `Value must be less than ${val}.`
+}
+
+const CalculatorSettingsSchema = z.object({
+  numberOfPizzas: z
     .coerce
     .number()
     .gt(0, {
-      message: "Can't make pizza with no flour!"
+      message: errors.negativeValue
     })
     .lt(MAX_VAL, {
-      message: "Come on, this much flour?"
+      message: errors.valueExceeds(MAX_VAL)
     })
   ,
-  water: z
+  weightPerPizza: z
     .coerce
     .number()
     .gt(0, {
-      message: "Can't make pizza with no water!"
+      message: errors.negativeValue
     })
     .lt(MAX_VAL, {
-      message: "Come on, this much water?"
+      message: errors.valueExceeds(MAX_VAL)
     })
   ,
-  salt: z
+  hydration: z
     .coerce
     .number()
+    .gt(0, {
+      message: errors.negativeValue
+    })
     .lt(MAX_VAL, {
-      message: "Come on, this much salt?"
+      message: errors.valueExceeds(MAX_VAL)
     })
     .default(0),
-  oil: z
-    .coerce
-    .number()
-    .lt(MAX_VAL, {
-      message: "Come on, this much oil?"
-  })
-    .optional(),
-
-  sugar: z
-    .coerce
-    .number()
-    .lt(MAX_VAL, {
-      message: "Come on, this much sugar?"
-  })
-    .optional(),
 })
 
-const RecipeSchema = z.object({
+const CalculatorSchema = z.object({
   pizzaStyle: z
     .coerce
     .string(),
-  ingredients: IngredientSchema
+  settings: CalculatorSettingsSchema
 })
 
-export type CalculatorFormData = z.infer<typeof RecipeSchema>;
+export type CalculatorFormData = z.infer<typeof CalculatorSchema>;
 
 type CalculatorProps = {
   onInputChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  onSelectChange: (value: keyof typeof pizzaStyles) => void,
+  onSelectChange: (value: PizzaStyleName) => void,
   onSubmit: (values: CalculatorFormData) => void,
   defaultValues: CalculatorFormData,
 }
 
 export default function Calculator(props: CalculatorProps) {
-  const ingredients = Object.keys(props.defaultValues.ingredients) as Array<keyof typeof props.defaultValues.ingredients>;
+  const settings = Object.keys(props.defaultValues.settings) as Array<keyof typeof props.defaultValues.settings>;
 
   const form = useForm<CalculatorFormData>({
-    resolver: zodResolver(RecipeSchema),
+    resolver: zodResolver(CalculatorSchema),
     defaultValues: useMemo(() => {
       return props.defaultValues;
     }, [props])
@@ -156,20 +186,19 @@ export default function Calculator(props: CalculatorProps) {
             </FormItem>
           )}
         />
-        {ingredients.map((ingredient) => (
+        {settings.map((setting) => (
           <FormField
-            key={ingredient}
+            key={setting}
             control={form.control}
-            name={`ingredients.${ingredient}`}
+            name={`settings.${setting}`}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{capitalizeEveryFirstChar(ingredient)}</FormLabel>
+                <FormLabel>{capitalizeEveryFirstChar(setting)}</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
-                    pattern="[0-9]+"
                     inputMode="numeric"
-                    placeholder={`Enter the amount of ${ingredient}`}
+                    placeholder={`Select ${setting}`}
                     {...field}
                     onChange={(e) => field.onChange(props.onInputChange(e))} />
                 </FormControl>
