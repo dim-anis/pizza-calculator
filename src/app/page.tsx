@@ -1,22 +1,36 @@
 "use client"
 
 import { ChangeEvent, useState } from "react";
-import Calculator, { type CalculatorFormData, type PizzaStyleName, type RecipeType, pizzaStyles } from "./calculator";
-import { capitalizeEveryFirstChar } from "./calculator";
+import Calculator, { type CalculatorFormData, type PizzaStyleName, type RecipeType, pizzaStyles, capitalize } from "./calculator";
+import { snakeCaseToRegular } from "./calculator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 function getRecipeIngredients<T extends PizzaStyleName>(totalDoughWeight: number, recipeForPizzaStyle: RecipeType<T>) {
-  let ingredients: Record<string, number> = {};
-  for (const [ingredient, percentage] of Object.entries(recipeForPizzaStyle)) {
-    const amount = (percentage / 100) * totalDoughWeight;
-    ingredients[ingredient] = amount < 100 ? Number(amount.toFixed(1)) : Math.round(amount);
+  const ingredientAmounts: Record<string, number> = {};
+
+  const totalPercentage = Object.values(recipeForPizzaStyle).reduce(
+    (total, percentage) => total + percentage,
+    0
+  );
+
+  for (const ingredient in recipeForPizzaStyle) {
+    const amount = (totalDoughWeight * recipeForPizzaStyle[ingredient]) / totalPercentage;
+    ingredientAmounts[ingredient] = amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
   }
 
-  return ingredients;
+  return ingredientAmounts;
 }
 
 const defaultSettings = {
-  numberOfPizzas: 4,
-  weightPerPizza: 230,
+  number_of_pizzas: 4,
+  weight_per_pizza: 230,
   hydration: 65
 }
 
@@ -25,11 +39,10 @@ export default function Home() {
   const [calculatorSettings, setCalculatorSettings] = useState(defaultSettings);
   const [doughIngredients, setDoughIngredients] = useState(pizzaStyles[pizzaStyle]);
 
-
   function handleSubmit(values: CalculatorFormData) {
     setDoughIngredients({
       ...doughIngredients,
-      water: values.settings.hydration
+      water: values.settings.hydration / 100
     })
     setCalculatorSettings(values.settings);
   }
@@ -43,8 +56,8 @@ export default function Home() {
     setDoughIngredients(pizzaStyles[value]);
   }
 
-  const { numberOfPizzas, weightPerPizza } = calculatorSettings;
-  const recipeIngredients = getRecipeIngredients(numberOfPizzas * weightPerPizza, doughIngredients);
+  const { number_of_pizzas, weight_per_pizza } = calculatorSettings;
+  const recipeIngredients = getRecipeIngredients(number_of_pizzas * weight_per_pizza, doughIngredients);
 
   return (
     <main className="grid sm:grid-flow-col sm:auto-cols-fr gap-10 mx-auto my-10">
@@ -54,18 +67,30 @@ export default function Home() {
         onSelectChange={handleSelectChange}
         defaultValues={{ pizzaStyle, settings: calculatorSettings }}
       />
-      <div>
-        <h2 className="mb-5 text-xl font-semibold text-gray-900">You will need:</h2>
-        <ol className="space-y-1 text-lg text-gray-500 list-decimal list-inside">
-          {
-            Object.entries(recipeIngredients).map(([ingredient, amount]) => (
-              <li key={ingredient}>
-                {capitalizeEveryFirstChar(ingredient)} - {amount + (ingredient === "oil" || ingredient === "water" ? "ml" : "g")}
-              </li>
-            ))
-          }
-        </ol>
-      </div>
+      <article className="prose">
+        <h2>{snakeCaseToRegular(pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ")}</h2>
+        <h3>You will need:</h3>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Ingredient</TableHead>
+              <TableHead className="text-right">Amount</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {
+              Object.entries(recipeIngredients).map(([ingredient, amount]) => (
+                <TableRow key={ingredient}>
+                  <TableCell>
+                    {capitalize(ingredient)}
+                  </TableCell>
+                  <TableCell className="text-right">{amount}g</TableCell>
+                </TableRow>
+              ))
+            }
+          </TableBody>
+        </Table>
+      </article>
     </main>
   )
 }

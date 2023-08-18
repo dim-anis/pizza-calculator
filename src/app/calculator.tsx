@@ -24,53 +24,53 @@ import {
 
 export const pizzaStyles = {
   "neapolitan_brick_oven": {
-    "flour": 100,
-    "water": 60,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.6,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   },
   "neapolitan_home_oven": {
-    "flour": 100,
-    "water": 68,
-    "salt": 2.5,
-    "yeast": 0.4,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.68,
+    "salt": 0.025,
+    "yeast": 0.004,
+    "oil": 0.015
   },
   "new_york": {
-    "flour": 100,
-    "water": 63,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.63,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   },
   "chicago": {
-    "flour": 100,
-    "water": 53,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.53,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   },
   "detroit": {
-    "flour": 100,
-    "water": 62,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.62,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   },
   "al_taglio": {
-    "flour": 100,
-    "water": 73,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.73,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   },
   "calzone": {
-    "flour": 100,
-    "water": 63,
-    "salt": 2.5,
-    "yeast": 0.3,
-    "oil": 1.5
+    "flour": 1,
+    "water": 0.63,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
   }
 }
 
@@ -78,19 +78,23 @@ export type PizzaStyles = typeof pizzaStyles;
 export type PizzaStyleName = keyof PizzaStyles;
 export type RecipeType<T extends PizzaStyleName> = PizzaStyles[T];
 
-export function capitalizeEveryFirstChar(expression: string) {
-  return expression.split("_").map(word => word.slice(0, 1).toLocaleUpperCase() + word.slice(1)).join(" ");
+export function snakeCaseToRegular(str: string) {
+  return str.replaceAll("_", " ");
+}
+
+export function capitalize(word: string) {
+  return word.slice(0, 1).toUpperCase() + word.slice(1);
 }
 
 const MAX_VAL = 99999;
 
 const errors = {
-  negativeValue: "Value must be positive.",
+  negativeValue: "Value must be greater than 0.",
   valueExceeds: (val: number) => `Value must be less than ${val}.`
 }
 
 const CalculatorSettingsSchema = z.object({
-  numberOfPizzas: z
+  number_of_pizzas: z
     .coerce
     .number()
     .gt(0, {
@@ -100,7 +104,7 @@ const CalculatorSettingsSchema = z.object({
       message: errors.valueExceeds(MAX_VAL)
     })
   ,
-  weightPerPizza: z
+  weight_per_pizza: z
     .coerce
     .number()
     .gt(0, {
@@ -154,59 +158,73 @@ export default function Calculator(props: CalculatorProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(props.onSubmit)} className="flex flex-col gap-5">
-        <FormField
-          control={form.control}
-          name="pizzaStyle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Pizza style</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(props.onSelectChange(value as keyof typeof pizzaStyles))
-                }}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select pizza style" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {
-                    Object.keys(pizzaStyles).map((pizzaStyle, index) => (
-                      <SelectItem key={index} value={pizzaStyle}>
-                        {capitalizeEveryFirstChar(pizzaStyle)}
-                      </SelectItem>
-                    ))
-                  }
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {settings.map((setting) => (
+      <form onSubmit={form.handleSubmit(props.onSubmit)} className="flex flex-col justify-around gap-5">
+        <div className="flex flex-col gap-5">
           <FormField
-            key={setting}
             control={form.control}
-            name={`settings.${setting}`}
+            name="pizzaStyle"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{capitalizeEveryFirstChar(setting)}</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder={`Select ${setting}`}
-                    {...field}
-                    onChange={(e) => field.onChange(props.onInputChange(e))} />
-                </FormControl>
+                <FormLabel>Pizza style</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(props.onSelectChange(value as keyof typeof pizzaStyles))
+                  }}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select pizza style" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {
+                      Object.keys(pizzaStyles).map((pizzaStyle, index) => (
+                        <SelectItem key={index} value={pizzaStyle}>
+                          {
+                            snakeCaseToRegular(pizzaStyle)
+                              .split(" ")
+                              .map((word) => capitalize(word))
+                              .join(" ")
+                          }
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
-        ))}
+          {settings.map((settingString) => (
+            <FormField
+              key={settingString}
+              control={form.control}
+              name={`settings.${settingString}`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {
+                      snakeCaseToRegular(settingString)
+                        .split(" ")
+                        .map((word, index) => index === 0 ? capitalize(word) : word)
+                        .join(" ")
+                    }
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder={`Select ${snakeCaseToRegular(settingString)}`}
+                      {...field}
+                      onChange={(e) => field.onChange(props.onInputChange(e))} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+        </div>
         <Button type="submit">Calculate</Button>
       </form>
     </Form>
