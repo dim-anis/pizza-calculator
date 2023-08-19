@@ -74,9 +74,8 @@ export const pizzaStyles = {
   }
 }
 
-export type PizzaStyles = typeof pizzaStyles;
-export type PizzaStyleName = keyof PizzaStyles;
-export type RecipeType<T extends PizzaStyleName> = PizzaStyles[T];
+export type PizzaStyleName = keyof typeof pizzaStyles;
+export type RecipeType = typeof pizzaStyles[PizzaStyleName];
 
 export function snakeCaseToRegular(str: string) {
   return str.replaceAll("_", " ");

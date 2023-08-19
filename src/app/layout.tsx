@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="text-[16px] sm:text-[20px]">
       <body>
         <div className={`${inter.className} w-[min(100%-3rem,_75ch)] mx-auto`}>
           <nav className="flex flex-row justify-between py-6">

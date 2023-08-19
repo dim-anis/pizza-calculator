@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-function getRecipeIngredients<T extends PizzaStyleName>(totalDoughWeight: number, recipeForPizzaStyle: RecipeType<T>) {
+function getRecipeIngredients(totalDoughWeight: number, recipeForPizzaStyle: RecipeType) {
   const ingredientAmounts: Record<string, number> = {};
 
   const totalPercentage = Object.values(recipeForPizzaStyle).reduce(
@@ -21,8 +21,8 @@ function getRecipeIngredients<T extends PizzaStyleName>(totalDoughWeight: number
   );
 
   for (const ingredient in recipeForPizzaStyle) {
-    const amount = (totalDoughWeight * recipeForPizzaStyle[ingredient]) / totalPercentage;
-    ingredientAmounts[ingredient] = amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
+    const amount = (totalDoughWeight * recipeForPizzaStyle[ingredient as keyof RecipeType]) / totalPercentage;
+    ingredientAmounts[ingredient as keyof RecipeType] = amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
   }
 
   return ingredientAmounts;
