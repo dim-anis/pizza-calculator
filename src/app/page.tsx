@@ -1,16 +1,9 @@
 "use client"
 
 import { ChangeEvent, useState } from "react";
-import Calculator, { type CalculatorFormData, type PizzaStyleName, type RecipeType, pizzaStyles, capitalize } from "./calculator";
-import { snakeCaseToRegular } from "./calculator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import Calculator, { type CalculatorFormData, type PizzaStyleName, type RecipeType } from "./calculator";
+import pizzaStyles from "../../public/recipes.json"
+import Ingredients from "./ingredients";
 
 function getRecipeIngredients(totalDoughWeight: number, recipeForPizzaStyle: RecipeType) {
   const ingredientAmounts: Record<string, number> = {};
@@ -30,7 +23,7 @@ function getRecipeIngredients(totalDoughWeight: number, recipeForPizzaStyle: Rec
 
 const defaultSettings = {
   number_of_pizzas: 4,
-  weight_per_pizza: 230,
+  weight_per_pizza: 220,
   hydration: 65
 }
 
@@ -60,37 +53,20 @@ export default function Home() {
   const recipeIngredients = getRecipeIngredients(number_of_pizzas * weight_per_pizza, doughIngredients);
 
   return (
-    <main className="grid sm:grid-flow-col sm:auto-cols-fr gap-10 mx-auto my-10">
-      <Calculator
-        onSubmit={handleSubmit}
-        onInputChange={handleInputChange}
-        onSelectChange={handleSelectChange}
-        defaultValues={{ pizzaStyle, settings: calculatorSettings }}
-      />
-      <article className="prose">
-        <h2>{snakeCaseToRegular(pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ")}</h2>
-        <h3>You will need:</h3>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ingredient</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {
-              Object.entries(recipeIngredients).map(([ingredient, amount]) => (
-                <TableRow key={ingredient}>
-                  <TableCell>
-                    {capitalize(ingredient)}
-                  </TableCell>
-                  <TableCell className="text-right">{amount}g</TableCell>
-                </TableRow>
-              ))
-            }
-          </TableBody>
-        </Table>
-      </article>
-    </main>
+    <section>
+      <div className="relative max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
+        <h1 className="text-4xl text-slate-900 font-extrabold sm:text-5xl lg:text-6xl tracking-tight text-center">Pizza Calculator</h1>
+        <p className="mt-6 text-lg text-slate-600 text-center max-w-3xl mx-auto">Craft Perfect Pizzas Every Time</p>
+      </div>
+      <div className="grid sm:grid-flow-col sm:auto-cols-fr gap-10 mx-auto my-10 pt-8 sm:pt-10 lg:pt-14">
+        <Calculator
+          onSubmit={handleSubmit}
+          onInputChange={handleInputChange}
+          onSelectChange={handleSelectChange}
+          defaultValues={{ pizzaStyle, settings: calculatorSettings }}
+        />
+      </div>
+      <Ingredients pizzaStyle={pizzaStyle} recipeIngredients={recipeIngredients} />
+    </section>
   )
 }

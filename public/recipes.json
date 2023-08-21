@@ -1,0 +1,51 @@
+{
+  "neapolitan_brick_oven": {
+    "flour": 1,
+    "water": 0.6,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  },
+  "neapolitan_home_oven": {
+    "flour": 1,
+    "water": 0.68,
+    "salt": 0.025,
+    "yeast": 0.004,
+    "oil": 0.015
+  },
+  "new_york": {
+    "flour": 1,
+    "water": 0.63,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  },
+  "chicago": {
+    "flour": 1,
+    "water": 0.53,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  },
+  "detroit": {
+    "flour": 1,
+    "water": 0.62,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  },
+  "al_taglio": {
+    "flour": 1,
+    "water": 0.73,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  },
+  "calzone": {
+    "flour": 1,
+    "water": 0.63,
+    "salt": 0.025,
+    "yeast": 0.003,
+    "oil": 0.015
+  }
+}

@@ -21,58 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-export const pizzaStyles = {
-  "neapolitan_brick_oven": {
-    "flour": 1,
-    "water": 0.6,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  },
-  "neapolitan_home_oven": {
-    "flour": 1,
-    "water": 0.68,
-    "salt": 0.025,
-    "yeast": 0.004,
-    "oil": 0.015
-  },
-  "new_york": {
-    "flour": 1,
-    "water": 0.63,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  },
-  "chicago": {
-    "flour": 1,
-    "water": 0.53,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  },
-  "detroit": {
-    "flour": 1,
-    "water": 0.62,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  },
-  "al_taglio": {
-    "flour": 1,
-    "water": 0.73,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  },
-  "calzone": {
-    "flour": 1,
-    "water": 0.63,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
-  }
-}
+import pizzaStyles from '../../public/recipes.json'
 
 export type PizzaStyleName = keyof typeof pizzaStyles;
 export type RecipeType = typeof pizzaStyles[PizzaStyleName];
@@ -157,7 +106,7 @@ export default function Calculator(props: CalculatorProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(props.onSubmit)} className="flex flex-col justify-around gap-5">
+      <form onSubmit={form.handleSubmit(props.onSubmit)} className="flex flex-col justify-around gap-5 bg-white">
         <div className="flex flex-col gap-5">
           <FormField
             control={form.control}
@@ -178,16 +127,14 @@ export default function Calculator(props: CalculatorProps) {
                   </FormControl>
                   <SelectContent>
                     {
-                      Object.keys(pizzaStyles).map((pizzaStyle, index) => (
-                        <SelectItem key={index} value={pizzaStyle}>
-                          {
-                            snakeCaseToRegular(pizzaStyle)
-                              .split(" ")
-                              .map((word) => capitalize(word))
-                              .join(" ")
-                          }
-                        </SelectItem>
-                      ))
+                      Object.keys(pizzaStyles).map((pizzaStyle, index) => {
+                        const itemName = snakeCaseToRegular(pizzaStyle)
+                          .split(" ")
+                          .map((word) => capitalize(word))
+                          .join(" ")
+
+                        return <SelectItem key={index} value={pizzaStyle}>{itemName}</SelectItem>
+                      })
                     }
                   </SelectContent>
                 </Select>

@@ -13,7 +13,7 @@ import {
 
 export default function Navbar() {
   return (
-    <NavigationMenu>
+    <NavigationMenu className="flex flex-row justify-between py-6">
       <NavigationMenuList>
         <NavigationMenuItem>
           <Link href="/" legacyBehavior passHref>
