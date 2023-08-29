@@ -1,4 +1,4 @@
-import { PizzaStyleName, snakeCaseToRegular } from "./calculator";
+import { PizzaStyleName, snakeCaseToSpaces } from "./calculator";
 import {
   Table,
   TableBody,
@@ -17,7 +17,7 @@ type IngredientsProps = {
 export default function Ingredients(props: IngredientsProps) {
   return (
     <div className="max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
-      <h2 className="text-3xl text-slate-900 font-bold sm:text-2xl lg:text-4xl tracking-tight">{snakeCaseToRegular(props.pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ")}</h2>
+      <h2 className="text-3xl text-slate-900 font-bold sm:text-2xl lg:text-4xl tracking-tight">{snakeCaseToSpaces(props.pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ")}</h2>
       <p className="mt-5 text-lg text-slate-600 max-w-3xl">For this recipe you will need:</p>
       <Table className="mt-5">
         <TableHeader>

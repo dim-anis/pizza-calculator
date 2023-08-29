@@ -26,7 +26,7 @@ import pizzaStyles from '../../public/recipes.json'
 export type PizzaStyleName = keyof typeof pizzaStyles;
 export type RecipeType = typeof pizzaStyles[PizzaStyleName];
 
-export function snakeCaseToRegular(str: string) {
+export function snakeCaseToSpaces(str: string) {
   return str.replaceAll("_", " ");
 }
 
@@ -128,7 +128,7 @@ export default function Calculator(props: CalculatorProps) {
                   <SelectContent>
                     {
                       Object.keys(pizzaStyles).map((pizzaStyle, index) => {
-                        const itemName = snakeCaseToRegular(pizzaStyle)
+                        const itemName = snakeCaseToSpaces(pizzaStyle)
                           .split(" ")
                           .map((word) => capitalize(word))
                           .join(" ")
@@ -151,7 +151,7 @@ export default function Calculator(props: CalculatorProps) {
                 <FormItem>
                   <FormLabel>
                     {
-                      snakeCaseToRegular(settingString)
+                      snakeCaseToSpaces(settingString)
                         .split(" ")
                         .map((word, index) => index === 0 ? capitalize(word) : word)
                         .join(" ")
@@ -161,7 +161,7 @@ export default function Calculator(props: CalculatorProps) {
                     <Input
                       type="text"
                       inputMode="numeric"
-                      placeholder={`Select ${snakeCaseToRegular(settingString)}`}
+                      placeholder={`Select ${snakeCaseToSpaces(settingString)}`}
                       {...field}
                       onChange={(e) => field.onChange(props.onInputChange(e))} />
                   </FormControl>
