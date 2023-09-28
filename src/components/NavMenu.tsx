@@ -3,17 +3,18 @@
 import * as React from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import AuthButton from "./AuthButton"
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+} from "./ui/navigation-menu"
 
 export default function Navbar() {
   return (
-    <NavigationMenu className="flex flex-row justify-between py-6">
+    <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
           <Link href="/" legacyBehavior passHref>
@@ -37,6 +38,7 @@ export default function Navbar() {
           </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
+    <AuthButton />  
     </NavigationMenu>
   )
 }

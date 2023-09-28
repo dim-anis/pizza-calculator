@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,19 +12,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { useMemo, type ChangeEvent, useEffect } from "react"
+} from "@/components/ui/form";
+import { useMemo, type ChangeEvent, useEffect } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import pizzaStyles from '../../public/recipes.json'
+} from "@/components/ui/select";
+import pizzaStyles from "../../public/recipes.json";
 
 export type PizzaStyleName = keyof typeof pizzaStyles;
-export type RecipeType = typeof pizzaStyles[PizzaStyleName];
+export type RecipeType = (typeof pizzaStyles)[PizzaStyleName];
 
 export function snakeCaseToSpaces(str: string) {
   return str.replaceAll("_", " ");
@@ -38,67 +38,62 @@ const MAX_VAL = 99999;
 
 const errors = {
   negativeValue: "Value must be greater than 0.",
-  valueExceeds: (val: number) => `Value must be less than ${val}.`
-}
+  valueExceeds: (val: number) => `Value must be less than ${val}.`,
+};
 
 const CalculatorSettingsSchema = z.object({
-  number_of_pizzas: z
-    .coerce
+  number_of_pizzas: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue
+      message: errors.negativeValue,
     })
     .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL)
-    })
-  ,
-  weight_per_pizza: z
-    .coerce
+      message: errors.valueExceeds(MAX_VAL),
+    }),
+  weight_per_pizza: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue
+      message: errors.negativeValue,
     })
     .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL)
-    })
-  ,
-  hydration: z
-    .coerce
+      message: errors.valueExceeds(MAX_VAL),
+    }),
+  hydration: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue
+      message: errors.negativeValue,
     })
     .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL)
+      message: errors.valueExceeds(MAX_VAL),
     })
     .default(0),
-})
+});
 
 const CalculatorSchema = z.object({
-  pizzaStyle: z
-    .coerce
-    .string(),
-  settings: CalculatorSettingsSchema
-})
+  pizzaStyle: z.coerce.string(),
+  settings: CalculatorSettingsSchema,
+});
 
 export type CalculatorFormData = z.infer<typeof CalculatorSchema>;
 
 type CalculatorProps = {
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  onSelectChange: (value: PizzaStyleName) => void,
-  onSubmit: (values: CalculatorFormData) => void,
-  defaultValues: CalculatorFormData,
-}
+  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSelectChange: (value: PizzaStyleName) => void;
+  onSubmit: (values: CalculatorFormData) => void;
+  defaultValues: CalculatorFormData;
+};
 
 export default function Calculator(props: CalculatorProps) {
-  const settings = Object.keys(props.defaultValues.settings) as Array<keyof typeof props.defaultValues.settings>;
+  const settings = Object.keys(props.defaultValues.settings) as Array<
+    keyof typeof props.defaultValues.settings
+  >;
 
   const form = useForm<CalculatorFormData>({
     resolver: zodResolver(CalculatorSchema),
     defaultValues: useMemo(() => {
       return props.defaultValues;
-    }, [props])
-  })
+    }, [props]),
+  });
 
   useEffect(() => {
     form.reset(props.defaultValues);
@@ -106,7 +101,10 @@ export default function Calculator(props: CalculatorProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(props.onSubmit)} className="flex flex-col justify-around gap-5 bg-white">
+      <form
+        onSubmit={form.handleSubmit(props.onSubmit)}
+        className="flex flex-col justify-around gap-5 bg-white"
+      >
         <div className="flex flex-col gap-5">
           <FormField
             control={form.control}
@@ -116,7 +114,9 @@ export default function Calculator(props: CalculatorProps) {
                 <FormLabel>Pizza style</FormLabel>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(props.onSelectChange(value as keyof typeof pizzaStyles))
+                    field.onChange(
+                      props.onSelectChange(value as keyof typeof pizzaStyles)
+                    );
                   }}
                   defaultValue={field.value}
                 >
@@ -126,16 +126,18 @@ export default function Calculator(props: CalculatorProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {
-                      Object.keys(pizzaStyles).map((pizzaStyle, index) => {
-                        const itemName = snakeCaseToSpaces(pizzaStyle)
-                          .split(" ")
-                          .map((word) => capitalize(word))
-                          .join(" ")
+                    {Object.keys(pizzaStyles).map((pizzaStyle, index) => {
+                      const itemName = snakeCaseToSpaces(pizzaStyle)
+                        .split(" ")
+                        .map((word) => capitalize(word))
+                        .join(" ");
 
-                        return <SelectItem key={index} value={pizzaStyle}>{itemName}</SelectItem>
-                      })
-                    }
+                      return (
+                        <SelectItem key={index} value={pizzaStyle}>
+                          {itemName}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -150,12 +152,12 @@ export default function Calculator(props: CalculatorProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {
-                      snakeCaseToSpaces(settingString)
-                        .split(" ")
-                        .map((word, index) => index === 0 ? capitalize(word) : word)
-                        .join(" ")
-                    }
+                    {snakeCaseToSpaces(settingString)
+                      .split(" ")
+                      .map((word, index) =>
+                        index === 0 ? capitalize(word) : word
+                      )
+                      .join(" ")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -163,7 +165,8 @@ export default function Calculator(props: CalculatorProps) {
                       inputMode="numeric"
                       placeholder={`Select ${snakeCaseToSpaces(settingString)}`}
                       {...field}
-                      onChange={(e) => field.onChange(props.onInputChange(e))} />
+                      onChange={(e) => field.onChange(props.onInputChange(e))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,5 +177,5 @@ export default function Calculator(props: CalculatorProps) {
         <Button type="submit">Calculate</Button>
       </form>
     </Form>
-  )
+  );
 }
