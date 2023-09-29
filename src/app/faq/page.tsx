@@ -7,7 +7,7 @@ import {
 
 export default function Faq() {
   return (
-    <main>
+    <div className="mt-8">
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
         Frequently Asked Questions
       </h1>
@@ -164,6 +164,6 @@ export default function Faq() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </main>
+    </div>
   );
 }
