@@ -14,7 +14,7 @@ type IngredientsProps = {
   recipeIngredients: Record<string, number>
 }
 
-export default function Ingredients(props: IngredientsProps) {
+export default function IngredientList(props: IngredientsProps) {
   const recipeNameFormatted = snakeCaseToSpaces(props.pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ");
   const ingredients = Object.entries(props.recipeIngredients); 
 

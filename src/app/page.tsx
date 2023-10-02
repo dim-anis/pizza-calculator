@@ -7,7 +7,7 @@ import Calculator, {
   type RecipeType,
 } from "./calculator";
 import pizzaStyles from "../../public/recipes.json";
-import Ingredients from "./ingredients";
+import IngredientList from "./IngredientList";
 
 function getRecipeIngredients(
   totalDoughWeight: number,
@@ -87,7 +87,7 @@ export default function Home() {
           defaultValues={{ pizzaStyle, settings: calculatorSettings }}
         />
       </div>
-      <Ingredients
+      <IngredientList
         pizzaStyle={pizzaStyle}
         recipeIngredients={recipeIngredients}
       />

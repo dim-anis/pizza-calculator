@@ -17,23 +17,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Recipe } from "@/app/myrecipes/page"
 
-const recipes = [
-  {
-    value: "american",
-    label: "American",
-  },
-  {
-    value: "italian",
-    label: "Italian",
-  },
-  {
-    value: "turkish",
-    label: "Turkish",
-  },
-]
+type SearchProps = {
+  recipes: Recipe[]
+}
 
-export default function Search() {
+export default function Search(props: SearchProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -47,7 +37,7 @@ export default function Search() {
           className="w-[200px] justify-between"
         >
           {value
-            ? recipes.find((recipe) => recipe.value === value)?.label
+            ? props.recipes.find((recipe) => recipe.name === value)?.name
             : "Search recipes..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -57,19 +47,19 @@ export default function Search() {
           <CommandInput placeholder="Search recipes..." className="h-9" />
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
-            {recipes.map((recipe) => (
+            {props.recipes.map((recipe) => (
               <CommandItem
-                key={recipe.value}
+                key={recipe.name.toLowerCase()}
                 onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
                 }}
               >
-                {recipe.label}
+                {recipe.name}
                 <CheckIcon
                   className={cn(
                     "ml-auto h-4 w-4",
-                    value === recipe.value ? "opacity-100" : "opacity-0"
+                    value === recipe.name.toLowerCase() ? "opacity-100" : "opacity-0"
                   )}
                 />
               </CommandItem>
