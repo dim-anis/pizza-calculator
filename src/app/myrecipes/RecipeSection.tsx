@@ -1,3 +1,5 @@
+import RecipeItem from "./RecipeItem";
+import RecipeList from "./RecipeList";
 import { Recipe } from "./page"
 
 type RecipeSectionProps = {
@@ -12,18 +14,18 @@ export default function RecipeSection(props: RecipeSectionProps) {
 
   return (
     <div>
-      <h2 className="mb-4 text-lg md:text-xl lg:text-2xl font-bold leading-none tracking-tight text-gray-900 ">{props.currFolderName} ({numOfRecipes})</h2>
+      <h2 className="mb-4 text-lg md:text-xl lg:text-2xl font-bold leading-none tracking-tight text-gray-900">{props.currFolderName} ({numOfRecipes})</h2>
       {
         numOfRecipes === 0 ? (
           <p>You don&apos;t have any saved recipes yet. Get cooking!</p>
         ) : (
-          <ul>
+          <RecipeList>
             {
               folders[currFolderName].map(recipe => (
-                <li key={recipe.name.toLowerCase()}>{recipe.name}</li>
+                <RecipeItem key={recipe.name.toLowerCase()} name={recipe.name} desc={'short desc...'}></RecipeItem>
               ))
             }
-          </ul>
+          </RecipeList>
         )}
     </div>
   )

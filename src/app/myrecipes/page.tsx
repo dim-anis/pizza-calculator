@@ -1,4 +1,5 @@
 'use client'
+
 import Search from "@/components/Search";
 // import { getServerSession } from "next-auth";
 // import { redirect } from "next/navigation";
@@ -66,7 +67,7 @@ const recipesGroupedByFolder = recipes.reduce((out: { [key: string]: Recipe[] },
 
 recipesGroupedByFolder['all'] = recipes;
 
-export default function ProtectedRoute() {
+export default function MyRecipes() {
   // const session = await getServerSession();
   //
   // if (!session || !session.user) {
