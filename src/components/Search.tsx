@@ -17,10 +17,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Recipe } from "@/app/myrecipes/page"
+import { RecipesWithFolders } from "@/app/myrecipes/SavedRecipesSection"
 
 type SearchProps = {
-  recipes: Recipe[]
+  recipes: RecipesWithFolders[]
 }
 
 export default function Search(props: SearchProps) {

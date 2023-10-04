@@ -1,10 +1,10 @@
 import RecipeItem from "./RecipeItem";
 import RecipeList from "./RecipeList";
-import { Recipe } from "./page"
+import { RecipesWithFolders } from "./SavedRecipesSection";
 
 type RecipeSectionProps = {
   currFolderName: string,
-  folders: { [key: string]: Recipe[] },
+  folders: { [key: string]: RecipesWithFolders[] },
 }
 
 export default function RecipeSection(props: RecipeSectionProps) {
