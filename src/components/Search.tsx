@@ -17,10 +17,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { RecipesWithFolders } from "@/app/myrecipes/SavedRecipesSection"
+import { Recipe } from "@prisma/client"
 
 type SearchProps = {
-  recipes: RecipesWithFolders[]
+  recipes: Recipe[]
 }
 
 export default function Search(props: SearchProps) {
@@ -45,7 +45,7 @@ export default function Search(props: SearchProps) {
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Search recipes..." className="h-9" />
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandEmpty>No recipe found.</CommandEmpty>
           <CommandGroup>
             {props.recipes.map((recipe) => (
               <CommandItem

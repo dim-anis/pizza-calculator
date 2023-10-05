@@ -1,16 +1,5 @@
-import { redirect } from "next/navigation";
 import SavedRecipesSection from "./SavedRecipesSection";
-import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
 import { getUserRecipes } from "./loaders";
-
-export type Recipe = {
-  name: string,
-  ingredients: {
-    water: number
-  },
-  folder: string | undefined
-}
 
 // const recipes: Recipe[] = [
 //   {
@@ -52,5 +41,5 @@ export type Recipe = {
 
 export default async function MyRecipes() {
   const recipes = await getUserRecipes();
-  return <SavedRecipesSection recipes={recipes} />
+  return <SavedRecipesSection recipeFolders={recipes} />
 }

@@ -16,6 +16,7 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt", },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID ?? '',
@@ -24,6 +25,6 @@ export const authOptions: NextAuthOptions = {
   ]
 };
 
-export const handler = NextAuth(authOptions);
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
