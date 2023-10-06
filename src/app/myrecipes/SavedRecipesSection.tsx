@@ -3,24 +3,21 @@
 import FolderList from "./FolderList"
 import RecipeSection from "./RecipeSection"
 import { useState } from "react"
-import { Prisma } from "@prisma/client"
+import { Folder, Recipe } from "@prisma/client"
 
-const recipesGroupedByFolder = Prisma.validator<Prisma.FolderDefaultArgs>()({
-  include: {
-    recipes: true
-  },
-})
-
-export type RecipesGroupedByFolder = Prisma.FolderGetPayload<typeof recipesGroupedByFolder>;
-
-type SavedRecipesSectionProps = {
-  recipeFolders: RecipesGroupedByFolder[],
+export type RecipeFolder = Folder & { recipes: Recipe[] }
+export type CurrFolder = {
+  name: string,
+  contents: Recipe[]
+}
+export type SavedRecipesSectionProps = {
+  recipeFolders: RecipeFolder[],
 }
 
 export default function SavedRecipesSection(props: SavedRecipesSectionProps) {
   const { recipeFolders } = props;
 
-  const [currFolder, setCurrFolder] = useState({
+  const [currFolder, setCurrFolder] = useState<CurrFolder>({
     name: 'all',
     contents: recipeFolders.find(folder => folder.name === 'all')?.recipes || []
   });
@@ -28,7 +25,7 @@ export default function SavedRecipesSection(props: SavedRecipesSectionProps) {
   function handleClick(name: string) {
     setCurrFolder({
       name: name,
-      contents: recipeFolders.find((folder) => folder.name === name)?.recipes || []
+      contents: recipeFolders.find(folder => folder.name === name)?.recipes || []
     });
   }
 

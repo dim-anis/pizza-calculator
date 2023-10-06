@@ -88,11 +88,9 @@ model Recipe {
   updatedAt DateTime       @updatedAt
   name      String
   folders   RecipeFolder[]
-  folderId  Int
   user      User           @relation(fields: [userId], references: [id])
   userId    String
 
-  @@index(folderId)
   @@index(userId)
   @@map("recipes")
 }
@@ -100,8 +98,8 @@ model Recipe {
 model RecipeFolder {
   id       Int    @id @default(autoincrement())
   recipe   Recipe @relation(fields: [recipeId], references: [id])
-  recipeId Int
   folder   Folder @relation(fields: [folderId], references: [id])
+  recipeId Int
   folderId Int
   user     User   @relation(fields: [userId], references: [id])
   userId   String
