@@ -8,6 +8,10 @@ import Calculator, {
 } from "./calculator";
 import pizzaStyles from "../../public/recipes.json";
 import IngredientList from "./IngredientList";
+import { Button } from "@/components/ui/button";
+import { FolderPlus } from "lucide-react";
+import { User } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 function getRecipeIngredients(
   totalDoughWeight: number,
@@ -63,6 +67,10 @@ export default function Home() {
     setDoughIngredients(pizzaStyles[value]);
   }
 
+  function handleSaveRecipe(user: User, values: CalculatorFormData) {
+    prisma.recipe.create();
+  }
+
   const { number_of_pizzas, weight_per_pizza } = calculatorSettings;
   const recipeIngredients = getRecipeIngredients(
     number_of_pizzas * weight_per_pizza,
@@ -70,7 +78,7 @@ export default function Home() {
   );
 
   return (
-    <section>
+    <div>
       <div className="relative max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
         <h1 className="text-4xl text-slate-900 font-extrabold sm:text-5xl lg:text-6xl tracking-tight text-center">
           Pizza Calculator
@@ -91,6 +99,11 @@ export default function Home() {
         pizzaStyle={pizzaStyle}
         recipeIngredients={recipeIngredients}
       />
-    </section>
+      <div className="mt-4 text-left">
+        <Button variant="outline" onClick={() => handleSaveRecipe}>
+          <FolderPlus />
+        </Button>
+      </div>
+    </div>
   );
 }

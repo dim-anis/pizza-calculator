@@ -16,7 +16,7 @@ type IngredientsProps = {
 
 export default function IngredientList(props: IngredientsProps) {
   const recipeNameFormatted = snakeCaseToSpaces(props.pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ");
-  const ingredients = Object.entries(props.recipeIngredients); 
+  const ingredients = Object.entries(props.recipeIngredients);
 
   return (
     <div className="max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">

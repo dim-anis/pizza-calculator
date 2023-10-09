@@ -7,9 +7,8 @@ export default function RecipeItem(props: RecipeItemProps) {
   const { name, desc } = props;
 
   return (
-    <div className="flex flex-col space-y-1 p-4 rounded-xl border bg-card text-card-foreground shadow">
+    <div className="p-4 border border-input rounded-md">
       <h3 className="font-medium leading-none">{name}</h3>
-      <p className="text-xs text-muted-foreground">{desc}</p>
     </div>
   )
 }
