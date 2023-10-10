@@ -16,7 +16,7 @@ export default async function MyRecipes() {
       userId,
       recipes: extractedRecipes,
     };
-  })
+  });
 
-  return <SavedRecipesSection recipeFolders={transformedUserRecipes} />
+  return <SavedRecipesSection recipeFolders={transformedUserRecipes} />;
 }

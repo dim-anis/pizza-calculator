@@ -27,10 +27,10 @@ export default async function RootLayout({
         className={`${inter.className} antialiased text-slate-500 bg-white`}
       >
         <SessionProvider session={session}>
-          <main className={`w-[min(100%-3rem,_90ch)] mx-auto`}>
+          <header className="supports-backdrop-blur:bg-background/60 top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
             <NavBar />
-            {children}
-          </main>
+          </header>
+          <div className={`w-[min(100%-3rem,_90ch)] mx-auto`}>{children}</div>
           <Footer />
         </SessionProvider>
       </body>

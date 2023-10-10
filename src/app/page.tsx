@@ -8,20 +8,16 @@ import Calculator, {
 } from "./calculator";
 import pizzaStyles from "../../public/recipes.json";
 import IngredientList from "./IngredientList";
-import { Button } from "@/components/ui/button";
-import { FolderPlus } from "lucide-react";
-import { User } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
 
 function getRecipeIngredients(
   totalDoughWeight: number,
-  recipeForPizzaStyle: RecipeType
+  recipeForPizzaStyle: RecipeType,
 ) {
   const ingredientAmounts: Record<string, number> = {};
 
   const totalPercentage = Object.values(recipeForPizzaStyle).reduce(
     (total, percentage) => total + percentage,
-    0
+    0,
   );
 
   for (const ingredient in recipeForPizzaStyle) {
@@ -43,11 +39,11 @@ const defaultSettings = {
 
 export default function Home() {
   const [pizzaStyle, setPizzaStyle] = useState<PizzaStyleName>(
-    "neapolitan_home_oven"
+    "neapolitan_home_oven",
   );
   const [calculatorSettings, setCalculatorSettings] = useState(defaultSettings);
   const [doughIngredients, setDoughIngredients] = useState(
-    pizzaStyles[pizzaStyle]
+    pizzaStyles[pizzaStyle],
   );
 
   function handleSubmit(values: CalculatorFormData) {
@@ -67,42 +63,36 @@ export default function Home() {
     setDoughIngredients(pizzaStyles[value]);
   }
 
-  function handleSaveRecipe(user: User, values: CalculatorFormData) {
-    prisma.recipe.create();
-  }
-
   const { number_of_pizzas, weight_per_pizza } = calculatorSettings;
   const recipeIngredients = getRecipeIngredients(
     number_of_pizzas * weight_per_pizza,
-    doughIngredients
+    doughIngredients,
   );
 
   return (
     <div>
-      <div className="relative max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
+      <div className="text-center relative max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
         <h1 className="text-4xl text-slate-900 font-extrabold sm:text-5xl lg:text-6xl tracking-tight text-center">
-          Pizza Calculator
+          Effortlessly create the perfect pizza dough for any craving.
         </h1>
         <p className="mt-6 text-lg text-slate-600 text-center max-w-3xl mx-auto">
-          Craft Perfect Pizzas Every Time
+          Simply by specifying your desired type, quantity, and doughball
+          weight.
         </p>
       </div>
-      <div className="grid sm:grid-flow-col sm:auto-cols-fr gap-10 mx-auto my-10 pt-4 sm:pt-10 lg:pt-14">
+      <div className="grid lg:grid-cols-2 items-center gap-10 my-10 pt-4 sm:pt-10 lg:pt-14">
         <Calculator
           onSubmit={handleSubmit}
           onInputChange={handleInputChange}
           onSelectChange={handleSelectChange}
           defaultValues={{ pizzaStyle, settings: calculatorSettings }}
         />
-      </div>
-      <IngredientList
-        pizzaStyle={pizzaStyle}
-        recipeIngredients={recipeIngredients}
-      />
-      <div className="mt-4 text-left">
-        <Button variant="outline" onClick={() => handleSaveRecipe}>
-          <FolderPlus />
-        </Button>
+        <div className="w-full p-8 lg:mt-5 rounded-xl border bg-card text-card-foreground shadow">
+          <IngredientList
+            pizzaStyle={pizzaStyle}
+            recipeIngredients={recipeIngredients}
+          />
+        </div>
       </div>
     </div>
   );

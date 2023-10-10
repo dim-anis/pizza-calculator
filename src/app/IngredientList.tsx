@@ -6,22 +6,49 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { capitalize } from "./calculator";
+import { Bookmark } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type IngredientsProps = {
-  pizzaStyle: PizzaStyleName,
-  recipeIngredients: Record<string, number>
-}
+  pizzaStyle: PizzaStyleName;
+  recipeIngredients: Record<string, number>;
+};
 
 export default function IngredientList(props: IngredientsProps) {
-  const recipeNameFormatted = snakeCaseToSpaces(props.pizzaStyle).split(" ").map((word) => capitalize(word)).join(" ");
+  const recipeNameFormatted = snakeCaseToSpaces(props.pizzaStyle)
+    .split(" ")
+    .map((word) => capitalize(word))
+    .join(" ");
   const ingredients = Object.entries(props.recipeIngredients);
 
   return (
-    <div className="max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
-      <h2 className="text-3xl text-slate-900 font-bold sm:text-2xl lg:text-4xl tracking-tight">{recipeNameFormatted}</h2>
-      <p className="mt-5 text-lg text-slate-600 max-w-3xl">For this recipe you will need:</p>
+    <div className="">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl text-slate-900 font-bold lg:text-2xl tracking-tight">
+          {recipeNameFormatted}
+        </h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="link">
+                <Bookmark className="hover:fill-black" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Save recipe</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <p className="mt-5 text-lg text-slate-600 max-w-3xl">Ingredients:</p>
       <Table className="mt-5">
         <TableHeader>
           <TableRow>
@@ -30,18 +57,14 @@ export default function IngredientList(props: IngredientsProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {
-            ingredients.map(([ingredient, amount]) => (
-              <TableRow key={ingredient}>
-                <TableCell>
-                  {capitalize(ingredient)}
-                </TableCell>
-                <TableCell className="text-right">{amount}g</TableCell>
-              </TableRow>
-            ))
-          }
+          {ingredients.map(([ingredient, amount]) => (
+            <TableRow key={ingredient}>
+              <TableCell>{capitalize(ingredient)}</TableCell>
+              <TableCell className="text-right">{amount}g</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
