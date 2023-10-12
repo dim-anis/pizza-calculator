@@ -1,51 +1,114 @@
-{
-  "neapolitan_brick_oven": {
-    "flour": 1,
-    "water": 0.6,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+[
+  {
+    "id": 1,
+    "name": "Neapolitan (Brick Oven)",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.6,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 60
+    }
   },
-  "neapolitan_home_oven": {
-    "flour": 1,
-    "water": 0.68,
-    "salt": 0.025,
-    "yeast": 0.004,
-    "oil": 0.015
+  {
+    "id": 2,
+    "name": "Neapolitan (Home Oven)",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.68,
+      "salt": 0.025,
+      "yeast": 0.004,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 68
+    }
   },
-  "new_york": {
-    "flour": 1,
-    "water": 0.63,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+  {
+    "id": 3,
+    "name": "New York Style",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.63,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 63
+    }
   },
-  "chicago": {
-    "flour": 1,
-    "water": 0.53,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+  {
+    "id": 4,
+    "name": "Chicago Style",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.53,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 53
+    }
   },
-  "detroit": {
-    "flour": 1,
-    "water": 0.62,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+  {
+    "id": 5,
+    "name": "Detroit Style Pizza",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.62,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 62
+    }
   },
-  "al_taglio": {
-    "flour": 1,
-    "water": 0.73,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+  {
+    "id": 6,
+    "name": "Al Taglio",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.73,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 73
+    }
   },
-  "calzone": {
-    "flour": 1,
-    "water": 0.63,
-    "salt": 0.025,
-    "yeast": 0.003,
-    "oil": 0.015
+  {
+    "id": 7,
+    "name": "Calzone",
+    "ingredients": {
+      "flour": 1,
+      "water": 0.63,
+      "salt": 0.025,
+      "yeast": 0.003,
+      "oil": 0.015
+    },
+    "settings": {
+      "number_of_pizzas": 4,
+      "weight_per_pizza": 220,
+      "hydration": 63
+    }
   }
-}
+]

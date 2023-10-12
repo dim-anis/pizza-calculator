@@ -1,4 +1,3 @@
-import { PizzaStyleName, snakeCaseToSpaces } from "./calculator";
 import {
   Table,
   TableBody,
@@ -16,24 +15,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { PizzaStyle } from "./page";
 
-type IngredientsProps = {
-  pizzaStyle: PizzaStyleName;
+type IngredientListProps = {
+  pizzaRecipeName: PizzaStyle["name"];
   recipeIngredients: Record<string, number>;
 };
 
-export default function IngredientList(props: IngredientsProps) {
-  const recipeNameFormatted = snakeCaseToSpaces(props.pizzaStyle)
-    .split(" ")
-    .map((word) => capitalize(word))
-    .join(" ");
-  const ingredients = Object.entries(props.recipeIngredients);
+export default function IngredientList(props: IngredientListProps) {
+  const { pizzaRecipeName, recipeIngredients } = props;
 
   return (
-    <div className="">
+    <div className="w-full p-8 lg:mt-5 rounded-xl border bg-card text-card-foreground shadow">
       <div className="flex items-center justify-between">
         <h2 className="text-xl text-slate-900 font-bold lg:text-2xl tracking-tight">
-          {recipeNameFormatted}
+          {pizzaRecipeName}
         </h2>
         <TooltipProvider>
           <Tooltip>
@@ -57,7 +53,7 @@ export default function IngredientList(props: IngredientsProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {ingredients.map(([ingredient, amount]) => (
+          {Object.entries(recipeIngredients).map(([ingredient, amount]) => (
             <TableRow key={ingredient}>
               <TableCell>{capitalize(ingredient)}</TableCell>
               <TableCell className="text-right">{amount}g</TableCell>

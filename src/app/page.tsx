@@ -3,15 +3,34 @@
 import { ChangeEvent, useState } from "react";
 import Calculator, {
   type CalculatorFormData,
-  type PizzaStyleName,
   type RecipeType,
 } from "./calculator";
 import pizzaStyles from "../../public/recipes.json";
 import IngredientList from "./IngredientList";
 
+export type PizzaStyle = {
+  id: number;
+  name: string;
+  ingredients: {
+    flour: number;
+    water: number;
+    salt?: number;
+    yeast?: number;
+    oil?: number;
+  };
+  settings: {
+    number_of_pizzas: number;
+    weight_per_pizza: number;
+    hydration: number;
+  };
+};
+
+const pizzaData = pizzaStyles as PizzaStyle[];
+const PERCENTAGE_BASE = 100;
+
 function getRecipeIngredients(
   totalDoughWeight: number,
-  recipeForPizzaStyle: RecipeType,
+  recipeForPizzaStyle: PizzaStyle["ingredients"],
 ) {
   const ingredientAmounts: Record<string, number> = {};
 
@@ -31,42 +50,35 @@ function getRecipeIngredients(
   return ingredientAmounts;
 }
 
-const defaultSettings = {
-  number_of_pizzas: 4,
-  weight_per_pizza: 220,
-  hydration: 65,
-};
-
 export default function Home() {
-  const [pizzaStyle, setPizzaStyle] = useState<PizzaStyleName>(
-    "neapolitan_home_oven",
-  );
-  const [calculatorSettings, setCalculatorSettings] = useState(defaultSettings);
-  const [doughIngredients, setDoughIngredients] = useState(
-    pizzaStyles[pizzaStyle],
-  );
+  const defaultPizza = pizzaData[0];
+  const [selectedPizza, setSelectedPizza] = useState(defaultPizza);
 
   function handleSubmit(values: CalculatorFormData) {
-    setDoughIngredients({
-      ...doughIngredients,
-      water: values.settings.hydration / 100,
+    const updatedDoughIngredients = {
+      ...selectedPizza.ingredients,
+      water: values.settings.hydration / PERCENTAGE_BASE,
+    };
+    setSelectedPizza({
+      ...selectedPizza,
+      ingredients: updatedDoughIngredients,
+      settings: values.settings,
     });
-    setCalculatorSettings(values.settings);
   }
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     return e.target.value.replace(/[^0-9]/, "");
   }
 
-  function handleSelectChange(value: PizzaStyleName) {
-    setPizzaStyle(value);
-    setDoughIngredients(pizzaStyles[value]);
+  function handleSelectChange(name: string) {
+    const selectedPizza = pizzaData.find((pizza) => pizza.name === name)!;
+    setSelectedPizza(selectedPizza);
   }
 
-  const { number_of_pizzas, weight_per_pizza } = calculatorSettings;
+  const { number_of_pizzas, weight_per_pizza } = selectedPizza.settings;
   const recipeIngredients = getRecipeIngredients(
     number_of_pizzas * weight_per_pizza,
-    doughIngredients,
+    selectedPizza.ingredients,
   );
 
   return (
@@ -85,14 +97,12 @@ export default function Home() {
           onSubmit={handleSubmit}
           onInputChange={handleInputChange}
           onSelectChange={handleSelectChange}
-          defaultValues={{ pizzaStyle, settings: calculatorSettings }}
+          defaultValues={selectedPizza}
         />
-        <div className="w-full p-8 lg:mt-5 rounded-xl border bg-card text-card-foreground shadow">
-          <IngredientList
-            pizzaStyle={pizzaStyle}
-            recipeIngredients={recipeIngredients}
-          />
-        </div>
+        <IngredientList
+          pizzaRecipeName={selectedPizza.name}
+          recipeIngredients={recipeIngredients}
+        />
       </div>
     </div>
   );
