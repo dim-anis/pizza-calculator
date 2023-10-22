@@ -1,8 +1,4 @@
-"use client";
-
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { UseFormSetValue, useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +9,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useMemo, type ChangeEvent, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -22,25 +17,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import pizzaStyles from "../../public/recipes.json";
-
-export type PizzaStyleName = keyof typeof pizzaStyles;
-export type RecipeType = (typeof pizzaStyles)[PizzaStyleName];
-
-export function snakeCaseToSpaces(str: string) {
-  return str.replaceAll("_", " ");
-}
-
-export function capitalize(word: string) {
-  return word.slice(0, 1).toUpperCase() + word.slice(1);
-}
-
-const MAX_VAL = 99999;
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PizzaStyle } from "./page";
+import { capitalize, snakeCaseToSpaces } from "./_utils/helpers";
 
 const errors = {
   negativeValue: "Value must be greater than 0.",
   valueExceeds: (val: number) => `Value must be less than ${val}.`,
 };
+
+const MAX_INPUT_VALUE = 99999;
 
 const CalculatorSettingsSchema = z.object({
   number_of_pizzas: z.coerce
@@ -48,24 +35,24 @@ const CalculatorSettingsSchema = z.object({
     .gt(0, {
       message: errors.negativeValue,
     })
-    .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL),
+    .lt(MAX_INPUT_VALUE, {
+      message: errors.valueExceeds(MAX_INPUT_VALUE),
     }),
   weight_per_pizza: z.coerce
     .number()
     .gt(0, {
       message: errors.negativeValue,
     })
-    .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL),
+    .lt(MAX_INPUT_VALUE, {
+      message: errors.valueExceeds(MAX_INPUT_VALUE),
     }),
   hydration: z.coerce
     .number()
     .gt(0, {
       message: errors.negativeValue,
     })
-    .lt(MAX_VAL, {
-      message: errors.valueExceeds(MAX_VAL),
+    .lt(MAX_INPUT_VALUE, {
+      message: errors.valueExceeds(MAX_INPUT_VALUE),
     })
     .default(0),
 });
@@ -77,40 +64,41 @@ const CalculatorSchema = z.object({
 
 export type CalculatorFormData = z.infer<typeof CalculatorSchema>;
 
-type CalculatorProps = {
-  onInputChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSelectChange: (name: string) => void;
-  onSubmit: (values: CalculatorFormData) => void;
+type CalculatorFormProps = {
+  pizzaRecipes: PizzaStyle[];
   defaultValues: CalculatorFormData;
+  handleSubmit: (data: CalculatorFormData) => void;
+  handleSelectChange: (
+    value: string,
+    setValue: UseFormSetValue<CalculatorFormData>,
+  ) => void;
 };
 
-export default function Calculator(props: CalculatorProps) {
-  const { defaultValues, onSubmit, onSelectChange, onInputChange } = props;
+export default function CalculatorForm({
+  pizzaRecipes,
+  defaultValues,
+  handleSubmit,
+  handleSelectChange,
+}: CalculatorFormProps) {
+  const form = useForm<CalculatorFormData>({
+    resolver: zodResolver(CalculatorSchema),
+    defaultValues,
+  });
+
   const settings = Object.keys(defaultValues.settings) as Array<
     keyof typeof defaultValues.settings
   >;
 
-  const form = useForm<CalculatorFormData>({
-    resolver: zodResolver(CalculatorSchema),
-    defaultValues: useMemo(() => {
-      return defaultValues;
-    }, [defaultValues]),
-  });
-
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [form, defaultValues]);
-
   return (
-    <Tabs defaultValue="default">
+    <Tabs defaultValue="basicSettings">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="default">Default</TabsTrigger>
-        <TabsTrigger value="custom">Custom</TabsTrigger>
+        <TabsTrigger value="basicSettings">Basic</TabsTrigger>
+        <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
       </TabsList>
-      <TabsContent value="default">
+      <TabsContent value="basicSettings">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col justify-around gap-5 bg-white"
           >
             <div className="flex flex-col gap-5">
@@ -121,9 +109,11 @@ export default function Calculator(props: CalculatorProps) {
                   <FormItem>
                     <FormLabel>Pizza style</FormLabel>
                     <Select
-                      onValueChange={(value) => {
-                        field.onChange(onSelectChange(value));
-                      }}
+                      onValueChange={(value) =>
+                        field.onChange(() =>
+                          handleSelectChange(value, form.setValue),
+                        )
+                      }
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -132,7 +122,7 @@ export default function Calculator(props: CalculatorProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {pizzaStyles.map((style) => {
+                        {pizzaRecipes.map((style) => {
                           return (
                             <SelectItem key={style.id} value={style.name}>
                               {style.name}
@@ -168,7 +158,9 @@ export default function Calculator(props: CalculatorProps) {
                             settingString,
                           )}`}
                           {...field}
-                          onChange={(e) => field.onChange(onInputChange(e))}
+                          onChange={(e) =>
+                            field.onChange(e.target.value.replace(/[^0-9]/, ""))
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -181,10 +173,10 @@ export default function Calculator(props: CalculatorProps) {
           </form>
         </Form>
       </TabsContent>
-      <TabsContent value="custom">
+      <TabsContent value="advancedSettings">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col justify-around gap-5 bg-white"
           >
             <div className="flex flex-col gap-5">
@@ -195,9 +187,9 @@ export default function Calculator(props: CalculatorProps) {
                   <FormItem>
                     <FormLabel>Pizza style</FormLabel>
                     <Select
-                      onValueChange={(value) => {
-                        field.onChange(onSelectChange(value));
-                      }}
+                      onValueChange={(value) =>
+                        field.onChange(handleSelectChange(value, form.setValue))
+                      }
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -206,10 +198,10 @@ export default function Calculator(props: CalculatorProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {pizzaStyles.map((style) => {
+                        {pizzaRecipes.map((recipe) => {
                           return (
-                            <SelectItem key={style.id} value={style.name}>
-                              {style.name}
+                            <SelectItem key={recipe.id} value={recipe.name}>
+                              {recipe.name}
                             </SelectItem>
                           );
                         })}
@@ -242,7 +234,9 @@ export default function Calculator(props: CalculatorProps) {
                             settingString,
                           )}`}
                           {...field}
-                          onChange={(e) => field.onChange(onInputChange(e))}
+                          onChange={(e) =>
+                            field.onChange(e.target.value.replace(/[^0-9]/, ""))
+                          }
                         />
                       </FormControl>
                       <FormMessage />

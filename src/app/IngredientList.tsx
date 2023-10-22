@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { capitalize } from "./calculator";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,21 +14,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PizzaStyle } from "./page";
+import { capitalize } from "./_utils/helpers";
 
 type IngredientListProps = {
-  pizzaRecipeName: PizzaStyle["name"];
-  recipeIngredients: Record<string, number>;
+  userRecipe: {
+    name: string;
+    ingredients: Record<string, number>;
+  };
 };
 
-export default function IngredientList(props: IngredientListProps) {
-  const { pizzaRecipeName, recipeIngredients } = props;
-
+export default function IngredientList({ userRecipe }: IngredientListProps) {
   return (
     <div className="w-full p-8 lg:mt-5 rounded-xl border bg-card text-card-foreground shadow">
       <div className="flex items-center justify-between">
         <h2 className="text-xl text-slate-900 font-bold lg:text-2xl tracking-tight">
-          {pizzaRecipeName}
+          {userRecipe.name}
         </h2>
         <TooltipProvider>
           <Tooltip>
@@ -53,12 +52,14 @@ export default function IngredientList(props: IngredientListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Object.entries(recipeIngredients).map(([ingredient, amount]) => (
-            <TableRow key={ingredient}>
-              <TableCell>{capitalize(ingredient)}</TableCell>
-              <TableCell className="text-right">{amount}g</TableCell>
-            </TableRow>
-          ))}
+          {Object.entries(userRecipe.ingredients).map(
+            ([ingredient, amount]) => (
+              <TableRow key={ingredient}>
+                <TableCell>{capitalize(ingredient)}</TableCell>
+                <TableCell className="text-right">{amount}g</TableCell>
+              </TableRow>
+            ),
+          )}
         </TableBody>
       </Table>
     </div>

@@ -1,12 +1,11 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
-import Calculator, {
-  type CalculatorFormData,
-  type RecipeType,
-} from "./calculator";
+import CalculatorForm, { CalculatorFormData } from "./CalculatorForm";
 import pizzaStyles from "../../public/recipes.json";
 import IngredientList from "./IngredientList";
+import { useState } from "react";
+import { UseFormSetValue } from "react-hook-form";
+import { getRecipeIngredients } from "./_utils/helpers";
 
 export type PizzaStyle = {
   id: number;
@@ -26,60 +25,66 @@ export type PizzaStyle = {
 };
 
 const pizzaData = pizzaStyles as PizzaStyle[];
-const PERCENTAGE_BASE = 100;
 
-function getRecipeIngredients(
-  totalDoughWeight: number,
-  recipeForPizzaStyle: PizzaStyle["ingredients"],
-) {
-  const ingredientAmounts: Record<string, number> = {};
-
-  const totalPercentage = Object.values(recipeForPizzaStyle).reduce(
-    (total, percentage) => total + percentage,
-    0,
-  );
-
-  for (const ingredient in recipeForPizzaStyle) {
-    const amount =
-      (totalDoughWeight * recipeForPizzaStyle[ingredient as keyof RecipeType]) /
-      totalPercentage;
-    ingredientAmounts[ingredient as keyof RecipeType] =
-      amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
-  }
-
-  return ingredientAmounts;
-}
+export type PizzaStyleName = keyof typeof pizzaData;
+export type RecipeType = (typeof pizzaData)[PizzaStyleName];
 
 export default function Home() {
-  const defaultPizza = pizzaData[0];
-  const [selectedPizza, setSelectedPizza] = useState(defaultPizza);
+  const {
+    name: defaultPizzaName,
+    settings: defaultPizzaSettings,
+    ingredients: defaultPizzaIngredients,
+  } = pizzaData[0];
 
-  function handleSubmit(values: CalculatorFormData) {
-    const updatedDoughIngredients = {
-      ...selectedPizza.ingredients,
-      water: values.settings.hydration / PERCENTAGE_BASE,
-    };
-    setSelectedPizza({
-      ...selectedPizza,
-      ingredients: updatedDoughIngredients,
-      settings: values.settings,
-    });
+  const { weight_per_pizza, number_of_pizzas } = defaultPizzaSettings;
+  const [userRecipe, setUserRecipe] = useState({
+    name: defaultPizzaName,
+    settings: defaultPizzaSettings,
+    ingredients: getRecipeIngredients(
+      weight_per_pizza * number_of_pizzas,
+      defaultPizzaIngredients,
+    ),
+  });
+
+  function onSubmit(data: CalculatorFormData) {
+    const { weight_per_pizza, number_of_pizzas, hydration } = data.settings;
+    const totalDoughWeight = weight_per_pizza * number_of_pizzas;
+
+    const selectedPizza = pizzaData.find((pizza) => pizza.name === data.name);
+
+    if (selectedPizza) {
+      const ingredients = getRecipeIngredients(totalDoughWeight, {
+        ...selectedPizza.ingredients,
+        water: hydration / 100,
+      });
+
+      setUserRecipe({
+        name: data.name,
+        settings: data.settings,
+        ingredients,
+      });
+    }
   }
 
-  function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-    return e.target.value.replace(/[^0-9]/, "");
+  function onSelectChange(
+    name: string,
+    setValue: UseFormSetValue<CalculatorFormData>,
+  ) {
+    const selectedPizza = pizzaStyles.find((pizza) => pizza.name === name);
+    if (selectedPizza) {
+      const { number_of_pizzas, weight_per_pizza } = selectedPizza.settings;
+      setValue("name", selectedPizza.name);
+      setValue("settings", selectedPizza.settings);
+      setUserRecipe({
+        name: selectedPizza.name,
+        settings: selectedPizza.settings,
+        ingredients: getRecipeIngredients(
+          number_of_pizzas * weight_per_pizza,
+          selectedPizza.ingredients,
+        ),
+      });
+    }
   }
-
-  function handleSelectChange(name: string) {
-    const selectedPizza = pizzaData.find((pizza) => pizza.name === name)!;
-    setSelectedPizza(selectedPizza);
-  }
-
-  const { number_of_pizzas, weight_per_pizza } = selectedPizza.settings;
-  const recipeIngredients = getRecipeIngredients(
-    number_of_pizzas * weight_per_pizza,
-    selectedPizza.ingredients,
-  );
 
   return (
     <div>
@@ -93,16 +98,16 @@ export default function Home() {
         </p>
       </div>
       <div className="grid lg:grid-cols-2 items-center gap-10 my-10 pt-4 sm:pt-10 lg:pt-14">
-        <Calculator
-          onSubmit={handleSubmit}
-          onInputChange={handleInputChange}
-          onSelectChange={handleSelectChange}
-          defaultValues={selectedPizza}
+        <CalculatorForm
+          pizzaRecipes={pizzaData}
+          defaultValues={{
+            name: defaultPizzaName,
+            settings: defaultPizzaSettings,
+          }}
+          handleSubmit={onSubmit}
+          handleSelectChange={onSelectChange}
         />
-        <IngredientList
-          pizzaRecipeName={selectedPizza.name}
-          recipeIngredients={recipeIngredients}
-        />
+        <IngredientList userRecipe={userRecipe} />
       </div>
     </div>
   );
