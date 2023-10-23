@@ -45,17 +45,16 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  createdAt     DateTime       @default(now())
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
   name          String?
-  email         String?        @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   recipes       Recipe[]
   folders       Folder[]
-  recipeFolders RecipeFolder[]
 
   @@map("users")
 }
@@ -70,12 +69,12 @@ model VerificationToken {
 }
 
 model Folder {
-  id        Int            @id @default(autoincrement())
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  name      String         @unique
-  recipes   RecipeFolder[]
-  user      User           @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+  recipes   Recipe[]
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
 
   @@index(userId)
@@ -83,28 +82,14 @@ model Folder {
 }
 
 model Recipe {
-  id        Int            @id @default(autoincrement())
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   name      String
-  folders   RecipeFolder[]
-  user      User           @relation(fields: [userId], references: [id])
+  folders   Folder[]
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
 
   @@index(userId)
   @@map("recipes")
-}
-
-model RecipeFolder {
-  id       Int    @id @default(autoincrement())
-  recipe   Recipe @relation(fields: [recipeId], references: [id])
-  folder   Folder @relation(fields: [folderId], references: [id])
-  recipeId Int
-  folderId Int
-  user     User   @relation(fields: [userId], references: [id])
-  userId   String
-
-  @@unique([recipeId, folderId])
-  @@index(folderId)
-  @@index(userId)
 }

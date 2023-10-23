@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
+import * as React from "react";
+import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Recipe } from "@prisma/client"
+} from "@/components/ui/popover";
+import { Recipe } from "@prisma/client";
 
 type SearchProps = {
-  recipes: Recipe[]
-}
+  recipes: Recipe[];
+};
 
-export default function Search(props: SearchProps) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+export default function Search({ recipes }: SearchProps) {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -37,7 +37,7 @@ export default function Search(props: SearchProps) {
           className="w-[200px] justify-between"
         >
           {value
-            ? props.recipes.find((recipe) => recipe.name === value)?.name
+            ? recipes.find((recipe) => recipe.name === value)?.name
             : "Search recipes..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -47,19 +47,21 @@ export default function Search(props: SearchProps) {
           <CommandInput placeholder="Search recipes..." className="h-9" />
           <CommandEmpty>No recipe found.</CommandEmpty>
           <CommandGroup>
-            {props.recipes.map((recipe) => (
+            {recipes.map((recipe) => (
               <CommandItem
                 key={recipe.name.toLowerCase()}
                 onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue)
-                  setOpen(false)
+                  setValue(currentValue === value ? "" : currentValue);
+                  setOpen(false);
                 }}
               >
                 {recipe.name}
                 <CheckIcon
                   className={cn(
                     "ml-auto h-4 w-4",
-                    value === recipe.name.toLowerCase() ? "opacity-100" : "opacity-0"
+                    value === recipe.name.toLowerCase()
+                      ? "opacity-100"
+                      : "opacity-0",
                   )}
                 />
               </CommandItem>
@@ -68,5 +70,5 @@ export default function Search(props: SearchProps) {
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

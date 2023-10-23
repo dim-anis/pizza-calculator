@@ -1,31 +1,33 @@
-'use client'
+"use client";
 
-import FolderList from "./FolderList"
-import RecipeSection from "./RecipeSection"
-import { useState } from "react"
-import { Folder, Recipe } from "@prisma/client"
+import FolderList from "./FolderList";
+import RecipeSection from "./RecipeSection";
+import { useState } from "react";
+import { Folder, Recipe } from "@prisma/client";
 
-export type RecipeFolder = Folder & { recipes: Recipe[] }
+export type RecipeFolder = Folder & { recipes: Recipe[] };
 export type CurrFolder = {
-  name: string,
-  contents: Recipe[]
-}
+  name: string;
+  contents: Recipe[];
+};
 export type SavedRecipesSectionProps = {
-  recipeFolders: RecipeFolder[],
-}
+  recipeFolders: RecipeFolder[];
+};
 
-export default function SavedRecipesSection(props: SavedRecipesSectionProps) {
-  const { recipeFolders } = props;
-
+export default function SavedRecipesSection({
+  recipeFolders,
+}: SavedRecipesSectionProps) {
   const [currFolder, setCurrFolder] = useState<CurrFolder>({
-    name: 'all',
-    contents: recipeFolders.find(folder => folder.name === 'all')?.recipes || []
+    name: "all",
+    contents:
+      recipeFolders.find((folder) => folder.name === "all")?.recipes || [],
   });
 
   function handleClick(name: string) {
     setCurrFolder({
       name: name,
-      contents: recipeFolders.find(folder => folder.name === name)?.recipes || []
+      contents:
+        recipeFolders.find((folder) => folder.name === name)?.recipes || [],
     });
   }
 
@@ -35,9 +37,13 @@ export default function SavedRecipesSection(props: SavedRecipesSectionProps) {
         My Recipes
       </h1>
       <div className="mt-6 flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <FolderList folders={recipeFolders} currFolder={currFolder} handleClick={handleClick} />
+        <FolderList
+          folders={recipeFolders}
+          currFolder={currFolder}
+          handleClick={handleClick}
+        />
         <RecipeSection currFolder={currFolder} />
       </div>
     </div>
-  )
+  );
 }

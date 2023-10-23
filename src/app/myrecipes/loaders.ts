@@ -7,7 +7,7 @@ export async function getUserRecipes() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect('/api/auth/signin')
+    redirect("/api/auth/signin");
   }
 
   return await prisma.folder.findMany({
@@ -18,11 +18,7 @@ export async function getUserRecipes() {
       ["createdAt"]: "desc",
     },
     include: {
-      recipes: {
-        select: {
-          recipe: true,
-        }
-      }
+      recipes: true,
     },
   });
 }

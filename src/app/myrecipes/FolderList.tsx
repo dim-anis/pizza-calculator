@@ -1,5 +1,3 @@
-"use client";
-
 import Search from "@/components/Search";
 import { Button } from "@/components/ui/button";
 import type { CurrFolder, RecipeFolder } from "./SavedRecipesSection";
@@ -21,8 +19,11 @@ type FolderListProps = {
   handleClick: (name: string) => void;
 };
 
-export default function FolderList(props: FolderListProps) {
-  const { folders, currFolder, handleClick } = props;
+export default function FolderList({
+  folders,
+  currFolder,
+  handleClick,
+}: FolderListProps) {
   const allItemsFolder = folders.find((folder) => folder.name === "all")!;
   const foldersWithoutAll = folders.filter(
     (folder) => folder.name !== allItemsFolder?.name,
