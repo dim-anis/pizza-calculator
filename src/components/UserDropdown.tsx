@@ -1,4 +1,5 @@
-'use client'
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,14 +7,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
-
-export default function UserMenu() {
+export default function UserDropdown() {
   const { data: session } = useSession();
 
   if (session) {
@@ -26,9 +26,7 @@ export default function UserMenu() {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>
-            {session.user?.name}
-          </DropdownMenuLabel>
+          <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <Link href="/myrecipes" legacyBehavior passHref>
             <DropdownMenuItem>My Recipes</DropdownMenuItem>
@@ -36,8 +34,8 @@ export default function UserMenu() {
           <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
+    );
   }
 
-  return <Button onClick={() => signIn()}>Log in</Button>
+  return <Button onClick={() => signIn()}>Log in</Button>;
 }

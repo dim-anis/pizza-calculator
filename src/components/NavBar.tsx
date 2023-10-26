@@ -1,6 +1,6 @@
 import { Pizza } from "lucide-react";
 import NavMenu from "./NavMenu";
-import UserMenu from "./UserMenu";
+import UserDropdown from "./UserDropdown";
 import Link from "next/link";
 
 export default function NavBar() {
@@ -15,7 +15,7 @@ export default function NavBar() {
         </Link>
         <NavMenu />
       </div>
-      <UserMenu />
+      <UserDropdown />
     </div>
   );
 }
