@@ -114,7 +114,7 @@ export default function CalculatorForm({
                           handleSelectChange(value, form.setValue),
                         )
                       }
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -190,7 +190,7 @@ export default function CalculatorForm({
                       onValueChange={(value) =>
                         field.onChange(handleSelectChange(value, form.setValue))
                       }
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>

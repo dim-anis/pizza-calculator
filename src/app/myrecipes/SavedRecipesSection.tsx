@@ -6,10 +6,6 @@ import { useState } from "react";
 import { Folder, Recipe } from "@prisma/client";
 
 export type RecipeFolder = Folder & { recipes: Recipe[] };
-export type CurrFolder = {
-  name: string;
-  contents: Recipe[];
-};
 export type SavedRecipesSectionProps = {
   recipeFolders: RecipeFolder[];
 };
@@ -17,18 +13,15 @@ export type SavedRecipesSectionProps = {
 export default function SavedRecipesSection({
   recipeFolders,
 }: SavedRecipesSectionProps) {
-  const [currFolder, setCurrFolder] = useState<CurrFolder>({
-    name: "all",
-    contents:
-      recipeFolders.find((folder) => folder.name === "all")?.recipes || [],
-  });
+  const allRecipesFolder =
+    recipeFolders.find((folder) => folder.name === "all") || null;
+  const [currFolder, setCurrFolder] = useState<RecipeFolder | null>(
+    allRecipesFolder,
+  );
 
   function handleClick(name: string) {
-    setCurrFolder({
-      name: name,
-      contents:
-        recipeFolders.find((folder) => folder.name === name)?.recipes || [],
-    });
+    const folder = recipeFolders.find((folder) => folder.name === name) || null;
+    setCurrFolder(folder);
   }
 
   return (
