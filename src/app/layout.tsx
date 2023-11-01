@@ -24,13 +24,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased text-slate-500 bg-white`}
+        className={`${inter.className} bg-white text-slate-500 antialiased`}
       >
         <SessionProvider session={session}>
           <header className="supports-backdrop-blur:bg-background/60 top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
             <NavBar />
           </header>
-          <div className={`w-[min(100%-3rem,_90ch)] mx-auto`}>{children}</div>
+          <div className={`mx-auto w-[min(100%-3rem,_90ch)]`}>{children}</div>
           <Footer />
         </SessionProvider>
       </body>

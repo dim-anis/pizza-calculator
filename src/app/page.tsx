@@ -26,11 +26,11 @@ export type RecipeType = (typeof pizzaData)[PizzaStyleName];
 export default function Home() {
   return (
     <div>
-      <div className="text-center relative max-w-5xl mx-auto pt-10 sm:pt-12 lg:pt-16">
-        <h1 className="text-4xl text-slate-900 font-extrabold sm:text-5xl lg:text-6xl tracking-tight text-center">
+      <div className="relative mx-auto max-w-5xl pt-10 text-center sm:pt-12 lg:pt-16">
+        <h1 className="text-center text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
           Effortlessly create the perfect pizza dough for any craving.
         </h1>
-        <p className="mt-6 text-lg text-slate-600 text-center max-w-3xl mx-auto">
+        <p className="mx-auto mt-6 max-w-3xl text-center text-lg text-slate-600">
           Simply by specifying your desired type, quantity, and doughball
           weight.
         </p>

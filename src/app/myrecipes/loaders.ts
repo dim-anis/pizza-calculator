@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-export async function getUserRecipes() {
+export async function getRecipesGroupedByFolder() {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -18,21 +18,6 @@ export async function getUserRecipes() {
     },
     include: {
       recipes: true,
-    },
-  });
-}
-
-export async function createRecipeFolder(name: string) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/api/auth/signin");
-  }
-
-  return await prisma.folder.create({
-    data: {
-      name,
-      userId: user.id,
     },
   });
 }

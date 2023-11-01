@@ -25,9 +25,9 @@ type IngredientListProps = {
 
 export default function IngredientList({ userRecipe }: IngredientListProps) {
   return (
-    <div className="w-full p-8 lg:mt-5 rounded-xl border bg-card text-card-foreground shadow">
+    <div className="w-full rounded-xl border bg-card p-8 text-card-foreground shadow lg:mt-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl text-slate-900 font-bold lg:text-2xl tracking-tight">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
           {userRecipe.name}
         </h2>
         <TooltipProvider>
@@ -43,7 +43,7 @@ export default function IngredientList({ userRecipe }: IngredientListProps) {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <p className="mt-5 text-lg text-slate-600 max-w-3xl">Ingredients:</p>
+      <p className="mt-5 max-w-3xl text-lg text-slate-600">Ingredients:</p>
       <Table className="mt-5">
         <TableHeader>
           <TableRow>

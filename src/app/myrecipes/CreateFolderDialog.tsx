@@ -21,57 +21,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { createFolder } from "@/lib/actions";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
-  folderName: z.string().min(2, {
-    message: "Folder name be at least 2 characters.",
-  }),
+  folderName: z.string().min(1, "Name is required.").max(25),
 });
 
 export type FormData = z.infer<typeof FormSchema>;
 
 export function CreateFolderDialog() {
   const [open, setOpen] = useState(false);
-  const session = useSession();
-
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
+  const [pending, startTransition] = useTransition();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
+    mode: "onChange",
     defaultValues: {
       folderName: "",
     },
   });
 
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   async function onSubmit({ folderName }: FormData) {
-    const response = await fetch("/api/folders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: folderName,
-        userId: session.data?.user.id,
-      }),
+    startTransition(async () => {
+      await createFolder({ name: folderName });
+      setOpen(false);
     });
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    setOpen(false);
-    startTransition(() => {
-      router.refresh();
-    });
-
-    return await response.json();
   }
 
   return (
@@ -81,7 +57,7 @@ export function CreateFolderDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create new folder</DialogTitle>
+          <DialogTitle>Create a new folder</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -90,7 +66,7 @@ export function CreateFolderDialog() {
               name="folderName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New name</FormLabel>
+                  <FormLabel>Folder name</FormLabel>
                   <FormControl>
                     <Input placeholder="Folder name" {...field} />
                   </FormControl>
@@ -102,9 +78,18 @@ export function CreateFolderDialog() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isPending}>
-              Save changes
-            </Button>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={pending}>
+                {pending ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving
+                  </div>
+                ) : (
+                  <span>Save</span>
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

@@ -2,7 +2,7 @@ const today = new Date();
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col mt-5 gap-4 items-center pt-8 pb-8 text-slate-500 text-xs">
+    <footer className="mt-5 flex flex-col items-center gap-4 py-8 text-xs text-slate-500">
       <p> &copy; {today.getFullYear()} Dmitry Anisov. All rights reserved.</p>
     </footer>
   );

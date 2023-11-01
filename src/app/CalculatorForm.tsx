@@ -81,6 +81,7 @@ export default function CalculatorForm({
   handleSelectChange,
 }: CalculatorFormProps) {
   const form = useForm<CalculatorFormData>({
+    mode: "onChange",
     resolver: zodResolver(CalculatorSchema),
     defaultValues,
   });

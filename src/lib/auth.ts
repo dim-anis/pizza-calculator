@@ -3,8 +3,6 @@ import prisma from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GitHubProvider from "next-auth/providers/github";
 
-const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL;
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -48,19 +46,4 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  // cookies: {
-  //   sessionToken: {
-  //     name: `${VERCEL_DEPLOYMENT ? "__Secure-" : ""}next-auth.session-token`,
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       // When working on localhost, the cookie domain must be omitted entirely (https://stackoverflow.com/a/1188145)
-  //       domain: VERCEL_DEPLOYMENT
-  //         ? `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
-  //         : undefined,
-  //       secure: VERCEL_DEPLOYMENT,
-  //     },
-  //   },
-  // },
 };

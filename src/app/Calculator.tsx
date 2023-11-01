@@ -69,7 +69,7 @@ export default function Calculator({ pizzaData }: CalculatorProps) {
   }
 
   return (
-    <div className="grid lg:grid-cols-2 items-center gap-10 my-10 pt-4 sm:pt-10 lg:pt-14">
+    <div className="my-10 grid items-center gap-10 pt-4 sm:pt-10 lg:grid-cols-2 lg:pt-14">
       <CalculatorForm
         defaultValues={{
           name: defaultPizzaName,

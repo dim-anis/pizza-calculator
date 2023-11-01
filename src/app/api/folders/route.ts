@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const { newName, userId, folderId } = await req.json();
-  console.log({ newName, userId, folderId });
 
   const updatedFolder = await prisma.folder.update({
     where: {
@@ -24,8 +23,6 @@ export async function PUT(req: NextRequest) {
       name: newName,
     },
   });
-
-  console.log(updatedFolder);
 
   return NextResponse.json(updatedFolder);
 }

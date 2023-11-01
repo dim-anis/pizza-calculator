@@ -5,10 +5,10 @@ import Link from "next/link";
 
 export default function NavBar() {
   return (
-    <div className="py-2 lg:py-3 flex items-center justify-between text-slate-700 font-semibold leading-6 w-[min(100%-3rem,_90ch)] mx-auto">
+    <div className="mx-auto flex w-[min(100%-3rem,_90ch)] items-center justify-between py-2 font-semibold leading-6 text-slate-700 lg:py-3">
       <div className="flex items-center lg:gap-8">
         <Link href="/">
-          <div className="flex gap-2 font-bold tracking-tight items-center">
+          <div className="flex items-center gap-2 font-bold tracking-tight">
             <Pizza />
             <p>Pizza Calculator</p>
           </div>
