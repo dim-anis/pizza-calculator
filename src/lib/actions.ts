@@ -55,18 +55,23 @@ export async function createFolder(data: z.infer<typeof CreateFolder>) {
 }
 
 const UpdateFolder = FolderSchema.pick({
-  id: true,
   name: true,
 });
 
-export async function updateFolder(data: z.infer<typeof UpdateFolder>) {
+const UpdateFolderWithOldName = UpdateFolder.extend({
+  oldName: z.string(),
+});
+
+export async function updateFolder(
+  data: z.infer<typeof UpdateFolderWithOldName>,
+) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const zodResult = UpdateFolder.safeParse(data);
+  const zodResult = UpdateFolderWithOldName.safeParse(data);
 
   if (!zodResult.success) {
     const { error } = zodResult;
@@ -74,13 +79,13 @@ export async function updateFolder(data: z.infer<typeof UpdateFolder>) {
   }
 
   const {
-    data: { id: folderId, name: newName },
+    data: { oldName, name: newName },
   } = zodResult;
 
   try {
     const updatedFolder = await prisma.folder.update({
       where: {
-        id: folderId,
+        name: oldName,
         userId: user.id,
       },
       data: {
@@ -97,7 +102,7 @@ export async function updateFolder(data: z.infer<typeof UpdateFolder>) {
 }
 
 const DeleteFolder = FolderSchema.pick({
-  id: true,
+  name: true,
 });
 export async function deleteFolder(data: z.infer<typeof DeleteFolder>) {
   const user = await getCurrentUser();
@@ -114,12 +119,12 @@ export async function deleteFolder(data: z.infer<typeof DeleteFolder>) {
   }
 
   const {
-    data: { id },
+    data: { name },
   } = zodResult;
 
   const deletedFolder = await prisma.folder.delete({
     where: {
-      id,
+      name,
       userId: user?.id,
     },
   });

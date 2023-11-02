@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { RecipeFolder } from "./SavedRecipesSection";
 import { z } from "zod";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -26,7 +25,9 @@ import {
 import { deleteFolder, updateFolder } from "@/lib/actions";
 
 type ChangeFolderNameDialogProps = {
-  currFolder: RecipeFolder | undefined;
+  folderName: string;
+  handleUpdateFolderName: (oldName: string, newName: string) => void;
+  handleDeleteFolder: (folderName: string) => void;
 };
 
 const FormSchema = z.object({
@@ -36,7 +37,9 @@ const FormSchema = z.object({
 export type FormData = z.infer<typeof FormSchema>;
 
 export default function ChangeFolderNameDialog({
-  currFolder,
+  folderName,
+  handleUpdateFolderName,
+  handleDeleteFolder,
 }: ChangeFolderNameDialogProps) {
   const [open, setOpen] = useState(false);
   const [updatePending, startUpdateTransition] = useTransition();
@@ -46,20 +49,21 @@ export default function ChangeFolderNameDialog({
     resolver: zodResolver(FormSchema),
     mode: "onChange",
     defaultValues: {
-      folderName: currFolder?.name,
+      folderName,
     },
   });
 
   useEffect(() => {
     form.reset({
-      folderName: currFolder?.name,
+      folderName,
     });
-  }, [currFolder?.name, form]);
+  }, [folderName, form]);
 
-  async function onSubmit({ folderName }: FormData) {
+  async function onSubmit({ folderName: newFolderName }: FormData) {
     startUpdateTransition(async () => {
-      await updateFolder({ name: folderName, id: currFolder.id });
+      await updateFolder({ oldName: folderName, name: newFolderName });
       setOpen(false);
+      handleUpdateFolderName(folderName, newFolderName);
     });
   }
 
@@ -115,8 +119,9 @@ export default function ChangeFolderNameDialog({
             disabled={deletePending}
             onClick={async () => {
               startDeleteTransition(async () => {
-                await deleteFolder({ id: currFolder.id });
+                await deleteFolder({ name: folderName });
                 setOpen(false);
+                handleDeleteFolder(folderName);
               });
             }}
           >
