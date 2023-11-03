@@ -1,24 +1,8 @@
-import pizzaStyles from "../../public/recipes.json";
+import { PizzaRecipe } from "@/lib/definitions";
+import { defaultPizzaRecipes } from "../../public/recipes";
 import Calculator from "./Calculator";
 
-export type PizzaStyle = {
-  id: number;
-  name: string;
-  ingredients: {
-    flour: number;
-    water: number;
-    salt?: number;
-    yeast?: number;
-    oil?: number;
-  };
-  settings: {
-    number_of_pizzas: number;
-    weight_per_pizza: number;
-    hydration: number;
-  };
-};
-
-const pizzaData = pizzaStyles as PizzaStyle[];
+const pizzaData = defaultPizzaRecipes as PizzaRecipe[];
 
 export type PizzaStyleName = keyof typeof pizzaData;
 export type RecipeType = (typeof pizzaData)[PizzaStyleName];

@@ -2,6 +2,9 @@ import { Recipe } from "@prisma/client";
 import ChangeFolderNameDialog from "./ChangeFolderNameDialog";
 import RecipeItem from "./RecipeItem";
 import RecipeList from "./RecipeList";
+import { DEFAULT_FOLDER_NAME } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { Star } from "lucide-react";
 
 type RecipeSectionProps = {
   filteredRecipes: Recipe[];
@@ -22,7 +25,11 @@ export default function RecipeSection({
   return (
     <div className="flex-1 lg:max-w-2xl">
       <div className="mb-5 flex items-center gap-1">
-        {selectedFolder !== "all" && (
+        {selectedFolder === DEFAULT_FOLDER_NAME ? (
+          <Button variant="ghost" size="icon" disabled>
+            <Star />
+          </Button>
+        ) : (
           <ChangeFolderNameDialog
             folderName={selectedFolder}
             handleUpdateFolderName={handleUpdateFolderName}

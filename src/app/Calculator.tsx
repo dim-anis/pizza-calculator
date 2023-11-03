@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import CalculatorForm, { CalculatorFormData } from "./CalculatorForm";
 import IngredientList from "./IngredientList";
 import { getRecipeIngredients } from "./_utils/helpers";
 import { UseFormSetValue } from "react-hook-form";
-import { PizzaStyle } from "./page";
+import { PizzaRecipe } from "@/lib/definitions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
+import CustomRecipeForm from "./CustomRecipeForm";
 
 type CalculatorProps = {
-  pizzaData: PizzaStyle[];
+  pizzaData: PizzaRecipe[];
 };
 
 export default function Calculator({ pizzaData }: CalculatorProps) {
@@ -70,15 +72,32 @@ export default function Calculator({ pizzaData }: CalculatorProps) {
 
   return (
     <div className="my-10 grid items-center gap-10 pt-4 sm:pt-10 lg:grid-cols-2 lg:pt-14">
-      <CalculatorForm
-        defaultValues={{
-          name: defaultPizzaName,
-          settings: defaultPizzaSettings,
-        }}
-        pizzaRecipes={pizzaData}
-        handleSubmit={onSubmit}
-        handleSelectChange={onSelectChange}
-      />
+      <Tabs defaultValue="basicSettings">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="basicSettings">Basic</TabsTrigger>
+          <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
+        </TabsList>
+        <TabsContent value="basicSettings">
+          <DefaultRecipesForm
+            pizzaRecipes={pizzaData}
+            defaultValues={{
+              name: defaultPizzaName,
+              settings: defaultPizzaSettings,
+            }}
+            handleSubmit={onSubmit}
+            handleSelectChange={onSelectChange}
+          />
+        </TabsContent>
+        <TabsContent value="advancedSettings">
+          <CustomRecipeForm
+            defaultValues={{
+              name: defaultPizzaName,
+              settings: defaultPizzaSettings,
+            }}
+            handleSubmit={onSubmit}
+          />
+        </TabsContent>
+      </Tabs>
       <IngredientList userRecipe={userRecipe} />
     </div>
   );

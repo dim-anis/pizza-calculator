@@ -70,7 +70,7 @@ export default function ChangeFolderNameDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="ghost" size="icon">
           <FolderEdit />
         </Button>
       </DialogTrigger>

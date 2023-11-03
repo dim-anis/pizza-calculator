@@ -1,4 +1,4 @@
-import { AllRecipesFolder, RecipeFolder } from "./SavedRecipesSection";
+import { AllRecipesFolder, RecipeFolder } from "@/lib/definitions";
 
 type FolderListItemProps = {
   folder: RecipeFolder | AllRecipesFolder;

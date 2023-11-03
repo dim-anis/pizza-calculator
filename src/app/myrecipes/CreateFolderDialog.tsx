@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Dialog,
   DialogContent,
@@ -31,7 +29,13 @@ const FormSchema = z.object({
 
 export type FormData = z.infer<typeof FormSchema>;
 
-export function CreateFolderDialog() {
+type CreateFolderDialogProps = {
+  handleCreateFolder: (folderName: string) => void;
+};
+
+export function CreateFolderDialog({
+  handleCreateFolder,
+}: CreateFolderDialogProps) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -45,8 +49,9 @@ export function CreateFolderDialog() {
 
   async function onSubmit({ folderName }: FormData) {
     startTransition(async () => {
-      await createFolder({ name: folderName });
+      handleCreateFolder(folderName);
       setOpen(false);
+      await createFolder({ name: folderName });
     });
   }
 

@@ -1,8 +1,9 @@
-import { PizzaStyle, RecipeType } from "../page";
+import { PizzaRecipe } from "@/lib/definitions";
+import { RecipeType } from "../page";
 
 export function getRecipeIngredients(
   totalDoughWeight: number,
-  recipeForPizzaStyle: PizzaStyle["ingredients"],
+  recipeForPizzaStyle: PizzaRecipe["ingredients"],
 ) {
   const ingredientAmounts: Record<string, number> = {};
 

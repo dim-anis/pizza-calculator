@@ -1,62 +1,116 @@
 "use client";
 
 import RecipeSection from "./RecipeSection";
-import { useState } from "react";
-import { Folder, Recipe } from "@prisma/client";
+import { useOptimistic, useState } from "react";
 import { CreateFolderDialog } from "./CreateFolderDialog";
 import Search from "@/components/Search";
 import FolderListItem from "./FolderListItem";
+import { DEFAULT_FOLDER_NAME } from "@/lib/constants";
+import { AllRecipesFolder, RecipeFolder } from "@/lib/definitions";
+import { flattenRecipes } from "./helpers";
 
-export type AllRecipesFolder = Omit<
-  RecipeFolder,
-  "userId" | "createdAt" | "updatedAt"
->;
-
-export type RecipeFolder = Folder & { recipes: Recipe[] };
-export type SavedRecipesSectionProps = {
-  recipeFolders: (RecipeFolder | AllRecipesFolder)[];
+type AddFolderAction = {
+  type: "ADD_FOLDER";
+  payload: { folder: Omit<RecipeFolder, "createdAt" | "updatedAt" | "userId"> };
 };
 
-function flattenRecipes(
-  folders: (RecipeFolder | AllRecipesFolder)[],
-): Recipe[] {
-  return folders.reduce(
-    (acc, curr) => [...acc, ...curr.recipes],
-    [] as Recipe[],
-  );
-}
+type DeleteFolderAction = {
+  type: "DELETE_FOLDER";
+  payload: { folderName: string };
+};
+
+type UpdateFolderAction = {
+  type: "UPDATE_FOLDER";
+  payload: { oldName: string; newName: string };
+};
+
+type RecipeFolderAction =
+  | AddFolderAction
+  | DeleteFolderAction
+  | UpdateFolderAction;
+
+type SavedRecipesSectionProps = {
+  recipeFolders: (RecipeFolder | AllRecipesFolder)[];
+};
 
 export default function SavedRecipesSection({
   recipeFolders,
 }: SavedRecipesSectionProps) {
-  const [selectedFolder, setSelectedFolder] = useState("all");
+  const [selectedFolder, setSelectedFolder] = useState(DEFAULT_FOLDER_NAME);
+  const [optimisticRecipeFolders, optimisticDispatch] = useOptimistic(
+    recipeFolders,
+    (
+      state: (AllRecipesFolder | RecipeFolder)[],
+      action: RecipeFolderAction,
+    ) => {
+      switch (action.type) {
+        case "ADD_FOLDER":
+          return [...state, action.payload.folder];
+        case "DELETE_FOLDER":
+          return state.filter(
+            (folder) => folder.name !== action.payload.folderName,
+          );
+        case "UPDATE_FOLDER":
+          return [
+            ...recipeFolders.map((folder) =>
+              folder.name === action.payload.oldName
+                ? { ...folder, name: action.payload.newName }
+                : folder,
+            ),
+          ];
+        default:
+          return state;
+      }
+    },
+  );
 
   function handleFolderClick(name: string) {
     setSelectedFolder(name);
   }
 
+  function handleCreateFolder(folderName: string) {
+    setSelectedFolder(folderName);
+    const folder = {
+      name: folderName,
+      id: Math.random().toString(),
+      recipes: [],
+    };
+    optimisticDispatch({
+      type: "ADD_FOLDER",
+      payload: {
+        folder,
+      },
+    });
+  }
+
   function handleUpdateFolderName(oldName: string, newName: string) {
-    recipeFolders = [
-      ...recipeFolders.map((folder) =>
-        folder.name === oldName ? { ...folder, name: newName } : folder,
-      ),
-    ];
+    optimisticDispatch({
+      type: "UPDATE_FOLDER",
+      payload: {
+        oldName,
+        newName,
+      },
+    });
     if (selectedFolder === oldName) {
       setSelectedFolder(newName);
     }
   }
 
   function handleDeleteFolder(folderName: string) {
-    recipeFolders = [
-      ...recipeFolders.filter((folder) => folder.name !== folderName),
-    ];
     if (selectedFolder === folderName) {
-      setSelectedFolder("all");
+      setSelectedFolder(DEFAULT_FOLDER_NAME);
     }
+
+    optimisticDispatch({
+      type: "DELETE_FOLDER",
+      payload: {
+        folderName,
+      },
+    });
   }
 
   const filteredRecipes =
-    selectedFolder === "all"
+    selectedFolder === DEFAULT_FOLDER_NAME
       ? flattenRecipes(recipeFolders)
       : recipeFolders.find((folder) => folder.name === selectedFolder)
           ?.recipes || [];
@@ -68,12 +122,16 @@ export default function SavedRecipesSection({
       </h1>
       <div className="mt-6 flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
         <div className="flex flex-col space-y-4">
-          <CreateFolderDialog />
+          <CreateFolderDialog handleCreateFolder={handleCreateFolder} />
           <Search recipes={flattenRecipes(recipeFolders)} />
           <ul className="mt-2 flex space-x-2 overflow-auto lg:flex-col lg:space-x-0 lg:space-y-1">
             {[
-              { name: "all", id: "null", recipes: [] } as AllRecipesFolder,
-              ...recipeFolders,
+              {
+                name: DEFAULT_FOLDER_NAME,
+                id: "null",
+                recipes: [],
+              } as AllRecipesFolder,
+              ...optimisticRecipeFolders,
             ].map((folder) => (
               <FolderListItem
                 key={folder.id}
