@@ -33,35 +33,43 @@ type SavedRecipesSectionProps = {
   recipeFolders: (RecipeFolder | AllRecipesFolder)[];
 };
 
+const allRecipesFolder: AllRecipesFolder = {
+  name: DEFAULT_FOLDER_NAME,
+  id: crypto.randomUUID(),
+  recipes: [],
+};
+
+function reducer(
+  state: (AllRecipesFolder | RecipeFolder)[],
+  action: RecipeFolderAction,
+) {
+  switch (action.type) {
+    case "ADD_FOLDER":
+      return [...state, action.payload.folder];
+    case "DELETE_FOLDER":
+      return state.filter(
+        (folder) => folder.name !== action.payload.folderName,
+      );
+    case "UPDATE_FOLDER":
+      return [
+        ...state.map((folder) =>
+          folder.name === action.payload.oldName
+            ? { ...folder, name: action.payload.newName }
+            : folder,
+        ),
+      ];
+    default:
+      return state;
+  }
+}
+
 export default function SavedRecipesSection({
   recipeFolders,
 }: SavedRecipesSectionProps) {
   const [selectedFolder, setSelectedFolder] = useState(DEFAULT_FOLDER_NAME);
   const [optimisticRecipeFolders, optimisticDispatch] = useOptimistic(
     recipeFolders,
-    (
-      state: (AllRecipesFolder | RecipeFolder)[],
-      action: RecipeFolderAction,
-    ) => {
-      switch (action.type) {
-        case "ADD_FOLDER":
-          return [...state, action.payload.folder];
-        case "DELETE_FOLDER":
-          return state.filter(
-            (folder) => folder.name !== action.payload.folderName,
-          );
-        case "UPDATE_FOLDER":
-          return [
-            ...recipeFolders.map((folder) =>
-              folder.name === action.payload.oldName
-                ? { ...folder, name: action.payload.newName }
-                : folder,
-            ),
-          ];
-        default:
-          return state;
-      }
-    },
+    reducer,
   );
 
   function handleFolderClick(name: string) {
@@ -72,7 +80,7 @@ export default function SavedRecipesSection({
     setSelectedFolder(folderName);
     const folder = {
       name: folderName,
-      id: Math.random().toString(),
+      id: crypto.randomUUID(),
       recipes: [],
     };
     optimisticDispatch({
@@ -125,14 +133,7 @@ export default function SavedRecipesSection({
           <CreateFolderDialog handleCreateFolder={handleCreateFolder} />
           <Search recipes={flattenRecipes(recipeFolders)} />
           <ul className="mt-2 flex space-x-2 overflow-auto lg:flex-col lg:space-x-0 lg:space-y-1">
-            {[
-              {
-                name: DEFAULT_FOLDER_NAME,
-                id: "null",
-                recipes: [],
-              } as AllRecipesFolder,
-              ...optimisticRecipeFolders,
-            ].map((folder) => (
+            {[allRecipesFolder, ...optimisticRecipeFolders].map((folder) => (
               <FolderListItem
                 key={folder.id}
                 folder={folder}
