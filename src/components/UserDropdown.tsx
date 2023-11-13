@@ -28,7 +28,7 @@ export default function UserDropdown() {
         <DropdownMenuContent>
           <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <Link href="/myrecipes" legacyBehavior passHref>
+          <Link href="/myrecipes/all" legacyBehavior passHref>
             <DropdownMenuItem>My Recipes</DropdownMenuItem>
           </Link>
           <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>

@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
 import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
 
@@ -24,14 +23,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-white text-slate-500 antialiased`}
+        className={`${inter.className} min-h-screen bg-white text-slate-500 antialiased`}
       >
         <SessionProvider session={session}>
-          <header className="supports-backdrop-blur:bg-background/60 top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-            <NavBar />
-          </header>
-          <div className={`mx-auto w-[min(100%-3rem,_90ch)]`}>{children}</div>
-          <Footer />
+          <div className="flex min-h-screen flex-col">
+            <header className="supports-backdrop-blur:bg-background/60 top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+              <NavBar />
+            </header>
+            {children}
+          </div>
         </SessionProvider>
       </body>
     </html>

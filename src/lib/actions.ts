@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 import { z } from "zod";
+import { redirect } from "next/navigation";
 
 const FolderSchema = z.object({
   id: z.string(),
@@ -130,4 +131,22 @@ export async function deleteFolder(data: z.infer<typeof DeleteFolder>) {
   });
 
   revalidatePath("/myrecipes");
+}
+
+export async function deleteRecipe(folderName: string, recipeId: string) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const deletedRecipe = await prisma.recipe.delete({
+    where: {
+      id: recipeId,
+      userId: user?.id,
+    },
+  });
+
+  revalidatePath("/myrecipes");
+  redirect(`/myrecipes/${folderName}`);
 }

@@ -71,34 +71,42 @@ export default function Calculator({ pizzaData }: CalculatorProps) {
   }
 
   return (
-    <div className="my-10 grid items-center gap-10 pt-4 sm:pt-10 lg:grid-cols-2 lg:pt-14">
-      <Tabs defaultValue="basicSettings">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="basicSettings">Basic</TabsTrigger>
-          <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
-        </TabsList>
-        <TabsContent value="basicSettings">
-          <DefaultRecipesForm
-            pizzaRecipes={pizzaData}
-            defaultValues={{
-              name: defaultPizzaName,
-              settings: defaultPizzaSettings,
-            }}
-            handleSubmit={onSubmit}
-            handleSelectChange={onSelectChange}
-          />
-        </TabsContent>
-        <TabsContent value="advancedSettings">
-          <CustomRecipeForm
-            defaultValues={{
-              name: defaultPizzaName,
-              settings: defaultPizzaSettings,
-            }}
-            handleSubmit={onSubmit}
-          />
-        </TabsContent>
-      </Tabs>
-      <IngredientList userRecipe={userRecipe} />
-    </div>
+    <section className="container space-y-6 py-4 md:py-6 lg:py-12">
+      <div className="mx-auto grid items-center gap-5 md:max-w-[64rem] md:grid-cols-2">
+        <Tabs defaultValue="basicSettings">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="basicSettings">Basic</TabsTrigger>
+            <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
+          </TabsList>
+          <TabsContent value="basicSettings">
+            <DefaultRecipesForm
+              pizzaRecipes={pizzaData}
+              defaultValues={{
+                name: defaultPizzaName,
+                settings: defaultPizzaSettings,
+              }}
+              handleSubmit={onSubmit}
+              handleSelectChange={onSelectChange}
+            />
+          </TabsContent>
+          <TabsContent value="advancedSettings">
+            <CustomRecipeForm
+              defaultValues={{
+                name: defaultPizzaName,
+                settings: defaultPizzaSettings,
+              }}
+              handleSubmit={onSubmit}
+            />
+          </TabsContent>
+        </Tabs>
+        <div className="w-full rounded-xl border bg-card p-8 text-card-foreground shadow">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
+            {userRecipe.name}
+          </h2>
+          <p className="mt-7 max-w-3xl text-lg text-slate-600">Ingredients:</p>
+          <IngredientList ingredients={userRecipe.ingredients} />
+        </div>
+      </div>
+    </section>
   );
 }

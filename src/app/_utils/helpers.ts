@@ -30,3 +30,9 @@ export function snakeCaseToSpaces(str: string) {
 export function capitalize(word: string) {
   return word.slice(0, 1).toUpperCase() + word.slice(1);
 }
+
+export function toTitleCase(str: string) {
+  return str.replace(/\w\S*/g, function (txt: string) {
+    return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
+  });
+}
