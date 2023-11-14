@@ -82,14 +82,37 @@ model Folder {
 }
 
 model Recipe {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  folders   Folder[]
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  id          String             @id @default(cuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  name        String
+  ingredients RecipeIngredient[]
+  folders     Folder[]
+  user        User               @relation(fields: [userId], references: [id])
+  userId      String
 
   @@index(userId)
   @@map("recipes")
+}
+
+model Ingredient {
+  id   String @id @default(cuid())
+  name String @unique
+
+  recipes RecipeIngredient[]
+
+  @@map("ingredients")
+}
+
+model RecipeIngredient {
+  recipeId     String
+  ingredientId String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  proportion   Decimal    @default(0) @db.Decimal(5, 4)
+
+  @@id([recipeId, ingredientId])
+  @@index(recipeId)
+  @@index(ingredientId)
+  @@map("recipe_ingredients")
 }

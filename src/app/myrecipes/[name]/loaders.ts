@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { Folder } from "@prisma/client";
-import { redirect } from "next/navigation";
 
 export async function getRecipesGroupedByFolder() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/api/auth/signin");
+    throw new Error("You're not authorized!");
   }
 
   return await prisma.folder.findMany({
@@ -27,7 +26,7 @@ export async function getAllRecipes() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/api/auth/signin");
+    throw new Error("You're not authorized!");
   }
 
   return await prisma.recipe.findMany({
@@ -65,15 +64,48 @@ export async function getRecipeById(recipeId: string) {
     throw new Error("You're not authorized!");
   }
 
-  return await prisma.recipe.findUnique({
+  const recipe = await prisma.recipe.findUnique({
     where: {
       userId: user.id,
       id: recipeId,
     },
-    include: {
-      folders: true,
+    select: {
+      id: true,
+      name: true,
+      folders: {
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+        },
+      },
+      ingredients: {
+        select: {
+          proportion: true,
+          ingredient: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  if (!recipe) {
+    throw new Error("Failed to fetch the recipe!");
+  }
+
+  const ingredients = recipe.ingredients.map((item) => ({
+    name: item.ingredient.name,
+    proportion: Number(item.proportion),
+  }));
+
+  return {
+    ...recipe,
+    ingredients,
+  };
 }
 
 type FolderWithIdNameRecipeCount = Omit<

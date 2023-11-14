@@ -9,6 +9,7 @@ export type PizzaRecipe = {
     salt?: number;
     yeast?: number;
     oil?: number;
+    sugar?: number;
   };
   settings: {
     number_of_pizzas: number;

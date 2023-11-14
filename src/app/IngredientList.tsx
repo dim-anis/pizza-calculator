@@ -22,12 +22,15 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Object.entries(ingredients).map(([ingredient, amount]) => (
-          <TableRow key={ingredient}>
-            <TableCell>{capitalize(ingredient)}</TableCell>
-            <TableCell className="text-right">{amount}g</TableCell>
-          </TableRow>
-        ))}
+        {Object.entries(ingredients).map(
+          ([ingredient, amount]) =>
+            amount > 0 && (
+              <TableRow key={ingredient}>
+                <TableCell>{capitalize(ingredient)}</TableCell>
+                <TableCell className="text-right">{amount}g</TableCell>
+              </TableRow>
+            ),
+        )}
       </TableBody>
     </Table>
   );
