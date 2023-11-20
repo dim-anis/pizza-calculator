@@ -1,4 +1,4 @@
-import FolderList from "./folder-list";
+import FolderList from "./_components/folder-list";
 
 export default function MyRecipesLayout({
   children,
@@ -18,7 +18,9 @@ export default function MyRecipesLayout({
       </div>
       <div className="flex-1 md:grid md:grid-cols-[220px_1fr] md:gap-6 lg:grid-cols-[240px_1fr] lg:gap-10">
         <FolderList />
-        {children}
+        <div className="relative space-y-2 py-6 md:space-y-4 lg:gap-10 lg:py-10">
+          {children}
+        </div>
       </div>
     </div>
   );

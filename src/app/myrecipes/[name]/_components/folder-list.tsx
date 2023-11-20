@@ -1,4 +1,4 @@
-import { getFolderNamesWithRecipeCount } from "./loaders";
+import { getFolderNamesWithRecipeCount } from "../loaders";
 import FolderItem from "./folder-list-item";
 import { Button } from "@/components/ui/button";
 

@@ -25,8 +25,7 @@ model Account {
   scope                    String?
   id_token                 String? @db.Text
   session_state            String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index(userId)
@@ -71,48 +70,32 @@ model VerificationToken {
 model Folder {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now())
   name      String   @unique
   recipes   Recipe[]
-  user      User     @relation(fields: [userId], references: [id])
   userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index(userId)
   @@map("folders")
 }
 
 model Recipe {
-  id          String             @id @default(cuid())
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  name        String
-  ingredients RecipeIngredient[]
-  folders     Folder[]
-  user        User               @relation(fields: [userId], references: [id])
-  userId      String
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  folders         Folder[]
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  name            String
+  doughballWeight Int
+  flourRatio      Decimal  @default(0) @db.Decimal(5, 4)
+  waterRatio      Decimal  @default(0) @db.Decimal(5, 4)
+  saltRatio       Decimal  @default(0) @db.Decimal(5, 4)
+  oilRatio        Decimal  @default(0) @db.Decimal(5, 4)
+  sugarRatio      Decimal  @default(0) @db.Decimal(5, 4)
+  yeastRatio      Decimal  @default(0) @db.Decimal(5, 4)
 
   @@index(userId)
   @@map("recipes")
-}
-
-model Ingredient {
-  id   String @id @default(cuid())
-  name String @unique
-
-  recipes RecipeIngredient[]
-
-  @@map("ingredients")
-}
-
-model RecipeIngredient {
-  recipeId     String
-  ingredientId String
-  recipe       Recipe     @relation(fields: [recipeId], references: [id])
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  proportion   Decimal    @default(0) @db.Decimal(5, 4)
-
-  @@id([recipeId, ingredientId])
-  @@index(recipeId)
-  @@index(ingredientId)
-  @@map("recipe_ingredients")
 }

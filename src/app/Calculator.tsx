@@ -2,70 +2,60 @@
 
 import { useState } from "react";
 import IngredientList from "./IngredientList";
-import { getRecipeIngredients } from "./_utils/helpers";
-import { UseFormSetValue } from "react-hook-form";
-import { PizzaRecipe } from "@/lib/definitions";
+import { getRecipeIngredientQuantities } from "./_utils/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
-import CustomRecipeForm from "./CustomRecipeForm";
+// import CustomRecipeForm from "./CustomRecipeForm";
+import { RecipeParsed } from "@/lib/definitions";
+import { UseFormReset } from "react-hook-form";
 
 type CalculatorProps = {
-  pizzaData: PizzaRecipe[];
+  defaultRecipes: RecipeParsed[];
 };
 
-export default function Calculator({ pizzaData }: CalculatorProps) {
-  const {
-    name: defaultPizzaName,
-    settings: defaultPizzaSettings,
-    ingredients: defaultPizzaIngredients,
-  } = pizzaData[0];
+export default function Calculator({ defaultRecipes }: CalculatorProps) {
+  const [userRecipe, setUserRecipe] = useState<RecipeParsed>();
+  const [numOfPizzas, setNumOfPizzas] = useState(2);
+  const recipe = userRecipe || defaultRecipes[0];
 
-  const { weight_per_pizza, number_of_pizzas } = defaultPizzaSettings;
-  const [userRecipe, setUserRecipe] = useState({
-    name: defaultPizzaName,
-    settings: defaultPizzaSettings,
-    ingredients: getRecipeIngredients(
-      weight_per_pizza * number_of_pizzas,
-      defaultPizzaIngredients,
-    ),
-  });
+  const ingredientQuantities = getRecipeIngredientQuantities(
+    numOfPizzas * recipe.doughballWeight,
+    recipe.ingredientRatios,
+  );
 
-  function onSubmit(data: CalculatorFormData) {
-    const { weight_per_pizza, number_of_pizzas, hydration } = data.settings;
-    const totalDoughWeight = weight_per_pizza * number_of_pizzas;
+  function onSubmit(formData: CalculatorFormData) {
+    const {
+      settings: { number_of_pizzas, hydration },
+    } = formData;
 
-    const selectedPizza = pizzaData.find((pizza) => pizza.name === data.name);
+    const updatedIngredientRatios = {
+      ...recipe.ingredientRatios,
+      water: hydration / 100,
+    };
 
-    if (selectedPizza) {
-      const ingredients = getRecipeIngredients(totalDoughWeight, {
-        ...selectedPizza.ingredients,
-        water: hydration / 100,
-      });
-
-      setUserRecipe({
-        name: data.name,
-        settings: data.settings,
-        ingredients,
-      });
-    }
+    setNumOfPizzas(number_of_pizzas);
+    setUserRecipe({
+      ...recipe,
+      ingredientRatios: updatedIngredientRatios,
+    });
   }
 
   function onSelectChange(
-    name: string,
-    setValue: UseFormSetValue<CalculatorFormData>,
+    recipeName: string,
+    resetForm: UseFormReset<CalculatorFormData>,
   ) {
-    const selectedPizza = pizzaData.find((pizza) => pizza.name === name);
-    if (selectedPizza) {
-      const { number_of_pizzas, weight_per_pizza } = selectedPizza.settings;
-      setValue("name", selectedPizza.name);
-      setValue("settings", selectedPizza.settings);
-      setUserRecipe({
-        name: selectedPizza.name,
-        settings: selectedPizza.settings,
-        ingredients: getRecipeIngredients(
-          number_of_pizzas * weight_per_pizza,
-          selectedPizza.ingredients,
-        ),
+    const selectedRecipe = defaultRecipes.find(
+      (recipe) => recipe.name === recipeName,
+    );
+    if (selectedRecipe) {
+      setUserRecipe(selectedRecipe);
+      resetForm({
+        name: selectedRecipe.name,
+        settings: {
+          number_of_pizzas: numOfPizzas,
+          weight_per_pizza: selectedRecipe.doughballWeight,
+          hydration: selectedRecipe.ingredientRatios.water * 100,
+        },
       });
     }
   }
@@ -80,31 +70,35 @@ export default function Calculator({ pizzaData }: CalculatorProps) {
           </TabsList>
           <TabsContent value="basicSettings">
             <DefaultRecipesForm
-              pizzaRecipes={pizzaData}
+              pizzaRecipes={defaultRecipes}
               defaultValues={{
-                name: defaultPizzaName,
-                settings: defaultPizzaSettings,
+                name: recipe.name,
+                settings: {
+                  number_of_pizzas: numOfPizzas,
+                  weight_per_pizza: recipe.doughballWeight,
+                  hydration: recipe.ingredientRatios.water * 100,
+                },
               }}
               handleSubmit={onSubmit}
               handleSelectChange={onSelectChange}
             />
           </TabsContent>
-          <TabsContent value="advancedSettings">
-            <CustomRecipeForm
-              defaultValues={{
-                name: defaultPizzaName,
-                settings: defaultPizzaSettings,
-              }}
-              handleSubmit={onSubmit}
-            />
-          </TabsContent>
+          {/* <TabsContent value="advancedSettings"> */}
+          {/*   <CustomRecipeForm */}
+          {/*     defaultValues={{ */}
+          {/*       name: defaultPizzaName, */}
+          {/*       settings: defaultPizzaSettings, */}
+          {/*     }} */}
+          {/*     handleSubmit={onSubmit} */}
+          {/*   /> */}
+          {/* </TabsContent> */}
         </Tabs>
         <div className="w-full rounded-xl border bg-card p-8 text-card-foreground shadow">
           <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
-            {userRecipe.name}
+            {recipe.name}
           </h2>
           <p className="mt-7 max-w-3xl text-lg text-slate-600">Ingredients:</p>
-          <IngredientList ingredients={userRecipe.ingredients} />
+          <IngredientList ingredients={ingredientQuantities} />
         </div>
       </div>
     </section>

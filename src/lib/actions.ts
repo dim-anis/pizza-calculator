@@ -21,14 +21,14 @@ const CreateFolder = FolderSchema.omit({
   userId: true,
 });
 
-export async function createFolder(data: z.infer<typeof CreateFolder>) {
+export async function createFolder(folderData: z.infer<typeof CreateFolder>) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const zodResult = CreateFolder.safeParse(data);
+  const zodResult = CreateFolder.safeParse(folderData);
 
   if (!zodResult.success) {
     const { error } = zodResult;
@@ -64,7 +64,7 @@ const UpdateFolderWithOldName = UpdateFolder.extend({
 });
 
 export async function updateFolder(
-  data: z.infer<typeof UpdateFolderWithOldName>,
+  folderData: z.infer<typeof UpdateFolderWithOldName>,
 ) {
   const user = await getCurrentUser();
 
@@ -72,7 +72,7 @@ export async function updateFolder(
     return;
   }
 
-  const zodResult = UpdateFolderWithOldName.safeParse(data);
+  const zodResult = UpdateFolderWithOldName.safeParse(folderData);
 
   if (!zodResult.success) {
     const { error } = zodResult;
@@ -105,14 +105,14 @@ export async function updateFolder(
 const DeleteFolder = FolderSchema.pick({
   name: true,
 });
-export async function deleteFolder(data: z.infer<typeof DeleteFolder>) {
+export async function deleteFolder(folderData: z.infer<typeof DeleteFolder>) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const zodResult = DeleteFolder.safeParse(data);
+  const zodResult = DeleteFolder.safeParse(folderData);
 
   if (!zodResult.success) {
     const { error } = zodResult;
@@ -149,4 +149,14 @@ export async function deleteRecipe(folderName: string, recipeId: string) {
 
   revalidatePath("/myrecipes");
   redirect(`/myrecipes/${folderName}`);
+}
+
+export async function createRecipe() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const savedRecipe = await prisma.recipe.create({});
 }

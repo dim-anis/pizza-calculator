@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
-import { defaultPizzaRecipes } from "../public/recipes";
+import { defaultPizzaRecipes, customRecipes } from "../public/recipes";
+import { warn } from "console";
 
 const folderNames = [
   "All",
@@ -16,13 +17,13 @@ function getRandomArbitrary(min: number, max: number) {
 }
 
 async function main() {
-  await prisma.folder.deleteMany();
   await prisma.recipe.deleteMany();
-
+  await prisma.folder.deleteMany();
   const user = await prisma.user.findFirst();
 
   if (!user) return;
 
+  console.log("Creating folders...");
   for (const folderName of folderNames) {
     await prisma.folder.create({
       data: {
@@ -32,30 +33,38 @@ async function main() {
     });
   }
 
+  console.log("Creating default recipes...");
   for (const recipe of defaultPizzaRecipes) {
+    const randomNum = getRandomArbitrary(1, defaultPizzaRecipes.length - 1);
+    await prisma.recipe.create({
+      data: {
+        userId: null,
+        name: recipe.name,
+        doughballWeight: recipe.settings.weight_per_pizza,
+        flourRatio: recipe.ingredients.flour,
+        waterRatio: recipe.ingredients.water,
+        saltRatio: recipe.ingredients.salt,
+        yeastRatio: recipe.ingredients.yeast,
+        oilRatio: recipe.ingredients.oil,
+      },
+    });
+  }
+
+  console.log("Creating custom recipes...");
+  for (const recipe of customRecipes) {
     const randomNum = getRandomArbitrary(1, defaultPizzaRecipes.length - 1);
     await prisma.recipe.create({
       data: {
         userId: user.id,
         name: recipe.name,
+        doughballWeight: recipe.settings.weight_per_pizza,
+        flourRatio: recipe.ingredients.flour,
+        waterRatio: recipe.ingredients.water,
+        saltRatio: recipe.ingredients.salt,
+        yeastRatio: recipe.ingredients.yeast,
+        oilRatio: recipe.ingredients.oil,
         folders: {
-          connect: [
-            { userId: user.id, name: "All" },
-            { userId: user.id, name: folderNames[randomNum] },
-          ],
-        },
-        ingredients: {
-          create: Object.entries(recipe.ingredients).map(
-            ([name, proportion]) => ({
-              ingredient: {
-                connectOrCreate: {
-                  where: { name },
-                  create: { name },
-                },
-              },
-              proportion,
-            }),
-          ),
+          connect: [{ name: "All" }, { name: folderNames[randomNum] }],
         },
       },
     });

@@ -19,19 +19,38 @@ export default function UserDropdown() {
   if (session) {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage src={session.user?.image || undefined} />
-            <AvatarFallback>AB</AvatarFallback>
-          </Avatar>
+        <DropdownMenuTrigger asChild>
+          <Button variant="link" size="icon">
+            <Avatar>
+              <AvatarImage src={session.user?.image || undefined} />
+              <AvatarFallback>AB</AvatarFallback>
+            </Avatar>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>{session.user?.name}</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            <p className="text-sm font-medium leading-none">
+              {session.user?.name}
+            </p>
+            {session.user?.email && (
+              <p className="text-xs leading-none text-muted-foreground">
+                {session.user?.email}
+              </p>
+            )}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <Link href="/myrecipes/all" legacyBehavior passHref>
-            <DropdownMenuItem>My Recipes</DropdownMenuItem>
-          </Link>
-          <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/myrecipes/all" passHref>
+              My recipes
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              signOut({ callbackUrl: `${window.location.origin}` })
+            }
+          >
+            Log out
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );

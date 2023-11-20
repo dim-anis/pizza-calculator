@@ -1,21 +1,32 @@
-import { PizzaRecipe } from "@/lib/definitions";
-import { RecipeType } from "../page";
+import { RecipeParsed } from "@/lib/definitions";
 
-export function getRecipeIngredients(
+export const validationErrorMessages = {
+  negativeValue: "Value must be greater than 0.",
+  valueExceeds: (val: number) => `Value must be less than ${val}.`,
+};
+
+export function getRecipeIngredientQuantities(
   totalDoughWeight: number,
-  recipeForPizzaStyle: PizzaRecipe["ingredients"],
+  ingredientRatios: RecipeParsed["ingredientRatios"],
 ) {
-  const ingredientAmounts: Record<string, number> = {};
-
-  const totalPercentage = Object.values(recipeForPizzaStyle).reduce(
-    (total, percentage) => total + percentage,
+  const ingredientAmounts = {
+    flour: 0,
+    water: 0,
+    salt: 0,
+    yeast: 0,
+    sugar: 0,
+    oil: 0,
+  };
+  const totalPercentage = Object.values(ingredientRatios).reduce(
+    (total, ratio) => total + ratio,
     0,
   );
 
-  for (const ingredient in recipeForPizzaStyle) {
+  for (const ingredient of Object.keys(ingredientRatios) as Array<
+    keyof RecipeParsed["ingredientRatios"]
+  >) {
     const amount =
-      (totalDoughWeight * recipeForPizzaStyle[ingredient as keyof RecipeType]) /
-      totalPercentage;
+      (totalDoughWeight * ingredientRatios[ingredient]) / totalPercentage;
     ingredientAmounts[ingredient] =
       amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
   }

@@ -15,16 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { capitalize, snakeCaseToSpaces } from "./_utils/helpers";
+import {
+  capitalize,
+  snakeCaseToSpaces,
+  validationErrorMessages,
+} from "./_utils/helpers";
 import { z } from "zod";
-import { PizzaRecipe } from "@/lib/definitions";
-import { UseFormSetValue, useForm } from "react-hook-form";
+import { RecipeParsed } from "@/lib/definitions";
+import { UseFormReset, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-const errors = {
-  negativeValue: "Value must be greater than 0.",
-  valueExceeds: (val: number) => `Value must be less than ${val}.`,
-};
 
 const MAX_INPUT_VALUE = 99999;
 
@@ -32,26 +31,26 @@ const CalculatorSettingsSchema = z.object({
   number_of_pizzas: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue,
+      message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
-      message: errors.valueExceeds(MAX_INPUT_VALUE),
+      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     }),
   weight_per_pizza: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue,
+      message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
-      message: errors.valueExceeds(MAX_INPUT_VALUE),
+      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     }),
   hydration: z.coerce
     .number()
     .gt(0, {
-      message: errors.negativeValue,
+      message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
-      message: errors.valueExceeds(MAX_INPUT_VALUE),
+      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     })
     .default(0),
 });
@@ -64,12 +63,12 @@ const CalculatorSchema = z.object({
 export type CalculatorFormData = z.infer<typeof CalculatorSchema>;
 
 type CalculatorFormProps = {
-  pizzaRecipes: PizzaRecipe[];
+  pizzaRecipes: RecipeParsed[];
   defaultValues: CalculatorFormData;
   handleSubmit: (data: CalculatorFormData) => void;
   handleSelectChange: (
     name: string,
-    setValue: UseFormSetValue<CalculatorFormData>,
+    setValue: UseFormReset<CalculatorFormData>,
   ) => void;
 };
 
@@ -103,9 +102,7 @@ export default function DefaultRecipesForm({
                 <FormLabel>Pizza style</FormLabel>
                 <Select
                   onValueChange={(value) =>
-                    field.onChange(() =>
-                      handleSelectChange(value, form.setValue),
-                    )
+                    field.onChange(handleSelectChange(value, form.reset))
                   }
                   value={field.value}
                 >

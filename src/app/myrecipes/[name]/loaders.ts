@@ -2,6 +2,29 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { Folder } from "@prisma/client";
 
+export async function getAllFolders() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("You're not authorized!");
+  }
+
+  const folders = await prisma.folder.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: {
+      ["createdAt"]: "desc",
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return folders.filter((folder) => folder.name !== "All");
+}
+
 export async function getRecipesGroupedByFolder() {
   const user = await getCurrentUser();
 
@@ -20,6 +43,42 @@ export async function getRecipesGroupedByFolder() {
       recipes: true,
     },
   });
+}
+
+export async function getDefaultRecipes() {
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      userId: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      doughballWeight: true,
+      flourRatio: true,
+      waterRatio: true,
+      saltRatio: true,
+      yeastRatio: true,
+      oilRatio: true,
+      sugarRatio: true,
+    },
+    orderBy: {
+      ["createdAt"]: "desc",
+    },
+  });
+
+  return recipes.map((recipe) => ({
+    id: recipe.id,
+    name: recipe.name,
+    doughballWeight: recipe.doughballWeight,
+    ingredientRatios: {
+      flour: Number(recipe.flourRatio),
+      water: Number(recipe.waterRatio),
+      salt: Number(recipe.saltRatio),
+      yeast: Number(recipe.yeastRatio),
+      oil: Number(recipe.oilRatio),
+      sugar: Number(recipe.sugarRatio),
+    },
+  }));
 }
 
 export async function getAllRecipes() {
@@ -72,22 +131,18 @@ export async function getRecipeById(recipeId: string) {
     select: {
       id: true,
       name: true,
+      doughballWeight: true,
+      flourRatio: true,
+      waterRatio: true,
+      saltRatio: true,
+      oilRatio: true,
+      sugarRatio: true,
+      yeastRatio: true,
       folders: {
         select: {
           id: true,
           name: true,
           createdAt: true,
-        },
-      },
-      ingredients: {
-        select: {
-          proportion: true,
-          ingredient: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
         },
       },
     },
@@ -97,14 +152,19 @@ export async function getRecipeById(recipeId: string) {
     throw new Error("Failed to fetch the recipe!");
   }
 
-  const ingredients = recipe.ingredients.map((item) => ({
-    name: item.ingredient.name,
-    proportion: Number(item.proportion),
-  }));
-
   return {
-    ...recipe,
-    ingredients,
+    id: recipe.id,
+    name: recipe.name,
+    doughballWeight: recipe.doughballWeight,
+    folders: recipe.folders,
+    ingredientRatios: {
+      flour: Number(recipe.flourRatio),
+      water: Number(recipe.waterRatio),
+      salt: Number(recipe.saltRatio),
+      yeast: Number(recipe.yeastRatio),
+      oil: Number(recipe.oilRatio),
+      sugar: Number(recipe.sugarRatio),
+    },
   };
 }
 
