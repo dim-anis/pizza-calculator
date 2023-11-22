@@ -22,7 +22,7 @@ export default async function RecipePage({
       <Toolbar />
       <div className="h-full w-full space-y-8">
         <div className="flex flex-col space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight text-primary lg:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
             {recipe?.name}
           </h2>
           <div className="flex space-x-2">
@@ -42,17 +42,13 @@ export default async function RecipePage({
         </div>
         <div className="space-y-4">
           <div className="flex w-full flex-col space-y-2">
-            <h3 className="font-semibold text-primary lg:text-lg">
-              Ingredients:
-            </h3>
+            <h3 className="font-semibold lg:text-lg">Ingredients:</h3>
             <IngredientList ingredients={ingredientQuantities} />
           </div>
           <div className="space-y-2">
             {recipe.notes ? (
               <>
-                <h3 className="font-semibold text-primary lg:text-lg">
-                  Notes:
-                </h3>
+                <h3 className="font-semibold lg:text-lg">Notes:</h3>
                 <p>Some notes about the recipe.</p>
               </>
             ) : (

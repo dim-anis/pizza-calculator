@@ -6,7 +6,7 @@ export default async function CreateRecipePage() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold tracking-tight text-primary lg:text-3xl">
+      <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
         Create a recipe
       </h2>
       <CreateRecipeForm folders={folders} />

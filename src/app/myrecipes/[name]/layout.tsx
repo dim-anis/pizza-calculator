@@ -9,9 +9,7 @@ export default function MyRecipesLayout({
   return (
     <div className="container flex-1">
       <div className="mt-5 space-y-0.5 border-b pb-5">
-        <h1 className="text-2xl font-bold tracking-tight text-primary">
-          My recipes
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight">My recipes</h1>
         <p className="text-muted-foreground">
           Create recipes and organize them in folders.
         </p>

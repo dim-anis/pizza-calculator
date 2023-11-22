@@ -16,7 +16,7 @@ export default function RecipeItem({
         }
       >
         <div>
-          <h3 className="text-base text-primary">{recipe.name}</h3>
+          <h3 className="text-base">{recipe.name}</h3>
           <p className="truncate text-sm text-muted-foreground">
             {new Date(recipe.createdAt).toLocaleDateString()}
           </p>

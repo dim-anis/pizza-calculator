@@ -22,9 +22,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} min-h-screen bg-white text-slate-500 antialiased`}
-      >
+      <body className={`${inter.className} min-h-screen bg-white antialiased`}>
         <SessionProvider session={session}>
           <div className="flex min-h-screen flex-col">
             <header className="supports-backdrop-blur:bg-background/60 top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
