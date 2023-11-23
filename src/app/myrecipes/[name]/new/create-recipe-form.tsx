@@ -256,13 +256,21 @@ export default function CreateRecipeForm({
                               <Checkbox
                                 checked={field.value?.includes(item.id)}
                                 onCheckedChange={(checked) => {
-                                  return checked
-                                    ? field.onChange([...field.value, item.id])
-                                    : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== item.id,
-                                        ),
-                                      );
+                                  if (checked) {
+                                    return field.onChange([
+                                      ...field.value,
+                                      item.id,
+                                    ]);
+                                  } else {
+                                    form.resetField(
+                                      `optionalIngredients.${item.id}`,
+                                    );
+                                    return field.onChange(
+                                      field.value?.filter(
+                                        (value) => value !== item.id,
+                                      ),
+                                    );
+                                  }
                                 }}
                               />
                             </FormControl>
