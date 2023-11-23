@@ -50,43 +50,39 @@ const IngredientSchema = z.object({
 const OptionalIngredientSchema = z.object({
   saltAmount: z.coerce
     .number()
-    .gt(0, {
+    .gte(0, {
       message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     })
-    .default(0)
     .optional(),
   yeastAmount: z.coerce
     .number()
-    .gt(0, {
+    .gte(0, {
       message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     })
-    .default(0)
     .optional(),
   sugarAmount: z.coerce
     .number()
-    .gt(0, {
+    .gte(0, {
       message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     })
-    .default(0)
     .optional(),
   oilAmount: z.coerce
     .number()
-    .gt(0, {
+    .gte(0, {
       message: validationErrorMessages.negativeValue,
     })
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     })
-    .default(0)
     .optional(),
 });
 
@@ -163,6 +159,7 @@ export default function CreateRecipeForm({
   });
 
   const selectedOptions = form.watch("selectedOptionalIngredients");
+  console.log(form.formState.errors);
 
   function handleSubmit(formData: CreateRecipeData) {
     console.log(formData);
