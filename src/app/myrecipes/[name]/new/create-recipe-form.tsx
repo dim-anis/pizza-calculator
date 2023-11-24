@@ -1,6 +1,6 @@
 "use client";
 
-import { validationErrorMessages } from "@/app/_utils/helpers";
+import { ingredientQuantitiesToRatios } from "@/app/_utils/helpers";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -20,81 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-const MAX_INPUT_VALUE = 99999;
-
-const IngredientSchema = z.object({
-  flourAmount: z.coerce
-    .number()
-    .gt(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    }),
-  waterAmount: z.coerce
-    .number()
-    .gt(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    }),
-});
-
-const OptionalIngredientSchema = z.object({
-  saltAmount: z.coerce
-    .number()
-    .gte(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    })
-    .optional(),
-  yeastAmount: z.coerce
-    .number()
-    .gte(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    })
-    .optional(),
-  sugarAmount: z.coerce
-    .number()
-    .gte(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    })
-    .optional(),
-  oilAmount: z.coerce
-    .number()
-    .gte(0, {
-      message: validationErrorMessages.negativeValue,
-    })
-    .lt(MAX_INPUT_VALUE, {
-      message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
-    })
-    .optional(),
-});
-
-const CreateRecipeSchema = z.object({
-  folderName: z.coerce.string().min(1, { message: "Please select a folder." }),
-  recipeName: z.coerce.string().min(1, { message: "Recipe name is required." }),
-  ingredients: IngredientSchema,
-  optionalIngredients: OptionalIngredientSchema,
-  selectedOptionalIngredients: z.array(z.string()),
-});
-
-export type CreateRecipeData = z.infer<typeof CreateRecipeSchema>;
+import { CreateRecipeData, CreateRecipeSchema } from "./definitions";
 
 type Params = {
   name: string;
