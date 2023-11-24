@@ -1,4 +1,5 @@
 import { RecipeParsed } from "@/lib/definitions";
+import { CreateRecipeData } from "../myrecipes/[name]/new/create-recipe-form";
 
 export const validationErrorMessages = {
   negativeValue: "Value must be greater than 0.",
@@ -32,6 +33,38 @@ export function ingredientRatiosToQuantities(
   }
 
   return ingredientAmounts;
+}
+
+type DoughIngredients = CreateRecipeData["ingredients"] &
+  CreateRecipeData["optionalIngredients"];
+
+function calculateBakersPercentage(
+  ingredientAmount: number,
+  flourAmount: number,
+) {
+  return ingredientAmount / flourAmount;
+}
+export function ingredientQuantitiesToRatios(
+  doughballWeight: number,
+  {
+    flourAmount,
+    waterAmount,
+    saltAmount,
+    yeastAmount,
+    sugarAmount,
+    oilAmount,
+  }: DoughIngredients,
+) {
+  const ratios = {
+    flourRatio: calculateBakersPercentage(flourAmount, flourAmount),
+    waterRatio: calculateBakersPercentage(waterAmount, flourAmount),
+    saltRatio: calculateBakersPercentage(saltAmount ?? 0, flourAmount),
+    yeastRatio: calculateBakersPercentage(yeastAmount ?? 0, flourAmount),
+    sugarRatio: calculateBakersPercentage(sugarAmount ?? 0, flourAmount),
+    oilRatio: calculateBakersPercentage(oilAmount ?? 0, flourAmount),
+  };
+
+  return ratios;
 }
 
 export function snakeCaseToSpaces(str: string) {
