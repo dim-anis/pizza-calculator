@@ -5,7 +5,7 @@ export const validationErrorMessages = {
   valueExceeds: (val: number) => `Value must be less than ${val}.`,
 };
 
-export function getRecipeIngredientQuantities(
+export function ingredientRatiosToQuantities(
   totalDoughWeight: number,
   ingredientRatios: RecipeParsed["ingredientRatios"],
 ) {

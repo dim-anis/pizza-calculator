@@ -4,7 +4,7 @@ import { Toolbar } from "../_components/toolbar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Folder } from "lucide-react";
 import Link from "next/link";
-import { getRecipeIngredientQuantities } from "@/app/_utils/helpers";
+import { ingredientRatiosToQuantities } from "@/app/_utils/helpers";
 
 export default async function RecipePage({
   params,
@@ -12,7 +12,7 @@ export default async function RecipePage({
   params: { name: string; id: string };
 }) {
   const recipe = await getRecipeById(params.id);
-  const ingredientQuantities = getRecipeIngredientQuantities(
+  const ingredientQuantities = ingredientRatiosToQuantities(
     250,
     recipe.ingredientRatios,
   );
