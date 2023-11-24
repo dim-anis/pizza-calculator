@@ -87,8 +87,8 @@ const OptionalIngredientSchema = z.object({
 });
 
 const CreateRecipeSchema = z.object({
-  folderName: z.coerce.string(),
-  recipeName: z.coerce.string().min(1, { message: "Name is too short." }),
+  folderName: z.coerce.string().min(1, { message: "Please select a folder." }),
+  recipeName: z.coerce.string().min(1, { message: "Recipe name is required." }),
   ingredients: IngredientSchema,
   optionalIngredients: OptionalIngredientSchema,
   selectedOptionalIngredients: z.array(z.string()),
