@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { Folder } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export async function getAllFolders() {
   const user = await getCurrentUser();
@@ -22,7 +22,11 @@ export async function getAllFolders() {
     },
   });
 
-  return folders.filter((folder) => folder.name !== "All");
+  return folders.sort((a, b) => {
+    if (a.name === "All") return -1; // "All" comes first
+    if (b.name === "All") return 1; // "All" comes first
+    return 0;
+  });
 }
 
 export async function getRecipesGroupedByFolder() {
@@ -168,13 +172,14 @@ export async function getRecipeById(recipeId: string) {
   };
 }
 
-type FolderWithIdNameRecipeCount = Omit<
-  Folder,
-  "userId" | "createdAt" | "updatedAt"
-> & { _count: { recipes: number } };
+const foldersWithCount = Prisma.validator<Prisma.FolderDefaultArgs>()({
+  select: { id: true, name: true, _count: { select: { recipes: true } } },
+});
+
+type FolderWithCount = Prisma.FolderGetPayload<typeof foldersWithCount>;
 
 export async function getFolderNamesWithRecipeCount(): Promise<
-  FolderWithIdNameRecipeCount[]
+  FolderWithCount[]
 > {
   const user = await getCurrentUser();
 
@@ -200,11 +205,9 @@ export async function getFolderNamesWithRecipeCount(): Promise<
     },
   });
 
-  const sortedFolders = [...folders].sort((a, b) => {
+  return folders.sort((a, b) => {
     if (a.name === "All") return -1; // "All" comes first
     if (b.name === "All") return 1; // "All" comes first
-    return a.name.localeCompare(b.name); // Sort the rest alphabetically
+    return 0;
   });
-
-  return sortedFolders;
 }
