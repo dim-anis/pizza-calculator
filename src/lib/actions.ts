@@ -5,6 +5,11 @@ import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { ingredientQuantitiesToRatios } from "@/app/_utils/helpers";
+import {
+  CreateRecipeData,
+  CreateRecipeSchema,
+} from "@/app/myrecipes/[name]/new/definitions";
 
 const FolderSchema = z.object({
   id: z.string(),
@@ -151,12 +156,53 @@ export async function deleteRecipe(folderName: string, recipeId: string) {
   redirect(`/myrecipes/${folderName}`);
 }
 
-export async function createRecipe() {
+export async function createRecipe(data: CreateRecipeData) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const savedRecipe = await prisma.recipe.create({});
+  const zodResult = CreateRecipeSchema.safeParse(data);
+
+  if (!zodResult.success) {
+    const { error } = zodResult;
+    return { success: false, error: error.format() };
+  }
+
+  const {
+    data: {
+      recipeName,
+      folderName,
+      doughballWeight,
+      ingredients,
+      optionalIngredients,
+    },
+  } = zodResult;
+
+  const folders = ["All"];
+  if (folderName !== "All") {
+    folders.push(folderName);
+  }
+
+  const ratios = ingredientQuantitiesToRatios(doughballWeight, {
+    ...ingredients,
+    ...optionalIngredients,
+  });
+
+  try {
+    const savedRecipe = await prisma.recipe.create({
+      data: {
+        userId: user.id,
+        name: recipeName,
+        folders: {
+          connect: [...folders.map((folder) => ({ name: folder }))],
+        },
+        doughballWeight,
+        ...ratios,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }

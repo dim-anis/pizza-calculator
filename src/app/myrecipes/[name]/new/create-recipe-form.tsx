@@ -75,6 +75,7 @@ export default function CreateRecipeForm({
     defaultValues: {
       recipeName: "",
       folderName: "",
+      doughballWeight: 0,
       ingredients: {
         flourAmount: 0,
         waterAmount: 0,
@@ -90,10 +91,30 @@ export default function CreateRecipeForm({
   });
 
   const selectedOptions = form.watch("selectedOptionalIngredients");
-  console.log(form.formState.errors);
 
-  function handleSubmit(formData: CreateRecipeData) {
-    console.log(formData);
+  async function handleSubmit(formData: CreateRecipeData) {
+    const {
+      recipeName,
+      ingredients,
+      optionalIngredients,
+      folderName,
+      doughballWeight,
+      selectedOptionalIngredients,
+    } = formData;
+
+    const ratios = ingredientQuantitiesToRatios(doughballWeight, {
+      ...ingredients,
+      ...optionalIngredients,
+    });
+
+    await createRecipe({
+      recipeName,
+      folderName,
+      doughballWeight,
+      ingredients,
+      optionalIngredients,
+      selectedOptionalIngredients,
+    });
   }
 
   return (
@@ -112,7 +133,7 @@ export default function CreateRecipeForm({
           name="recipeName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Recipe title</FormLabel>
+              <FormLabel>Recipe name</FormLabel>
               <FormControl>
                 <Input
                   type="text"
@@ -134,7 +155,7 @@ export default function CreateRecipeForm({
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a folder to save your recipe in" />
+                    <SelectValue placeholder="Select a folder" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -147,6 +168,27 @@ export default function CreateRecipeForm({
                   })}
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="doughballWeight"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Doughball weight</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={"Enter the size of a doughball (in grams)"}
+                  {...field}
+                  onChange={(e) =>
+                    field.onChange(e.target.value.replace(/[^0-9]/, ""))
+                  }
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -268,7 +310,7 @@ export default function CreateRecipeForm({
               ))}
           </div>
         </div>
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-4">
           <Link
             href={`/myrecipes/${folderName}`}
             className={`${buttonVariants({ variant: "secondary" })}`}
