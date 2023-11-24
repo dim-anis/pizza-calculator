@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import IngredientList from "./IngredientList";
-import { getRecipeIngredientQuantities } from "./_utils/helpers";
+import { ingredientRatiosToQuantities } from "./_utils/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
 // import CustomRecipeForm from "./CustomRecipeForm";
@@ -15,17 +15,20 @@ type CalculatorProps = {
 
 export default function Calculator({ defaultRecipes }: CalculatorProps) {
   const [userRecipe, setUserRecipe] = useState<RecipeParsed>();
-  const [numOfPizzas, setNumOfPizzas] = useState(2);
+  const [numOfDoughballs, setNumOfDoughballs] = useState(2);
   const recipe = userRecipe || defaultRecipes[0];
 
-  const ingredientQuantities = getRecipeIngredientQuantities(
-    numOfPizzas * recipe.doughballWeight,
+  const ingredientQuantities = ingredientRatiosToQuantities(
+    numOfDoughballs * recipe.doughballWeight,
     recipe.ingredientRatios,
   );
 
   function onSubmit(formData: CalculatorFormData) {
     const {
-      settings: { number_of_pizzas, hydration },
+      settings: {
+        numOfDoughballs: number_of_pizzas,
+        doughHydration: hydration,
+      },
     } = formData;
 
     const updatedIngredientRatios = {
@@ -33,7 +36,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
       water: hydration / 100,
     };
 
-    setNumOfPizzas(number_of_pizzas);
+    setNumOfDoughballs(number_of_pizzas);
     setUserRecipe({
       ...recipe,
       ingredientRatios: updatedIngredientRatios,
@@ -52,9 +55,9 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
       resetForm({
         name: selectedRecipe.name,
         settings: {
-          number_of_pizzas: numOfPizzas,
-          weight_per_pizza: selectedRecipe.doughballWeight,
-          hydration: selectedRecipe.ingredientRatios.water * 100,
+          numOfDoughballs: numOfDoughballs,
+          doughballWeight: selectedRecipe.doughballWeight,
+          doughHydration: selectedRecipe.ingredientRatios.water * 100,
         },
       });
     }
@@ -74,9 +77,9 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
               defaultValues={{
                 name: recipe.name,
                 settings: {
-                  number_of_pizzas: numOfPizzas,
-                  weight_per_pizza: recipe.doughballWeight,
-                  hydration: recipe.ingredientRatios.water * 100,
+                  numOfDoughballs: numOfDoughballs,
+                  doughballWeight: recipe.doughballWeight,
+                  doughHydration: recipe.ingredientRatios.water * 100,
                 },
               }}
               handleSubmit={onSubmit}

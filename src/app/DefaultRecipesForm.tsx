@@ -15,11 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  capitalize,
-  snakeCaseToSpaces,
-  validationErrorMessages,
-} from "./_utils/helpers";
+import { validationErrorMessages } from "./_utils/helpers";
 import { z } from "zod";
 import { RecipeParsed } from "@/lib/definitions";
 import { UseFormReset, useForm } from "react-hook-form";
@@ -27,8 +23,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 const MAX_INPUT_VALUE = 99999;
 
+const recipeSettings = [
+  {
+    id: "numOfDoughballs",
+    label: "Number of doughballs",
+  },
+  {
+    id: "doughballWeight",
+    label: "Doughball weight",
+  },
+  {
+    id: "doughHydration",
+    label: "Hydration level",
+  },
+] as const;
+
 const CalculatorSettingsSchema = z.object({
-  number_of_pizzas: z.coerce
+  numOfDoughballs: z.coerce
     .number()
     .gt(0, {
       message: validationErrorMessages.negativeValue,
@@ -36,7 +47,7 @@ const CalculatorSettingsSchema = z.object({
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     }),
-  weight_per_pizza: z.coerce
+  doughballWeight: z.coerce
     .number()
     .gt(0, {
       message: validationErrorMessages.negativeValue,
@@ -44,7 +55,7 @@ const CalculatorSettingsSchema = z.object({
     .lt(MAX_INPUT_VALUE, {
       message: validationErrorMessages.valueExceeds(MAX_INPUT_VALUE),
     }),
-  hydration: z.coerce
+  doughHydration: z.coerce
     .number()
     .gt(0, {
       message: validationErrorMessages.negativeValue,
@@ -83,10 +94,6 @@ export default function DefaultRecipesForm({
     resolver: zodResolver(CalculatorSchema),
     defaultValues,
   });
-
-  const settings = Object.keys(defaultValues.settings) as Array<
-    keyof typeof defaultValues.settings
-  >;
   return (
     <Form {...form}>
       <form
@@ -125,26 +132,19 @@ export default function DefaultRecipesForm({
               </FormItem>
             )}
           />
-          {settings.map((settingString) => (
+          {recipeSettings.map((setting) => (
             <FormField
-              key={settingString}
+              key={setting.id}
               control={form.control}
-              name={`settings.${settingString}`}
+              name={`settings.${setting.id}`}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    {snakeCaseToSpaces(settingString)
-                      .split(" ")
-                      .map((word, index) =>
-                        index === 0 ? capitalize(word) : word,
-                      )
-                      .join(" ")}
-                  </FormLabel>
+                  <FormLabel>{setting.label}</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
                       inputMode="numeric"
-                      placeholder={`Select ${snakeCaseToSpaces(settingString)}`}
+                      placeholder={`Select ${setting.label.toLowerCase()}`}
                       {...field}
                       onChange={(e) =>
                         field.onChange(e.target.value.replace(/[^0-9]/, ""))
