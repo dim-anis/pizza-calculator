@@ -199,4 +199,7 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
   } catch (e) {
     console.log(e);
   }
+
+  revalidatePath("/myrecipes");
+  redirect(`/myrecipes/${folderName}`);
 }
