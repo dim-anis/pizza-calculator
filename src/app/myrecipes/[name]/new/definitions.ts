@@ -63,7 +63,7 @@ const OptionalIngredientSchema = z.object({
 
 export const CreateRecipeSchema = z.object({
   recipeName: z.coerce.string().min(1, { message: "Recipe name is required." }),
-  doughballWeight: z.coerce
+  numOfDoughballs: z.coerce
     .number()
     .gt(0, {
       message: validationErrorMessages.negativeValue,

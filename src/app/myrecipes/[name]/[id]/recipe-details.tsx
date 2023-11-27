@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getArrayFromOneTo } from "@/app/_utils/helpers";
 
 export default function RecipeDetails({ recipe }: { recipe: RecipeParsed }) {
   const [numOfDoughballs, setNumOfDoughballs] = useState(1);
@@ -37,9 +38,9 @@ export default function RecipeDetails({ recipe }: { recipe: RecipeParsed }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup className="max-h-40">
-                  {Array.from(Array(16).keys()).map((num) => (
-                    <SelectItem value={`${num + 1}`} key={num}>
-                      <span className="pr-1">{num + 1}</span>
+                  {getArrayFromOneTo(16).map((num) => (
+                    <SelectItem value={`${num}`} key={num}>
+                      <span className="pr-1">{num}</span>
                     </SelectItem>
                   ))}
                 </SelectGroup>

@@ -5,7 +5,10 @@ import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 import { z } from "zod";
 import { redirect } from "next/navigation";
-import { ingredientQuantitiesToRatios } from "@/app/_utils/helpers";
+import {
+  getTotalDougWeight,
+  ingredientQuantitiesToRatios,
+} from "@/app/_utils/helpers";
 import {
   CreateRecipeData,
   CreateRecipeSchema,
@@ -171,7 +174,7 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
   }
 
   const {
-    data: { recipeName, doughballWeight, ingredients, optionalIngredients },
+    data: { recipeName, numOfDoughballs, ingredients, optionalIngredients },
   } = zodResult;
 
   const folders = ["All"];
@@ -179,10 +182,12 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
     folders.push(folderName);
   }
 
-  const ratios = ingredientQuantitiesToRatios(doughballWeight, {
+  const allIngredients = {
     ...ingredients,
     ...optionalIngredients,
-  });
+  };
+  const ratios = ingredientQuantitiesToRatios(allIngredients);
+  const doughballWeight = getTotalDougWeight(allIngredients) / numOfDoughballs;
 
   try {
     const savedRecipe = await prisma.recipe.create({

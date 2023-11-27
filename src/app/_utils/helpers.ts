@@ -1,5 +1,5 @@
 import { RecipeParsed } from "@/lib/definitions";
-import { CreateRecipeData } from "../myrecipes/[name]/new/create-recipe-form";
+import { CreateRecipeData } from "../myrecipes/[name]/new/definitions";
 
 export const validationErrorMessages = {
   negativeValue: "Value must be greater than 0.",
@@ -44,17 +44,14 @@ function calculateBakersPercentage(
 ) {
   return ingredientAmount / flourAmount;
 }
-export function ingredientQuantitiesToRatios(
-  doughballWeight: number,
-  {
-    flourAmount,
-    waterAmount,
-    saltAmount,
-    yeastAmount,
-    sugarAmount,
-    oilAmount,
-  }: DoughIngredients,
-) {
+export function ingredientQuantitiesToRatios({
+  flourAmount,
+  waterAmount,
+  saltAmount,
+  yeastAmount,
+  sugarAmount,
+  oilAmount,
+}: DoughIngredients) {
   const ratios = {
     flourRatio: calculateBakersPercentage(flourAmount, flourAmount),
     waterRatio: calculateBakersPercentage(waterAmount, flourAmount),
@@ -67,8 +64,15 @@ export function ingredientQuantitiesToRatios(
   return ratios;
 }
 
-export function snakeCaseToSpaces(str: string) {
-  return str.replaceAll("_", " ");
+export function getArrayFromOneTo(n: number) {
+  return Array.from(Array(n).keys()).map((n) => n + 1);
+}
+
+export function getTotalDougWeight(ingredients: DoughIngredients) {
+  return Object.values(ingredients).reduce(
+    (totalWeight, currItemWeight) => totalWeight + currItemWeight,
+    0,
+  );
 }
 
 export function capitalize(word: string) {

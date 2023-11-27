@@ -1,6 +1,6 @@
 "use client";
 
-import { ingredientQuantitiesToRatios } from "@/app/_utils/helpers";
+import { getArrayFromOneTo } from "@/app/_utils/helpers";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -19,6 +19,14 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { CreateRecipeData, CreateRecipeSchema } from "./definitions";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Params = {
   name: string;
@@ -63,7 +71,7 @@ export default function CreateRecipeForm() {
     resolver: zodResolver(CreateRecipeSchema),
     defaultValues: {
       recipeName: "",
-      doughballWeight: 0,
+      numOfDoughballs: 1,
       ingredients: {
         flourAmount: 0,
         waterAmount: 0,
@@ -85,18 +93,13 @@ export default function CreateRecipeForm() {
       recipeName,
       ingredients,
       optionalIngredients,
-      doughballWeight,
+      numOfDoughballs,
       selectedOptionalIngredients,
     } = formData;
 
-    const ratios = ingredientQuantitiesToRatios(doughballWeight, {
-      ...ingredients,
-      ...optionalIngredients,
-    });
-
     await createRecipe(folderName, {
       recipeName,
-      doughballWeight,
+      numOfDoughballs,
       ingredients,
       optionalIngredients,
       selectedOptionalIngredients,
@@ -134,21 +137,26 @@ export default function CreateRecipeForm() {
         />
         <FormField
           control={form.control}
-          name="doughballWeight"
+          name="numOfDoughballs"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Doughball weight</FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder={"Enter the size of a doughball (in grams)"}
-                  {...field}
-                  onChange={(e) =>
-                    field.onChange(e.target.value.replace(/[^0-9]/, ""))
-                  }
-                />
-              </FormControl>
+              <FormLabel>Number of dough balls</FormLabel>
+              <Select onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select the number of dough balls" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectGroup className="max-h-40">
+                    {getArrayFromOneTo(16).map((num) => (
+                      <SelectItem value={`${num}`} key={num}>
+                        <span className="pr-1">{num}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
