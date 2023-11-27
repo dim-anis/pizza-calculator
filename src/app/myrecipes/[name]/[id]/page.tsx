@@ -1,10 +1,9 @@
-import IngredientList from "@/app/IngredientList";
 import { getRecipeById } from "../loaders";
 import { Toolbar } from "../_components/toolbar";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Folder } from "lucide-react";
 import Link from "next/link";
-import { ingredientRatiosToQuantities } from "@/app/_utils/helpers";
+import RecipeDetails from "./recipe-details";
 
 export default async function RecipePage({
   params,
@@ -12,15 +11,11 @@ export default async function RecipePage({
   params: { name: string; id: string };
 }) {
   const recipe = await getRecipeById(params.id);
-  const ingredientQuantities = ingredientRatiosToQuantities(
-    250,
-    recipe.ingredientRatios,
-  );
 
   return (
-    <div className="flex h-full flex-col items-start justify-start space-y-5">
+    <div className="flex h-full flex-col items-start justify-start space-y-4">
       <Toolbar />
-      <div className="h-full w-full space-y-8">
+      <div className="h-full w-full space-y-6">
         <div className="flex flex-col space-y-2">
           <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
             {recipe?.name}
@@ -40,22 +35,7 @@ export default async function RecipePage({
             ))}
           </div>
         </div>
-        <div className="space-y-4">
-          <div className="flex w-full flex-col space-y-2">
-            <h3 className="font-semibold lg:text-lg">Ingredients:</h3>
-            <IngredientList ingredients={ingredientQuantities} />
-          </div>
-          <div className="space-y-2">
-            {recipe.notes ? (
-              <>
-                <h3 className="font-semibold lg:text-lg">Notes:</h3>
-                <p>Some notes about the recipe.</p>
-              </>
-            ) : (
-              <Button>Add notes</Button>
-            )}
-          </div>
-        </div>
+        <RecipeDetails recipe={recipe} />
       </div>
     </div>
   );
