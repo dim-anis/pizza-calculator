@@ -94,9 +94,8 @@ export default function CreateRecipeForm() {
       ...optionalIngredients,
     });
 
-    await createRecipe({
+    await createRecipe(folderName, {
       recipeName,
-      folderName,
       doughballWeight,
       ingredients,
       optionalIngredients,

@@ -156,7 +156,7 @@ export async function deleteRecipe(folderName: string, recipeId: string) {
   redirect(`/myrecipes/${folderName}`);
 }
 
-export async function createRecipe(data: CreateRecipeData) {
+export async function createRecipe(folderName: string, data: CreateRecipeData) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -171,13 +171,7 @@ export async function createRecipe(data: CreateRecipeData) {
   }
 
   const {
-    data: {
-      recipeName,
-      folderName,
-      doughballWeight,
-      ingredients,
-      optionalIngredients,
-    },
+    data: { recipeName, doughballWeight, ingredients, optionalIngredients },
   } = zodResult;
 
   const folders = ["All"];
