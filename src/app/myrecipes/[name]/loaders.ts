@@ -115,7 +115,11 @@ export async function getFolderWithRecipes(folderName: string) {
       name: folderName,
     },
     include: {
-      recipes: true,
+      recipes: {
+        orderBy: {
+          ["createdAt"]: "desc",
+        },
+      },
     },
   });
 }
