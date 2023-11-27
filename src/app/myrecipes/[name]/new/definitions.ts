@@ -62,7 +62,6 @@ const OptionalIngredientSchema = z.object({
 });
 
 export const CreateRecipeSchema = z.object({
-  folderName: z.coerce.string().min(1, { message: "Please select a folder." }),
   recipeName: z.coerce.string().min(1, { message: "Recipe name is required." }),
   doughballWeight: z.coerce
     .number()

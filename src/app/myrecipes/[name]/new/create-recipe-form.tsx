@@ -13,13 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { createRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -62,19 +55,14 @@ const optionalIngredients = [
   },
 ] as const;
 
-export default function CreateRecipeForm({
-  folders,
-}: {
-  folders: { id: string; name: string }[];
-}) {
+export default function CreateRecipeForm() {
   const params: Params = useParams();
-  const folderName = params["name"];
+  const folderName = decodeURIComponent(params["name"]);
   const form = useForm<CreateRecipeData>({
     mode: "onChange",
     resolver: zodResolver(CreateRecipeSchema),
     defaultValues: {
       recipeName: "",
-      folderName: "",
       doughballWeight: 0,
       ingredients: {
         flourAmount: 0,
@@ -97,7 +85,6 @@ export default function CreateRecipeForm({
       recipeName,
       ingredients,
       optionalIngredients,
-      folderName,
       doughballWeight,
       selectedOptionalIngredients,
     } = formData;
@@ -142,32 +129,6 @@ export default function CreateRecipeForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="folderName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Choose folder</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a folder" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {folders.map((style) => {
-                    return (
-                      <SelectItem key={style.id} value={style.name}>
-                        {style.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}
