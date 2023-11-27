@@ -18,7 +18,7 @@ export default async function RecipePage({
   );
 
   return (
-    <div className="flex h-full flex-col items-start justify-start space-y-5 text-gray-500">
+    <div className="flex h-full flex-col items-start justify-start space-y-5">
       <Toolbar />
       <div className="h-full w-full space-y-8">
         <div className="flex flex-col space-y-2">
