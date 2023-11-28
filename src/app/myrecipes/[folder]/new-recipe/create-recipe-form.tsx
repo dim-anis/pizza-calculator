@@ -112,11 +112,6 @@ export default function CreateRecipeForm() {
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col justify-around space-y-6 bg-white"
       >
-        <div
-          data-orientation="horizontal"
-          role="none"
-          className="h-[1px] w-full shrink-0 bg-border"
-        ></div>
         <FormField
           control={form.control}
           name="recipeName"
