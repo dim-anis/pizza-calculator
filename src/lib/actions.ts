@@ -12,7 +12,7 @@ import {
 import {
   CreateRecipeData,
   CreateRecipeSchema,
-} from "@/app/myrecipes/[name]/new/definitions";
+} from "@/app/myrecipes/[folder]/new-recipe/definitions";
 
 const FolderSchema = z.object({
   id: z.string(),

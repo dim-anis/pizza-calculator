@@ -1,5 +1,5 @@
 import { RecipeParsed } from "@/lib/definitions";
-import { CreateRecipeData } from "../myrecipes/[name]/new/definitions";
+import { CreateRecipeData } from "../myrecipes/[folder]/new-recipe/definitions";
 
 export const validationErrorMessages = {
   negativeValue: "Value must be greater than 0.",
