@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 
 type Params = {
-  name: string;
+  folder: string;
   id: string;
 };
 
@@ -65,7 +65,7 @@ const optionalIngredients = [
 
 export default function CreateRecipeForm() {
   const params: Params = useParams();
-  const folderName = decodeURIComponent(params["name"]);
+  const folderName = decodeURIComponent(params["folder"]);
   const form = useForm<CreateRecipeData>({
     mode: "onChange",
     resolver: zodResolver(CreateRecipeSchema),
