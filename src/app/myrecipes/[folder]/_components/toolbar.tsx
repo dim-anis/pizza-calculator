@@ -16,7 +16,7 @@ import {
 import { deleteRecipe } from "@/lib/actions";
 
 type Params = {
-  name: string;
+  folder: string;
   id: string;
 };
 
@@ -25,7 +25,7 @@ export function Toolbar() {
   return (
     <div className="flex w-full gap-5">
       <Link
-        href={`/myrecipes/${params.name}`}
+        href={`/myrecipes/${params.folder}`}
         className={buttonVariants({
           variant: "ghost",
           size: "icon",
@@ -35,7 +35,7 @@ export function Toolbar() {
       </Link>
       <div className="flex">
         <Link
-          href={`/myrecipes/${params.name}/new`}
+          href={`/myrecipes/${params.folder}/new`}
           className={buttonVariants({ variant: "ghost", size: "icon" })}
         >
           <PenSquare className="h-5 w-5" />
@@ -59,7 +59,7 @@ export function Toolbar() {
                 className="inline-flex"
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  await deleteRecipe(params.name, params.id);
+                  await deleteRecipe(params.folder, params.id);
                 }}
               >
                 <Button type="submit" variant="destructive">
