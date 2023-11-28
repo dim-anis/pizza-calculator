@@ -13,6 +13,10 @@ import {
   CreateRecipeData,
   CreateRecipeSchema,
 } from "@/app/myrecipes/[folder]/new-recipe/definitions";
+import {
+  CreateFolder,
+  CreateFolderSchema,
+} from "@/app/myrecipes/new-folder/definitions";
 
 const FolderSchema = z.object({
   id: z.string(),
@@ -22,21 +26,14 @@ const FolderSchema = z.object({
   userId: z.string(),
 });
 
-const CreateFolder = FolderSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  userId: true,
-});
-
-export async function createFolder(folderData: z.infer<typeof CreateFolder>) {
+export async function createFolder(folderData: CreateFolder) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const zodResult = CreateFolder.safeParse(folderData);
+  const zodResult = CreateFolderSchema.safeParse(folderData);
 
   if (!zodResult.success) {
     const { error } = zodResult;
