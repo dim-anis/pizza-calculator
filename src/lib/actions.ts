@@ -57,7 +57,10 @@ export async function createFolder(folderData: CreateFolder) {
     };
   }
 
+  const encodedFolderName = encodeURIComponent(name);
+
   revalidatePath("/myrecipes");
+  redirect(`/myrecipes/${encodedFolderName}`);
 }
 
 const UpdateFolder = FolderSchema.pick({
