@@ -1,4 +1,4 @@
-import FolderList from "./_components/folder-list";
+import FolderList from "./[folder]/_components/folder-list";
 
 export default function MyRecipesLayout({
   children,
