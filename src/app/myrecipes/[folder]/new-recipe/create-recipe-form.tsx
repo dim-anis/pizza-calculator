@@ -89,21 +89,7 @@ export default function CreateRecipeForm() {
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    const {
-      recipeName,
-      ingredients,
-      optionalIngredients,
-      numOfDoughballs,
-      selectedOptionalIngredients,
-    } = formData;
-
-    await createRecipe(folderName, {
-      recipeName,
-      numOfDoughballs,
-      ingredients,
-      optionalIngredients,
-      selectedOptionalIngredients,
-    });
+    await createRecipe(folderName, formData);
   }
 
   return (
