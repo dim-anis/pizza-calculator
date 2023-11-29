@@ -18,7 +18,7 @@ import {
   CreateFolderSchema,
 } from "@/app/myrecipes/new-folder/definitions";
 
-export default function EditRecipeForm({
+export default function EditFolderForm({
   oldFolderName,
 }: {
   oldFolderName: string;
