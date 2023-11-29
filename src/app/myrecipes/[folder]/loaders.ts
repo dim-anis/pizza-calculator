@@ -109,7 +109,7 @@ export async function getFolderWithRecipes(folderName: string) {
     throw new Error("You're not authorized!");
   }
 
-  return await prisma.folder.findUnique({
+  const folder = await prisma.folder.findUnique({
     where: {
       userId: user.id,
       name: folderName,
@@ -122,6 +122,12 @@ export async function getFolderWithRecipes(folderName: string) {
       },
     },
   });
+
+  if (!folder) {
+    throw new Error("Failed to fetch folder!");
+  }
+
+  return folder;
 }
 
 export async function getRecipeById(recipeId: string) {

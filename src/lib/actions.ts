@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
-import { z } from "zod";
 import { redirect } from "next/navigation";
 import {
   getTotalDougWeight,
@@ -17,14 +16,6 @@ import {
   CreateFolder,
   CreateFolderSchema,
 } from "@/app/myrecipes/new-folder/definitions";
-
-const FolderSchema = z.object({
-  id: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  name: z.string(),
-  userId: z.string(),
-});
 
 export async function createFolder(folderData: CreateFolder) {
   const user = await getCurrentUser();
@@ -63,64 +54,14 @@ export async function createFolder(folderData: CreateFolder) {
   redirect(`/myrecipes/${encodedFolderName}`);
 }
 
-const UpdateFolder = FolderSchema.pick({
-  name: true,
-});
-
-const UpdateFolderWithOldName = UpdateFolder.extend({
-  oldName: z.string(),
-});
-
-export async function updateFolder(
-  folderData: z.infer<typeof UpdateFolderWithOldName>,
-) {
+export async function updateFolder(oldName: string, folderData: CreateFolder) {
   const user = await getCurrentUser();
 
   if (!user) {
     return;
   }
 
-  const zodResult = UpdateFolderWithOldName.safeParse(folderData);
-
-  if (!zodResult.success) {
-    const { error } = zodResult;
-    return { success: false, error: error.format() };
-  }
-
-  const {
-    data: { oldName, name: newName },
-  } = zodResult;
-
-  try {
-    const updatedFolder = await prisma.folder.update({
-      where: {
-        name: oldName,
-        userId: user.id,
-      },
-      data: {
-        name: newName,
-      },
-    });
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to Update Folder",
-    };
-  }
-
-  revalidatePath("/myrecipes");
-}
-
-const DeleteFolder = FolderSchema.pick({
-  name: true,
-});
-export async function deleteFolder(folderData: z.infer<typeof DeleteFolder>) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return;
-  }
-
-  const zodResult = DeleteFolder.safeParse(folderData);
+  const zodResult = CreateFolderSchema.safeParse(folderData);
 
   if (!zodResult.success) {
     const { error } = zodResult;
@@ -131,14 +72,44 @@ export async function deleteFolder(folderData: z.infer<typeof DeleteFolder>) {
     data: { name },
   } = zodResult;
 
+  try {
+    const updatedFolder = await prisma.folder.update({
+      where: {
+        name: oldName,
+        userId: user.id,
+      },
+      data: {
+        name,
+      },
+    });
+  } catch (error) {
+    return {
+      message: "Database Error: Failed to Update Folder",
+    };
+  }
+
+  const encodedFolderName = encodeURIComponent(name);
+
+  revalidatePath(`/myrecipes/${encodedFolderName}`);
+  redirect(`/myrecipes/${encodedFolderName}`);
+}
+
+export async function deleteFolder(folderId: string) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
   const deletedFolder = await prisma.folder.delete({
     where: {
-      name,
+      id: folderId,
       userId: user?.id,
     },
   });
 
   revalidatePath("/myrecipes");
+  redirect("/myrecipes/all");
 }
 
 export async function deleteRecipe(folderName: string, recipeId: string) {
