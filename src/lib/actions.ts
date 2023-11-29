@@ -5,7 +5,7 @@ import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 import { redirect } from "next/navigation";
 import {
-  getTotalDougWeight,
+  getTotalDoughWeight,
   ingredientQuantitiesToRatios,
 } from "@/app/_utils/helpers";
 import {
@@ -158,7 +158,7 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
     ...optionalIngredients,
   };
   const ratios = ingredientQuantitiesToRatios(allIngredients);
-  const doughballWeight = getTotalDougWeight(allIngredients) / numOfDoughballs;
+  const doughballWeight = getTotalDoughWeight(allIngredients) / numOfDoughballs;
 
   try {
     const savedRecipe = await prisma.recipe.create({

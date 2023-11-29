@@ -68,7 +68,7 @@ export function getArrayFromOneTo(n: number) {
   return Array.from(Array(n).keys()).map((n) => n + 1);
 }
 
-export function getTotalDougWeight(ingredients: DoughIngredients) {
+export function getTotalDoughWeight(ingredients: DoughIngredients) {
   return Object.values(ingredients).reduce(
     (totalWeight, currItemWeight) => totalWeight + currItemWeight,
     0,
