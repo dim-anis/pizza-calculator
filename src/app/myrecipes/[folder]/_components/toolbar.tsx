@@ -35,7 +35,7 @@ export function Toolbar() {
       </Link>
       <div className="flex">
         <Link
-          href={`/myrecipes/${params.folder}/new`}
+          href={`/myrecipes/${params.folder}/${params.id}/edit`}
           className={buttonVariants({ variant: "ghost", size: "icon" })}
         >
           <PenSquare className="h-5 w-5" />
