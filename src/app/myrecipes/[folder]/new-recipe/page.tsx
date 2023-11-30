@@ -14,7 +14,7 @@ export default async function CreateRecipePage() {
         role="none"
         className="h-[1px] w-full shrink-0 bg-border"
       ></div>
-      <CreateRecipeForm />
+      <CreateRecipeForm folders={folders} />
     </>
   );
 }

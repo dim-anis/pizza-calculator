@@ -1,4 +1,4 @@
-import { getRecipeById } from "../loaders";
+import { getRecipeWithFolders } from "../loaders";
 import { Toolbar } from "../_components/toolbar";
 import { buttonVariants } from "@/components/ui/button";
 import { Folder } from "lucide-react";
@@ -10,7 +10,7 @@ export default async function RecipePage({
 }: {
   params: { name: string; id: string };
 }) {
-  const recipe = await getRecipeById(params.id);
+  const recipe = await getRecipeWithFolders(params.id);
 
   return (
     <div className="flex h-full flex-col items-start justify-start space-y-4">

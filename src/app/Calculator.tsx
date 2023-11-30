@@ -101,7 +101,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
             {recipe.name}
           </h2>
           <p className="mt-7 max-w-3xl text-lg text-slate-600">Ingredients:</p>
-          <IngredientList ingredients={ingredientQuantities} />
+          <IngredientList ingredientAmounts={ingredientQuantities} />
         </div>
       </div>
     </section>

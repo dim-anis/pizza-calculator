@@ -3,7 +3,6 @@
 import IngredientList from "@/app/IngredientList";
 import { ingredientRatiosToQuantities } from "@/app/_utils/helpers";
 import { Button } from "@/components/ui/button";
-import { RecipeParsed } from "@/lib/definitions";
 import { useState } from "react";
 import {
   Select,
@@ -60,7 +59,7 @@ export default function RecipeDetails({
             </Select>
           </div>
         </div>
-        <IngredientList ingredients={ingredientQuantities} />
+        <IngredientList ingredientAmounts={ingredientQuantities} />
       </div>
       <div className="space-y-2">
         {recipe.notes ? (

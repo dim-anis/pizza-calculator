@@ -2,7 +2,7 @@ import {
   getTotalDoughWeight,
   ingredientRatiosToQuantities,
 } from "@/app/_utils/helpers";
-import { getAllFolders, getRecipeById } from "../../loaders";
+import { getAllFolders, getRecipeWithFolders } from "../../loaders";
 import EditRecipeForm from "./edit-recipe-form";
 
 export default async function CreateRecipePage({

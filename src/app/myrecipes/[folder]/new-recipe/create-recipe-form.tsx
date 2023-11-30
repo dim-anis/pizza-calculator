@@ -27,69 +27,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ingredients, optionalIngredients } from "../../../../lib/data";
 
 type Params = {
   folder: string;
   id: string;
 };
 
-const ingredients = [
-  {
-    id: "flourAmount",
-    label: "Flour",
-  },
-  {
-    id: "waterAmount",
-    label: "Water",
-  },
-] as const;
-
-const optionalIngredients = [
-  {
-    id: "saltAmount",
-    label: "Salt",
-  },
-  {
-    id: "yeastAmount",
-    label: "Yeast",
-  },
-  {
-    id: "oilAmount",
-    label: "Oil",
-  },
-  {
-    id: "sugarAmount",
-    label: "Sugar",
-  },
-] as const;
-
-export default function CreateRecipeForm() {
+export default function CreateRecipeForm({
+  folders,
+}: {
+  folders: { id: string; name: string }[];
+}) {
   const params: Params = useParams();
   const folderName = decodeURIComponent(params["folder"]);
   const form = useForm<CreateRecipeData>({
     mode: "onChange",
     resolver: zodResolver(CreateRecipeSchema),
     defaultValues: {
-      recipeName: "",
+      name: "",
       numOfDoughballs: 1,
-      ingredients: {
-        flourAmount: 0,
-        waterAmount: 0,
-      },
-      optionalIngredients: {
-        saltAmount: 0,
-        yeastAmount: 0,
-        oilAmount: 0,
-        sugarAmount: 0,
-      },
+      flourAmount: 0,
+      waterAmount: 0,
+      saltAmount: 0,
+      yeastAmount: 0,
+      oilAmount: 0,
+      sugarAmount: 0,
       selectedOptionalIngredients: ["saltAmount", "yeastAmount"],
+      selectedFolders: [],
     },
   });
 
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    await createRecipe(folderName, formData);
+    await createRecipe(formData);
   }
 
   return (
