@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/select";
 import { validationErrorMessages } from "./_utils/helpers";
 import { z } from "zod";
-import { RecipeParsed } from "@/lib/definitions";
 import { UseFormReset, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Recipe } from "@prisma/client";
 
 const MAX_INPUT_VALUE = 99999;
 
@@ -74,7 +74,7 @@ const CalculatorSchema = z.object({
 export type CalculatorFormData = z.infer<typeof CalculatorSchema>;
 
 type CalculatorFormProps = {
-  pizzaRecipes: RecipeParsed[];
+  pizzaRecipes: Recipe[];
   defaultValues: CalculatorFormData;
   handleSubmit: (data: CalculatorFormData) => void;
   handleSelectChange: (
