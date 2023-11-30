@@ -1,5 +1,4 @@
-import { RecipeParsed } from "@/lib/definitions";
-import { CreateRecipeData } from "../myrecipes/[folder]/new-recipe/definitions";
+import { DoughIngredientRatios, DoughIngredients } from "@/lib/definitions";
 
 export const validationErrorMessages = {
   negativeValue: "Value must be greater than 0.",
@@ -8,15 +7,15 @@ export const validationErrorMessages = {
 
 export function ingredientRatiosToQuantities(
   totalDoughWeight: number,
-  ingredientRatios: RecipeParsed["ingredientRatios"],
+  ingredientRatios: DoughIngredientRatios,
 ) {
   const ingredientAmounts = {
-    flour: 0,
-    water: 0,
-    salt: 0,
-    yeast: 0,
-    sugar: 0,
-    oil: 0,
+    flourAmount: 0,
+    waterAmount: 0,
+    saltAmount: 0,
+    yeastAmount: 0,
+    sugarAmount: 0,
+    oilAmount: 0,
   };
   const totalPercentage = Object.values(ingredientRatios).reduce(
     (total, ratio) => total + ratio,
@@ -24,19 +23,20 @@ export function ingredientRatiosToQuantities(
   );
 
   for (const ingredient of Object.keys(ingredientRatios) as Array<
-    keyof RecipeParsed["ingredientRatios"]
+    keyof DoughIngredientRatios
   >) {
     const amount =
       (totalDoughWeight * ingredientRatios[ingredient]) / totalPercentage;
-    ingredientAmounts[ingredient] =
-      amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
+    ingredientAmounts[
+      `${ingredient.replace(
+        "Ratio",
+        "Amount",
+      )}` as keyof typeof ingredientAmounts
+    ] = amount > 100 ? Math.round(amount) : Number(amount.toFixed(1));
   }
 
   return ingredientAmounts;
 }
-
-type DoughIngredients = CreateRecipeData["ingredients"] &
-  CreateRecipeData["optionalIngredients"];
 
 function calculateBakersPercentage(
   ingredientAmount: number,
