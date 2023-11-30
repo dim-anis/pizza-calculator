@@ -6,40 +6,40 @@ import { ingredientRatiosToQuantities } from "./_utils/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
 // import CustomRecipeForm from "./CustomRecipeForm";
-import { RecipeParsed } from "@/lib/definitions";
 import { UseFormReset } from "react-hook-form";
+import { Recipe } from "@prisma/client";
 
 type CalculatorProps = {
-  defaultRecipes: RecipeParsed[];
+  defaultRecipes: Recipe[];
 };
 
 export default function Calculator({ defaultRecipes }: CalculatorProps) {
-  const [userRecipe, setUserRecipe] = useState<RecipeParsed>();
+  const [userRecipe, setUserRecipe] = useState<Recipe>();
   const [numOfDoughballs, setNumOfDoughballs] = useState(2);
   const recipe = userRecipe || defaultRecipes[0];
 
   const ingredientQuantities = ingredientRatiosToQuantities(
     numOfDoughballs * recipe.doughballWeight,
-    recipe.ingredientRatios,
+    {
+      flourRatio: recipe.flourRatio,
+      waterRatio: recipe.waterRatio,
+      saltRatio: recipe.saltRatio,
+      yeastRatio: recipe.yeastRatio,
+      sugarRatio: recipe.sugarRatio,
+      oilRatio: recipe.oilRatio,
+    },
   );
 
   function onSubmit(formData: CalculatorFormData) {
     const {
-      settings: {
-        numOfDoughballs: number_of_pizzas,
-        doughHydration: hydration,
-      },
+      settings: { numOfDoughballs, doughHydration, doughballWeight },
     } = formData;
 
-    const updatedIngredientRatios = {
-      ...recipe.ingredientRatios,
-      water: hydration / 100,
-    };
-
-    setNumOfDoughballs(number_of_pizzas);
+    setNumOfDoughballs(numOfDoughballs);
     setUserRecipe({
       ...recipe,
-      ingredientRatios: updatedIngredientRatios,
+      waterRatio: doughHydration / 100,
+      doughballWeight,
     });
   }
 
@@ -57,7 +57,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
         settings: {
           numOfDoughballs: numOfDoughballs,
           doughballWeight: selectedRecipe.doughballWeight,
-          doughHydration: selectedRecipe.ingredientRatios.water * 100,
+          doughHydration: selectedRecipe.waterRatio * 100,
         },
       });
     }
@@ -79,7 +79,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
                 settings: {
                   numOfDoughballs: numOfDoughballs,
                   doughballWeight: recipe.doughballWeight,
-                  doughHydration: recipe.ingredientRatios.water * 100,
+                  doughHydration: Number(recipe.waterRatio) * 100,
                 },
               }}
               handleSubmit={onSubmit}

@@ -14,12 +14,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getArrayFromOneTo } from "@/app/_utils/helpers";
+import { RecipeWithFolders } from "../loaders";
 
-export default function RecipeDetails({ recipe }: { recipe: RecipeParsed }) {
+export default function RecipeDetails({
+  recipe,
+}: {
+  recipe: RecipeWithFolders;
+}) {
   const [numOfDoughballs, setNumOfDoughballs] = useState(1);
   const ingredientQuantities = ingredientRatiosToQuantities(
     recipe.doughballWeight * numOfDoughballs,
-    recipe.ingredientRatios,
+    {
+      flourRatio: recipe.flourRatio,
+      waterRatio: recipe.waterRatio,
+      saltRatio: recipe.saltRatio,
+      yeastRatio: recipe.yeastRatio,
+      sugarRatio: recipe.sugarRatio,
+      oilRatio: recipe.oilRatio,
+    },
   );
 
   return (
