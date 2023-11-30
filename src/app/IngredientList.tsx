@@ -6,13 +6,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { capitalize } from "./_utils/helpers";
+import { DoughIngredients } from "@/lib/definitions";
+import { ingredients, optionalIngredients } from "../lib/data";
 
 type IngredientListProps = {
-  ingredients: Record<string, number>;
+  ingredientAmounts: Record<keyof DoughIngredients, number>;
 };
 
-export default function IngredientList({ ingredients }: IngredientListProps) {
+export default function IngredientList({
+  ingredientAmounts,
+}: IngredientListProps) {
+  console.log(ingredientAmounts);
   return (
     <Table>
       <TableHeader>
@@ -22,12 +26,25 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Object.entries(ingredients).map(
-          ([ingredient, amount]) =>
-            amount > 0 && (
-              <TableRow key={ingredient}>
-                <TableCell>{capitalize(ingredient)}</TableCell>
-                <TableCell className="text-right">{amount}g</TableCell>
+        {ingredients.map(
+          (ingredient) =>
+            ingredientAmounts[ingredient.id] > 0 && (
+              <TableRow key={ingredient.id}>
+                <TableCell>{ingredient.label}</TableCell>
+                <TableCell className="text-right">
+                  {ingredientAmounts[ingredient.id]}g
+                </TableCell>
+              </TableRow>
+            ),
+        )}
+        {optionalIngredients.map(
+          (ingredient) =>
+            ingredientAmounts[ingredient.id] > 0 && (
+              <TableRow key={ingredient.id}>
+                <TableCell>{ingredient.label}</TableCell>
+                <TableCell className="text-right">
+                  {ingredientAmounts[ingredient.id]}g
+                </TableCell>
               </TableRow>
             ),
         )}
