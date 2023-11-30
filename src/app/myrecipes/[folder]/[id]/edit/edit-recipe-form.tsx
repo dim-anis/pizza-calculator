@@ -317,7 +317,7 @@ export default function EditRecipeForm({
           >
             Cancel
           </Link>
-          <Button type="submit">Create Recipe</Button>
+          <Button type="submit">Update recipe</Button>
         </div>
       </form>
     </Form>

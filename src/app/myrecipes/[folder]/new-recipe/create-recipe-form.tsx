@@ -319,7 +319,7 @@ export default function CreateRecipeForm() {
           >
             Cancel
           </Link>
-          <Button type="submit">Create Recipe</Button>
+          <Button type="submit">Create recipe</Button>
         </div>
       </form>
     </Form>
