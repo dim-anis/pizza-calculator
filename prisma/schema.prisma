@@ -89,12 +89,12 @@ model Recipe {
   user            User?    @relation(fields: [userId], references: [id])
   name            String
   doughballWeight Int
-  flourRatio      Decimal  @default(0) @db.Decimal(5, 4)
-  waterRatio      Decimal  @default(0) @db.Decimal(5, 4)
-  saltRatio       Decimal  @default(0) @db.Decimal(5, 4)
-  oilRatio        Decimal  @default(0) @db.Decimal(5, 4)
-  sugarRatio      Decimal  @default(0) @db.Decimal(5, 4)
-  yeastRatio      Decimal  @default(0) @db.Decimal(5, 4)
+  flourRatio      Float    @default(0)
+  waterRatio      Float    @default(0)
+  saltRatio       Float    @default(0)
+  oilRatio        Float    @default(0)
+  sugarRatio      Float    @default(0)
+  yeastRatio      Float    @default(0)
 
   @@index(userId)
   @@map("recipes")
