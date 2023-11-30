@@ -1,13 +1,22 @@
-export type RecipeParsed = {
-  id: string;
-  name: string;
-  doughballWeight: number;
-  ingredientRatios: {
-    flour: number;
-    water: number;
-    salt: number;
-    yeast: number;
-    oil: number;
-    sugar: number;
-  };
-};
+import { Recipe } from "@prisma/client";
+import { CreateRecipeData } from "@/app/myrecipes/[folder]/new-recipe/definitions";
+
+export type DoughIngredients = Pick<
+  CreateRecipeData,
+  | "flourAmount"
+  | "waterAmount"
+  | "saltAmount"
+  | "yeastAmount"
+  | "sugarAmount"
+  | "oilAmount"
+>;
+
+export type DoughIngredientRatios = Pick<
+  Recipe,
+  | "flourRatio"
+  | "waterRatio"
+  | "saltRatio"
+  | "yeastRatio"
+  | "sugarRatio"
+  | "oilRatio"
+>;
