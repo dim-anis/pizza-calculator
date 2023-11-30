@@ -11,26 +11,7 @@ export default async function CreateRecipePage({
   params: { id: string };
 }) {
   const folders = await getAllFolders();
-  const recipe = await getRecipeById(params.id);
-
-  const ingredientQuantities = ingredientRatiosToQuantities(
-    recipe.doughballWeight,
-    recipe.ingredientRatios,
-  );
-  const ingredients = {
-    waterAmount: ingredientQuantities.water,
-    flourAmount: ingredientQuantities.flour,
-  };
-  const optionalIngredients = {
-    saltAmount: ingredientQuantities.salt,
-    yeastAmount: ingredientQuantities.yeast,
-    sugarAmount: ingredientQuantities.sugar,
-    oilAmount: ingredientQuantities.oil,
-  };
-  const totalDoughWeight = getTotalDoughWeight({
-    ...ingredients,
-    ...optionalIngredients,
-  });
+  const recipe = await getRecipeWithFolders(params.id);
 
   return (
     <>
@@ -42,24 +23,7 @@ export default async function CreateRecipePage({
         role="none"
         className="h-[1px] w-full shrink-0 bg-border"
       ></div>
-      <EditRecipeForm
-        defaultValues={{
-          recipeName: recipe.name,
-          ingredients,
-          numOfDoughballs: totalDoughWeight / recipe.doughballWeight,
-          optionalIngredients,
-          selectedOptionalIngredients: [
-            ...Object.keys(ingredientQuantities)
-              .filter(
-                (ingredient) =>
-                  ingredientQuantities[
-                    ingredient as keyof typeof ingredientQuantities
-                  ] > 0,
-              )
-              .map((key) => `${key}Amount`),
-          ],
-        }}
-      />
+      <EditRecipeForm recipe={recipe} folders={folders} />
     </>
   );
 }

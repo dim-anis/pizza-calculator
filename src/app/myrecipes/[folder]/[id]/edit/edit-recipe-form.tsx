@@ -1,6 +1,10 @@
 "use client";
 
-import { getArrayFromOneTo } from "@/app/_utils/helpers";
+import {
+  getArrayFromOneTo,
+  getTotalDoughWeight,
+  ingredientRatiosToQuantities,
+} from "@/app/_utils/helpers";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -13,11 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createRecipe } from "@/lib/actions";
+import { updateRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { DefaultValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   CreateRecipeData,
   CreateRecipeSchema,
@@ -30,59 +34,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ingredients, optionalIngredients } from "../../../../../lib/data";
+import { Folder } from "@prisma/client";
+import { RecipeWithFolders } from "../../loaders";
 
 type Params = {
   folder: string;
   id: string;
 };
 
-const ingredients = [
-  {
-    id: "flourAmount",
-    label: "Flour",
-  },
-  {
-    id: "waterAmount",
-    label: "Water",
-  },
-] as const;
-
-const optionalIngredients = [
-  {
-    id: "saltAmount",
-    label: "Salt",
-  },
-  {
-    id: "yeastAmount",
-    label: "Yeast",
-  },
-  {
-    id: "oilAmount",
-    label: "Oil",
-  },
-  {
-    id: "sugarAmount",
-    label: "Sugar",
-  },
-] as const;
-
 export default function EditRecipeForm({
-  defaultValues,
+  recipe,
+  folders,
 }: {
-  defaultValues: DefaultValues<CreateRecipeData>;
+  recipe: RecipeWithFolders;
+  folders: Folder[];
 }) {
+  const ingredientQuantities = ingredientRatiosToQuantities(
+    recipe.doughballWeight,
+    {
+      flourRatio: recipe.flourRatio,
+      waterRatio: recipe.waterRatio,
+      saltRatio: recipe.saltRatio,
+      yeastRatio: recipe.yeastRatio,
+      sugarRatio: recipe.sugarRatio,
+      oilRatio: recipe.oilRatio,
+    },
+  );
+  const totalDoughWeight = getTotalDoughWeight(ingredientQuantities);
+
   const params: Params = useParams();
   const folderName = decodeURIComponent(params["folder"]);
   const form = useForm<CreateRecipeData>({
     mode: "onChange",
     resolver: zodResolver(CreateRecipeSchema),
-    defaultValues,
+    defaultValues: {
+      name: recipe.name,
+      ...ingredientQuantities,
+      numOfDoughballs: totalDoughWeight / recipe.doughballWeight,
+      selectedFolders: recipe.folders.map((folder) => folder.name),
+      selectedOptionalIngredients: [
+        ...Object.keys(ingredientQuantities).filter(
+          (ingredient) =>
+            ingredientQuantities[
+              ingredient as keyof typeof ingredientQuantities
+            ] > 0,
+        ),
+      ],
+    },
   });
 
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    await createRecipe(folderName, formData);
+    await updateRecipe(recipe.id, recipe.folders, formData);
   }
 
   return (
