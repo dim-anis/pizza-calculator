@@ -16,10 +16,6 @@ export async function getAllFolders() {
     orderBy: {
       ["createdAt"]: "desc",
     },
-    select: {
-      id: true,
-      name: true,
-    },
   });
 
   return folders.sort((a, b) => {
@@ -50,39 +46,14 @@ export async function getRecipesGroupedByFolder() {
 }
 
 export async function getDefaultRecipes() {
-  const recipes = await prisma.recipe.findMany({
+  return await prisma.recipe.findMany({
     where: {
       userId: null,
-    },
-    select: {
-      id: true,
-      name: true,
-      doughballWeight: true,
-      flourRatio: true,
-      waterRatio: true,
-      saltRatio: true,
-      yeastRatio: true,
-      oilRatio: true,
-      sugarRatio: true,
     },
     orderBy: {
       ["createdAt"]: "desc",
     },
   });
-
-  return recipes.map((recipe) => ({
-    id: recipe.id,
-    name: recipe.name,
-    doughballWeight: recipe.doughballWeight,
-    ingredientRatios: {
-      flour: Number(recipe.flourRatio),
-      water: Number(recipe.waterRatio),
-      salt: Number(recipe.saltRatio),
-      yeast: Number(recipe.yeastRatio),
-      oil: Number(recipe.oilRatio),
-      sugar: Number(recipe.sugarRatio),
-    },
-  }));
 }
 
 export async function getAllRecipes() {
@@ -130,7 +101,21 @@ export async function getFolderWithRecipes(folderName: string) {
   return folder;
 }
 
-export async function getRecipeById(recipeId: string) {
+export type RecipeWithFolders = Prisma.RecipeGetPayload<{
+  include: {
+    folders: {
+      select: {
+        id: true;
+        name: true;
+        createdAt: true;
+      };
+    };
+  };
+}>;
+
+export async function getRecipeWithFolders(
+  recipeId: string,
+): Promise<RecipeWithFolders> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -142,23 +127,8 @@ export async function getRecipeById(recipeId: string) {
       userId: user.id,
       id: recipeId,
     },
-    select: {
-      id: true,
-      name: true,
-      doughballWeight: true,
-      flourRatio: true,
-      waterRatio: true,
-      saltRatio: true,
-      oilRatio: true,
-      sugarRatio: true,
-      yeastRatio: true,
-      folders: {
-        select: {
-          id: true,
-          name: true,
-          createdAt: true,
-        },
-      },
+    include: {
+      folders: true,
     },
   });
 
@@ -166,20 +136,7 @@ export async function getRecipeById(recipeId: string) {
     throw new Error("Failed to fetch the recipe!");
   }
 
-  return {
-    id: recipe.id,
-    name: recipe.name,
-    doughballWeight: recipe.doughballWeight,
-    folders: recipe.folders,
-    ingredientRatios: {
-      flour: Number(recipe.flourRatio),
-      water: Number(recipe.waterRatio),
-      salt: Number(recipe.saltRatio),
-      yeast: Number(recipe.yeastRatio),
-      oil: Number(recipe.oilRatio),
-      sugar: Number(recipe.sugarRatio),
-    },
-  };
+  return recipe;
 }
 
 const foldersWithCount = Prisma.validator<Prisma.FolderDefaultArgs>()({
