@@ -116,6 +116,61 @@ export default function EditRecipeForm({
         />
         <FormField
           control={form.control}
+          name="selectedFolders"
+          render={() => (
+            <FormItem>
+              <div className="mb-4">
+                <FormLabel className="text-base">Select folders</FormLabel>
+                <FormDescription>
+                  Select folders to assign this recipe to.
+                </FormDescription>
+              </div>
+              {folders
+                .filter((folder) => folder.name !== "All")
+                .map((folder) => (
+                  <FormField
+                    key={folder.id}
+                    control={form.control}
+                    name="selectedFolders"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={folder.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(folder.name)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  return field.onChange([
+                                    ...field.value,
+                                    folder.name,
+                                  ]);
+                                } else {
+                                  return field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== folder.name,
+                                    ),
+                                  );
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {folder.name}
+                          </FormLabel>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                ))}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="numOfDoughballs"
           render={({ field }) => (
             <FormItem>

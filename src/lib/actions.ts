@@ -130,7 +130,7 @@ export async function deleteRecipe(folderName: string, recipeId: string) {
   redirect(`/myrecipes/${folderName}`);
 }
 
-export async function createRecipe(folderName: string, data: CreateRecipeData) {
+export async function createRecipe(data: CreateRecipeData) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -145,31 +145,42 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
   }
 
   const {
-    data: { recipeName, numOfDoughballs, ingredients, optionalIngredients },
+    data: {
+      name,
+      numOfDoughballs,
+      flourAmount,
+      waterAmount,
+      saltAmount,
+      yeastAmount,
+      oilAmount,
+      sugarAmount,
+      selectedFolders,
+    },
   } = zodResult;
 
-  const folders = ["All"];
-  if (folderName !== "All") {
-    folders.push(folderName);
-  }
-
   const allIngredients = {
-    ...ingredients,
-    ...optionalIngredients,
+    flourAmount,
+    waterAmount,
+    saltAmount,
+    yeastAmount,
+    oilAmount,
+    sugarAmount,
   };
-  const ratios = ingredientQuantitiesToRatios(allIngredients);
+  const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
   const doughballWeight = getTotalDoughWeight(allIngredients) / numOfDoughballs;
 
   try {
     const savedRecipe = await prisma.recipe.create({
       data: {
         userId: user.id,
-        name: recipeName,
+        name,
         folders: {
-          connect: [...folders.map((folder) => ({ name: folder }))],
+          connect: [
+            ...["All", ...selectedFolders].map((folder) => ({ name: folder })),
+          ],
         },
         doughballWeight,
-        ...ratios,
+        ...ingredientRatios,
       },
     });
   } catch (e) {
@@ -177,5 +188,84 @@ export async function createRecipe(folderName: string, data: CreateRecipeData) {
   }
 
   revalidatePath("/myrecipes");
-  redirect(`/myrecipes/${folderName}`);
+  redirect("/myrecipes/all");
+}
+
+export async function updateRecipe(
+  recipeId: string,
+  connectedFolders: { id: string; name: string }[],
+  data: CreateRecipeData,
+) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  const zodResult = CreateRecipeSchema.safeParse(data);
+
+  if (!zodResult.success) {
+    const { error } = zodResult;
+    return { success: false, error: error.format() };
+  }
+
+  const {
+    data: {
+      name,
+      numOfDoughballs,
+      flourAmount,
+      waterAmount,
+      saltAmount,
+      yeastAmount,
+      oilAmount,
+      sugarAmount,
+      selectedFolders: updatedFolderSelection,
+    },
+  } = zodResult;
+
+  const allIngredients = {
+    flourAmount,
+    waterAmount,
+    saltAmount,
+    yeastAmount,
+    oilAmount,
+    sugarAmount,
+  };
+  const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
+  const doughballWeight = getTotalDoughWeight(allIngredients) / numOfDoughballs;
+
+  const foldersToConnect = updatedFolderSelection.filter(
+    (newFolderName) =>
+      !connectedFolders.some((folder) => folder.name === newFolderName),
+  );
+
+  const foldersToDisconnect = connectedFolders.filter(
+    (folder) => !updatedFolderSelection.includes(folder.name),
+  );
+
+  try {
+    const savedRecipe = await prisma.recipe.update({
+      where: {
+        userId: user.id,
+        id: recipeId,
+      },
+      data: {
+        userId: user.id,
+        name,
+        folders: {
+          connect: [...foldersToConnect.map((folder) => ({ name: folder }))],
+          disconnect: [
+            ...foldersToDisconnect.map((folder) => ({ name: folder.name })),
+          ],
+        },
+        doughballWeight,
+        ...ingredientRatios,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+
+  revalidatePath("/myrecipes");
+  redirect("/myrecipes/all");
 }
