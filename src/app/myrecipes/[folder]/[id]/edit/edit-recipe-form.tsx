@@ -98,7 +98,7 @@ export default function EditRecipeForm({
       >
         <FormField
           control={form.control}
-          name="recipeName"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Recipe name</FormLabel>
@@ -234,9 +234,7 @@ export default function EditRecipeForm({
                                       item.id,
                                     ]);
                                   } else {
-                                    form.resetField(
-                                      `optionalIngredients.${item.id}`,
-                                    );
+                                    form.resetField(`${item.id}`);
                                     return field.onChange(
                                       field.value?.filter(
                                         (value) => value !== item.id,
@@ -264,7 +262,7 @@ export default function EditRecipeForm({
               <FormField
                 key={ingredient.id}
                 control={form.control}
-                name={`ingredients.${ingredient.id}`}
+                name={`${ingredient.id}`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{ingredient.label}</FormLabel>
@@ -290,7 +288,7 @@ export default function EditRecipeForm({
                 <FormField
                   key={ingredient.id}
                   control={form.control}
-                  name={`optionalIngredients.${ingredient.id}`}
+                  name={`${ingredient.id}`}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{ingredient.label}</FormLabel>
