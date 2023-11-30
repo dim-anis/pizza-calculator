@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { defaultPizzaRecipes, customRecipes } from "../public/recipes";
-import { warn } from "console";
 
 const folderNames = [
   "All",
