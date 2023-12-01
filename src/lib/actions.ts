@@ -11,11 +11,11 @@ import {
 import {
   CreateRecipeData,
   CreateRecipeSchema,
-} from "@/app/myrecipes/[folder]/new-recipe/definitions";
+} from "@/app/(myrecipes)/myrecipes/[folder]/new-recipe/definitions";
 import {
   CreateFolder,
   CreateFolderSchema,
-} from "@/app/myrecipes/new-folder/definitions";
+} from "@/app/(myrecipes)/myrecipes/new-folder/definitions";
 
 export async function createFolder(folderData: CreateFolder) {
   const user = await getCurrentUser();

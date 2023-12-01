@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  getArrayFromOneTo,
-  getTotalDoughWeight,
-  ingredientRatiosToQuantities,
-} from "@/lib/helpers";
+import { getArrayFromOneTo } from "@/lib/helpers";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -17,15 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { updateRecipe } from "@/lib/actions";
+import { createRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import {
-  CreateRecipeData,
-  CreateRecipeSchema,
-} from "../../new-recipe/definitions";
+import { CreateRecipeData, CreateRecipeSchema } from "./definitions";
 import {
   Select,
   SelectContent,
@@ -35,8 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ingredients, optionalIngredients } from "../../../../../lib/data";
-import { Folder } from "@prisma/client";
-import { RecipeWithFolders } from "../../loaders";
 import { Textarea } from "@/components/ui/textarea";
 
 type Params = {
@@ -44,52 +35,34 @@ type Params = {
   id: string;
 };
 
-export default function EditRecipeForm({
-  recipe,
+export default function CreateRecipeForm({
   folders,
 }: {
-  recipe: RecipeWithFolders;
-  folders: Folder[];
+  folders: { id: string; name: string }[];
 }) {
-  const ingredientQuantities = ingredientRatiosToQuantities(
-    recipe.doughballWeight,
-    {
-      flourRatio: recipe.flourRatio,
-      waterRatio: recipe.waterRatio,
-      saltRatio: recipe.saltRatio,
-      yeastRatio: recipe.yeastRatio,
-      sugarRatio: recipe.sugarRatio,
-      oilRatio: recipe.oilRatio,
-    },
-  );
-  const totalDoughWeight = getTotalDoughWeight(ingredientQuantities);
-
   const params: Params = useParams();
   const folderName = decodeURIComponent(params["folder"]);
   const form = useForm<CreateRecipeData>({
     mode: "onChange",
     resolver: zodResolver(CreateRecipeSchema),
     defaultValues: {
-      name: recipe.name,
-      ...ingredientQuantities,
-      numOfDoughballs: totalDoughWeight / recipe.doughballWeight,
-      selectedFolders: recipe.folders.map((folder) => folder.name),
-      selectedOptionalIngredients: [
-        ...Object.keys(ingredientQuantities).filter(
-          (ingredient) =>
-            ingredientQuantities[
-              ingredient as keyof typeof ingredientQuantities
-            ] > 0,
-        ),
-      ],
-      notes: recipe.notes || "",
+      name: "",
+      numOfDoughballs: 1,
+      flourAmount: 0,
+      waterAmount: 0,
+      saltAmount: 0,
+      yeastAmount: 0,
+      oilAmount: 0,
+      sugarAmount: 0,
+      selectedOptionalIngredients: ["saltAmount", "yeastAmount"],
+      selectedFolders: [],
     },
   });
 
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    await updateRecipe(recipe.id, recipe.folders, formData);
+    await createRecipe(formData);
   }
 
   return (
@@ -336,7 +309,7 @@ export default function EditRecipeForm({
           >
             Cancel
           </Link>
-          <Button type="submit">Update recipe</Button>
+          <Button type="submit">Create recipe</Button>
         </div>
       </form>
     </Form>
