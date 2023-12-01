@@ -65,7 +65,7 @@ export default function RecipeDetails({
         {recipe.notes ? (
           <>
             <h3 className="font-semibold lg:text-lg">Notes:</h3>
-            <p>Some notes about the recipe.</p>
+            <p>{recipe.notes}</p>
           </>
         ) : (
           <Button>Add notes</Button>

@@ -155,6 +155,7 @@ export async function createRecipe(data: CreateRecipeData) {
       oilAmount,
       sugarAmount,
       selectedFolders,
+      notes,
     },
   } = zodResult;
 
@@ -181,6 +182,7 @@ export async function createRecipe(data: CreateRecipeData) {
         },
         doughballWeight,
         ...ingredientRatios,
+        notes,
       },
     });
   } catch (e) {
@@ -220,6 +222,7 @@ export async function updateRecipe(
       oilAmount,
       sugarAmount,
       selectedFolders: updatedFolderSelection,
+      notes,
     },
   } = zodResult;
 
@@ -258,6 +261,7 @@ export async function updateRecipe(
             ...foldersToDisconnect.map((folder) => ({ name: folder.name })),
           ],
         },
+        notes,
         doughballWeight,
         ...ingredientRatios,
       },
