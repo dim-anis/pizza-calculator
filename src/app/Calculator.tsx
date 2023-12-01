@@ -65,7 +65,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
 
   return (
     <section className="container space-y-6 py-4 md:py-6 lg:py-12">
-      <div className="mx-auto grid items-center gap-5 md:max-w-[64rem] md:grid-cols-2">
+      <div className="mx-auto grid items-center gap-6 pt-6 md:max-w-[64rem] md:grid-cols-2">
         <Tabs defaultValue="basicSettings">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
