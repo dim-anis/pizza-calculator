@@ -37,6 +37,7 @@ import {
 import { ingredients, optionalIngredients } from "../../../../../lib/data";
 import { Folder } from "@prisma/client";
 import { RecipeWithFolders } from "../../loaders";
+import { Textarea } from "@/components/ui/textarea";
 
 type Params = {
   folder: string;
@@ -81,6 +82,7 @@ export default function EditRecipeForm({
             ] > 0,
         ),
       ],
+      notes: recipe.notes || "",
     },
   });
 
@@ -310,6 +312,23 @@ export default function EditRecipeForm({
               ))}
           </div>
         </div>
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Add notes about the recipe"
+                  className="resize-none"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="flex justify-end space-x-4">
           <Link
             href={`/myrecipes/${folderName}`}

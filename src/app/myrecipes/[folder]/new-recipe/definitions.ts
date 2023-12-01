@@ -66,6 +66,7 @@ export const CreateRecipeSchema = z.object({
     .optional(),
   selectedOptionalIngredients: z.array(z.string()),
   selectedFolders: z.array(z.string()),
+  notes: z.string().max(500).optional(),
 });
 
 export type CreateRecipeData = z.infer<typeof CreateRecipeSchema>;
