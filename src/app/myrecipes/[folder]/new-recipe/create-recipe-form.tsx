@@ -1,6 +1,6 @@
 "use client";
 
-import { getArrayFromOneTo } from "@/app/_utils/helpers";
+import { getArrayFromOneTo } from "@/lib/helpers";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {

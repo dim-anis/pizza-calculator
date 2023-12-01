@@ -1,4 +1,4 @@
-import { validationErrorMessages } from "@/app/_utils/helpers";
+import { validationErrorMessages } from "@/lib/helpers";
 import { z } from "zod";
 
 const MAX_INPUT_VALUE = 99999;

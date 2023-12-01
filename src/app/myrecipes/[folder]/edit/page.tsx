@@ -1,4 +1,4 @@
-import { toTitleCase } from "@/app/_utils/helpers";
+import { toTitleCase } from "@/lib/helpers";
 import { getFolderWithRecipes } from "../loaders";
 import EditFolderForm from "./edit-folder-form";
 

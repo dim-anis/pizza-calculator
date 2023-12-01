@@ -1,7 +1,7 @@
 "use client";
 
-import IngredientList from "@/app/IngredientList";
-import { ingredientRatiosToQuantities } from "@/app/_utils/helpers";
+import IngredientList from "@/components/IngredientList";
+import { ingredientRatiosToQuantities } from "@/lib/helpers";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getArrayFromOneTo } from "@/app/_utils/helpers";
+import { getArrayFromOneTo } from "@/lib/helpers";
 import { RecipeWithFolders } from "../loaders";
 
 export default function RecipeDetails({
