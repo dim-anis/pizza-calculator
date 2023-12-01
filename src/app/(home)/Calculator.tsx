@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import IngredientList from "../../components/IngredientList";
+import IngredientList from "../../components/ingredient-list";
 import { ingredientRatiosToQuantities } from "../../lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";

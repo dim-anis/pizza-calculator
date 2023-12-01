@@ -1,5 +1,5 @@
-import Footer from "@/components/Footer";
-import MainNav from "@/components/NavBar";
+import Footer from "@/components/footer";
+import MainNav from "@/components/nav-bar";
 
 type HomeLayoutProps = {
   children: React.ReactNode;

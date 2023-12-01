@@ -1,6 +1,6 @@
 "use client";
 
-import IngredientList from "@/components/IngredientList";
+import IngredientList from "@/components/ingredient-list";
 import { ingredientRatiosToQuantities } from "@/lib/helpers";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

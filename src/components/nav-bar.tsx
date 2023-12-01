@@ -1,5 +1,5 @@
-import NavMenu from "./NavMenu";
-import UserDropdown from "./UserDropdown";
+import NavMenu from "./nav-menu";
+import UserDropdown from "./user-dropdown";
 
 export default function MainNav() {
   return (
