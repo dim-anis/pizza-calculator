@@ -7,6 +7,9 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID ?? "",

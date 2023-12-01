@@ -4,7 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ChevronLeft, Pizza } from "lucide-react";
-// import { UserAuthForm } from "@/components/user-auth-form"
+import UserAuthForm from "./user-auth-form";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -36,7 +36,7 @@ export default function LoginPage() {
             Enter your email to sign in to your account
           </p>
         </div>
-        {/* <UserAuthForm /> */}
+        <UserAuthForm />
         <p className="px-8 text-center text-sm text-muted-foreground">
           <Link href="/register" className="underline underline-offset-4">
             Don&apos;t have an account? Sign Up
