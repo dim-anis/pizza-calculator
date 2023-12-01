@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import {
   getTotalDoughWeight,
   ingredientQuantitiesToRatios,
-} from "@/app/_utils/helpers";
+} from "@/lib/helpers";
 import {
   CreateRecipeData,
   CreateRecipeSchema,
