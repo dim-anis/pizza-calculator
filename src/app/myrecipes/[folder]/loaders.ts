@@ -1,12 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { Prisma } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export async function getAllFolders() {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   const folders = await prisma.folder.findMany({
@@ -29,7 +30,7 @@ export async function getRecipesGroupedByFolder() {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   return await prisma.folder.findMany({
@@ -60,7 +61,7 @@ export async function getAllRecipes() {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   return await prisma.recipe.findMany({
@@ -77,7 +78,7 @@ export async function getFolderWithRecipes(folderName: string) {
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   const folder = await prisma.folder.findUnique({
@@ -119,7 +120,7 @@ export async function getRecipeWithFolders(
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   const recipe = await prisma.recipe.findUnique({
@@ -151,7 +152,7 @@ export async function getFolderNamesWithRecipeCount(): Promise<
   const user = await getCurrentUser();
 
   if (!user) {
-    throw new Error("You're not authorized!");
+    redirect("/login");
   }
 
   const folders = await prisma.folder.findMany({
