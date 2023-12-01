@@ -16,7 +16,6 @@ type IngredientListProps = {
 export default function IngredientList({
   ingredientAmounts,
 }: IngredientListProps) {
-  console.log(ingredientAmounts);
   return (
     <Table>
       <TableHeader>

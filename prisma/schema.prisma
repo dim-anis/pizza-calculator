@@ -95,7 +95,7 @@ model Recipe {
   oilRatio        Float    @default(0)
   sugarRatio      Float    @default(0)
   yeastRatio      Float    @default(0)
-  notes String @db.Text
+  notes           String?  @db.Text
 
   @@index(userId)
   @@map("recipes")
