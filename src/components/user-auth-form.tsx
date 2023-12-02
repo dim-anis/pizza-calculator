@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Github, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function UserAuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") || "/";
   return (
     <>
       <Input disabled />
@@ -32,7 +35,7 @@ export default function UserAuthForm() {
         className={`${buttonVariants({ variant: "outline" })} text-current`}
         onClick={() => {
           setIsGithubLoading(true);
-          signIn("github", { callbackUrl: "/" });
+          signIn("github", { callbackUrl: from });
         }}
         disabled={isLoading || isGithubLoading}
       >
