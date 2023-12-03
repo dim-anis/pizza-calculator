@@ -20,3 +20,8 @@ export type DoughIngredientRatios = Pick<
   | "sugarRatio"
   | "oilRatio"
 >;
+
+export type MainNavItem = {
+  title: string;
+  href: string;
+};
