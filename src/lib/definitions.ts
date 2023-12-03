@@ -25,3 +25,8 @@ export type MainNavItem = {
   title: string;
   href: string;
 };
+
+export type SiteConfig = {
+  name: string;
+  description: string;
+};
