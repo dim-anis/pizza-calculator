@@ -1,4 +1,4 @@
-import Footer from "@/components/footer";
+import Footer from "@/components/site-footer";
 import NavBar from "@/components/nav-menu";
 import UserDropdown from "@/components/user-dropdown";
 import { homeConfig } from "@/config/home";
