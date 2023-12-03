@@ -5,7 +5,6 @@ import IngredientList from "@/components/ingredient-list";
 import { ingredientRatiosToQuantities } from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
-// import CustomRecipeForm from "./CustomRecipeForm";
 import { UseFormReset } from "react-hook-form";
 import { Recipe } from "@prisma/client";
 
@@ -69,7 +68,9 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
         <Tabs defaultValue="basicSettings">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
-            <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
+            <TabsTrigger value="advancedSettings" disabled>
+              Advanced
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="basicSettings">
             <DefaultRecipesForm
