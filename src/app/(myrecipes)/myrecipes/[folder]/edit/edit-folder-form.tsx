@@ -13,10 +13,7 @@ import { Input } from "@/components/ui/input";
 import { updateFolder } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  CreateFolder,
-  CreateFolderSchema,
-} from "@/app/myrecipes/new-folder/definitions";
+import { CreateFolder, CreateFolderSchema } from "../../new-folder/definitions";
 
 export default function EditFolderForm({
   oldFolderName,
