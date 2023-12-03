@@ -2,11 +2,20 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Pizza } from "lucide-react";
 import Link from "next/link";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "./ui/navigation-menu";
+import { MainNavItem } from "@/lib/definitions";
 
 type MobileNavProps = {
-  children: React.ReactNode;
+  items: MainNavItem[];
+  children?: React.ReactNode;
 };
-export function MobileNav({ children }: MobileNavProps) {
+export function MobileNav({ children, items }: MobileNavProps) {
   return (
     <div
       className={cn(
@@ -19,6 +28,23 @@ export function MobileNav({ children }: MobileNavProps) {
           <span className="font-bold">{siteConfig.name}</span>
         </Link>
         {children}
+        <NavigationMenu className="gap-6 text-muted-foreground">
+          <NavigationMenuList className="flex flex-col">
+            {items?.length
+              ? items.map((page, index) => (
+                  <NavigationMenuItem key={index}>
+                    <Link href={page.href} legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        {page.title}
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                ))
+              : null}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </div>
   );

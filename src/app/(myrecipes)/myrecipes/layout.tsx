@@ -1,6 +1,7 @@
 import NavBar from "@/components/nav-menu";
 import FolderList from "./[folder]/_components/folder-list";
 import UserDropdown from "@/components/user-dropdown";
+import { homeConfig } from "@/config/home";
 
 export default function MyRecipesLayout({
   children,
@@ -12,7 +13,7 @@ export default function MyRecipesLayout({
     <div className="flex min-h-screen flex-col">
       <header className="container z-40 bg-background">
         <div className="flex h-20 items-center justify-between py-6">
-          <NavBar>
+          <NavBar items={homeConfig.mainNav}>
             <FolderList />
           </NavBar>
           <UserDropdown />

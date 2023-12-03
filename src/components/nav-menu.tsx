@@ -56,7 +56,9 @@ export default function NavBar({ children, items }: MainNavProps) {
         {showMobileMenu ? <PanelLeftClose /> : <PanelLeftOpen />}
         <span className="font-bold">Menu</span>
       </Button>
-      {showMobileMenu && <MobileNav>{children}</MobileNav>}
+      {showMobileMenu && items && (
+        <MobileNav items={items}>{children}</MobileNav>
+      )}
     </div>
   );
 }
