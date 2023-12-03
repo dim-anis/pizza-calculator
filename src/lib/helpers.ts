@@ -1,5 +1,14 @@
 import { DoughIngredientRatios, DoughIngredients } from "@/lib/definitions";
 
+export function formatDate(input: string | number): string {
+  const date = new Date(input);
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export const validationErrorMessages = {
   negativeValue: "Value must be greater than 0.",
   valueExceeds: (val: number) => `Value must be less than ${val}.`,

@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/helpers";
 import { Recipe } from "@prisma/client";
 import Link from "next/link";
 
@@ -18,7 +19,7 @@ export default function RecipeItem({
         <div>
           <h3 className="text-base">{recipe.name}</h3>
           <p className="truncate text-sm text-muted-foreground">
-            {new Date(recipe.createdAt).toLocaleDateString()}
+            {formatDate(recipe.createdAt.toDateString())}
           </p>
         </div>
       </li>
