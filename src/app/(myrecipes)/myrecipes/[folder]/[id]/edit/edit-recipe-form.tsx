@@ -38,6 +38,8 @@ import { ingredients, optionalIngredients } from "../../../../../../lib/data";
 import { Folder } from "@prisma/client";
 import { RecipeWithFolders } from "../../loaders";
 import { Textarea } from "@/components/ui/textarea";
+import { useTransition } from "react";
+import SubmitButton from "@/components/submit-button";
 
 type Params = {
   folder: string;
@@ -51,6 +53,7 @@ export default function EditRecipeForm({
   recipe: RecipeWithFolders;
   folders: Folder[];
 }) {
+  const [pending, startTransition] = useTransition();
   const ingredientQuantities = ingredientRatiosToQuantities(
     recipe.doughballWeight,
     {
@@ -89,7 +92,9 @@ export default function EditRecipeForm({
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    await updateRecipe(recipe.id, recipe.folders, formData);
+    startTransition(async () => {
+      await updateRecipe(recipe.id, recipe.folders, formData);
+    });
   }
 
   return (
@@ -338,7 +343,9 @@ export default function EditRecipeForm({
           >
             Cancel
           </Link>
-          <Button type="submit">Update recipe</Button>
+          <SubmitButton type="submit" pending={pending}>
+            Update recipe
+          </SubmitButton>
         </div>
       </form>
     </Form>

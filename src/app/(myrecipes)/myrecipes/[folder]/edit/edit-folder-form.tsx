@@ -14,12 +14,15 @@ import { updateFolder } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CreateFolder, CreateFolderSchema } from "../../new-folder/definitions";
+import { useTransition } from "react";
+import SubmitButton from "@/components/submit-button";
 
 export default function EditFolderForm({
   oldFolderName,
 }: {
   oldFolderName: string;
 }) {
+  const [pending, startTransition] = useTransition();
   const form = useForm<CreateFolder>({
     mode: "onChange",
     resolver: zodResolver(CreateFolderSchema),
@@ -29,7 +32,9 @@ export default function EditFolderForm({
   });
 
   async function handleSubmit(folderData: CreateFolder) {
-    await updateFolder(oldFolderName, folderData);
+    startTransition(async () => {
+      await updateFolder(oldFolderName, folderData);
+    });
   }
 
   return (
@@ -52,7 +57,9 @@ export default function EditFolderForm({
             </FormItem>
           )}
         />
-        <Button type="submit">Update folder</Button>
+        <SubmitButton type="submit" pending={pending}>
+          Update folder
+        </SubmitButton>
       </form>
     </Form>
   );

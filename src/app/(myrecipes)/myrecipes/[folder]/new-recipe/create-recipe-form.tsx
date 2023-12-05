@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { ingredients, optionalIngredients } from "../../../../../lib/data";
 import { Textarea } from "@/components/ui/textarea";
+import { useTransition } from "react";
+import SubmitButton from "@/components/submit-button";
 
 type Params = {
   folder: string;
@@ -40,6 +42,7 @@ export default function CreateRecipeForm({
 }: {
   folders: { id: string; name: string }[];
 }) {
+  const [pending, startTransition] = useTransition();
   const params: Params = useParams();
   const folderName = decodeURIComponent(params["folder"]);
   const form = useForm<CreateRecipeData>({
@@ -62,7 +65,9 @@ export default function CreateRecipeForm({
   const selectedOptions = form.watch("selectedOptionalIngredients");
 
   async function handleSubmit(formData: CreateRecipeData) {
-    await createRecipe(formData);
+    startTransition(async () => {
+      await createRecipe(formData);
+    });
   }
 
   return (
@@ -311,7 +316,9 @@ export default function CreateRecipeForm({
           >
             Cancel
           </Link>
-          <Button type="submit">Create recipe</Button>
+          <SubmitButton type="submit" pending={pending}>
+            Create recipe
+          </SubmitButton>
         </div>
       </form>
     </Form>

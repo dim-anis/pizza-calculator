@@ -14,6 +14,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { deleteRecipe } from "@/lib/actions";
+import SubmitButton from "@/components/submit-button";
+import { useTransition } from "react";
 
 type Params = {
   folder: string;
@@ -21,6 +23,7 @@ type Params = {
 };
 
 export function Toolbar() {
+  const [pending, startTransition] = useTransition();
   const params: Params = useParams();
   return (
     <div className="flex w-full gap-5">
@@ -59,12 +62,18 @@ export function Toolbar() {
                 className="inline-flex"
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  await deleteRecipe(params.folder, params.id);
+                  startTransition(async () => {
+                    await deleteRecipe(params.folder, params.id);
+                  });
                 }}
               >
-                <Button type="submit" variant="destructive">
+                <SubmitButton
+                  type="submit"
+                  pending={pending}
+                  variant="destructive"
+                >
                   Delete recipe
-                </Button>
+                </SubmitButton>
               </form>
             </DialogFooter>
           </DialogContent>

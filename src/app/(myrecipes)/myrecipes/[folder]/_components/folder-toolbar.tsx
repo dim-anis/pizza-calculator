@@ -19,6 +19,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useTransition } from "react";
+import SubmitButton from "@/components/submit-button";
 
 export default function FolderTitleToolbar({
   folderName,
@@ -27,6 +29,7 @@ export default function FolderTitleToolbar({
   folderName: string;
   folderId: string;
 }) {
+  const [pending, startTransition] = useTransition();
   return (
     <div className="flex items-center space-x-2">
       <Link
@@ -65,13 +68,21 @@ export default function FolderTitleToolbar({
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
                 <DialogDescription>
                   This action cannot be undone. Are you sure you want to
-                  permanently delete this folder and all of it&apos;s contents?
+                  permanently delete this folder?
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button onClick={async () => await deleteFolder(folderId)}>
-                  Confirm
-                </Button>
+                <SubmitButton
+                  variant="destructive"
+                  pending={pending}
+                  onClick={async () =>
+                    startTransition(async () => {
+                      await deleteFolder(folderId);
+                    })
+                  }
+                >
+                  Delete folder
+                </SubmitButton>
               </DialogFooter>
             </DialogContent>
           </DropdownMenu>
