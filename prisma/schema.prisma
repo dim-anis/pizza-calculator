@@ -87,7 +87,7 @@ model Recipe {
   folders         Folder[]
   userId          String?
   user            User?    @relation(fields: [userId], references: [id])
-  name            String
+  name            String @unique
   doughballWeight Int
   flourRatio      Float    @default(0)
   waterRatio      Float    @default(0)
