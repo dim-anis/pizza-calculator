@@ -1,4 +1,10 @@
-import { DoughIngredientRatios, DoughIngredients } from "@/lib/definitions";
+import {
+  ActionState,
+  DoughIngredientRatios,
+  DoughIngredients,
+} from "@/lib/definitions";
+import { Prisma } from "@prisma/client";
+import { ZodError } from "zod";
 
 export function formatDate(input: string | number): string {
   const date = new Date(input);
@@ -92,4 +98,35 @@ export function toTitleCase(str: string) {
   return str.replace(/\w\S*/g, function (txt: string) {
     return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase();
   });
+}
+
+export function catchError(e: unknown): ActionState {
+  if (e instanceof ZodError) {
+    return {
+      status: "error",
+      message: "invalid form data",
+      errors: e.issues.map((issue) => ({
+        path: issue.path.join("."),
+        message: issue.message,
+      })),
+    };
+  } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    if ((e.code = "P2022")) {
+      return {
+        status: "error",
+        message: "invalid form data",
+        errors: [
+          {
+            path: "name",
+            message:
+              "An item with this name already exists. Please choose a different name.",
+          },
+        ],
+      };
+    }
+  }
+  return {
+    status: "error",
+    message: `Something went wrong. Please try again.`,
+  };
 }

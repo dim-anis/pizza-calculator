@@ -15,7 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import { deleteRecipe } from "@/lib/actions";
 import SubmitButton from "@/components/submit-button";
-import { useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
+import { ActionState } from "@/lib/definitions";
+import { AlertDestructive } from "@/components/alert-destructive";
 
 type Params = {
   folder: string;
@@ -23,8 +25,20 @@ type Params = {
 };
 
 export function Toolbar() {
+  const [uncaughtError, setUncaughtError] = useState<ActionState>(null);
   const [pending, startTransition] = useTransition();
   const params: Params = useParams();
+
+  async function handleDelete(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    startTransition(async () => {
+      const result = await deleteRecipe(params.folder, params.id);
+      if (result?.status === "error") {
+        setUncaughtError(result);
+      }
+    });
+  }
+
   return (
     <div className="flex w-full gap-5">
       <Link
@@ -56,16 +70,17 @@ export function Toolbar() {
                 This action cannot be undone. This will permanently delete your
                 recipe.
               </DialogDescription>
+              {uncaughtError && (
+                <AlertDestructive
+                  className="flex-1"
+                  description={uncaughtError.message}
+                />
+              )}
             </DialogHeader>
             <DialogFooter>
               <form
                 className="inline-flex"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  startTransition(async () => {
-                    await deleteRecipe(params.folder, params.id);
-                  });
-                }}
+                onSubmit={async (e) => handleDelete(e)}
               >
                 <SubmitButton
                   type="submit"

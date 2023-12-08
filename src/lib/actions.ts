@@ -5,6 +5,7 @@ import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 import { redirect } from "next/navigation";
 import {
+  catchError,
   getTotalDoughWeight,
   ingredientQuantitiesToRatios,
 } from "@/lib/helpers";
@@ -16,64 +17,46 @@ import {
   CreateFolder,
   CreateFolderSchema,
 } from "@/app/(myrecipes)/myrecipes/new-folder/definitions";
+import { ActionState } from "./definitions";
 
-export async function createFolder(folderData: CreateFolder) {
+export async function createFolder(
+  folderData: CreateFolder,
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
-
-  const zodResult = CreateFolderSchema.safeParse(folderData);
-
-  if (!zodResult.success) {
-    const { error } = zodResult;
-    return error;
-  }
-
-  const {
-    data: { name },
-  } = zodResult;
 
   try {
-    const newFolder = await prisma.folder.create({
+    const { name } = CreateFolderSchema.parse(folderData);
+    await prisma.folder.create({
       data: {
         userId: user.id,
         name,
       },
     });
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to Create Folder",
-    };
+  } catch (e) {
+    return catchError(e);
   }
 
-  const encodedFolderName = encodeURIComponent(name);
-
   revalidatePath("/myrecipes");
-  redirect(`/myrecipes/${encodedFolderName}`);
+  redirect(`/myrecipes/${encodeURIComponent(folderData.name)}`);
 }
 
-export async function updateFolder(oldName: string, folderData: CreateFolder) {
+export async function updateFolder(
+  oldName: string,
+  folderData: CreateFolder,
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
-
-  const zodResult = CreateFolderSchema.safeParse(folderData);
-
-  if (!zodResult.success) {
-    const { error } = zodResult;
-    return { success: false, error: error.format() };
-  }
-
-  const {
-    data: { name },
-  } = zodResult;
 
   try {
-    const updatedFolder = await prisma.folder.update({
+    const { name } = CreateFolderSchema.parse(folderData);
+    await prisma.folder.update({
       where: {
         name: oldName,
         userId: user.id,
@@ -82,70 +65,72 @@ export async function updateFolder(oldName: string, folderData: CreateFolder) {
         name,
       },
     });
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to Update Folder",
-    };
+  } catch (e) {
+    return catchError(e);
   }
 
-  const encodedFolderName = encodeURIComponent(name);
-
-  revalidatePath(`/myrecipes/${encodedFolderName}`);
-  redirect(`/myrecipes/${encodedFolderName}`);
+  revalidatePath(`/myrecipes/${encodeURIComponent(folderData.name)}`);
+  redirect(`/myrecipes/${encodeURIComponent(folderData.name)}`);
 }
 
-export async function deleteFolder(folderId: string) {
+export async function deleteFolder(folderId: string): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
 
-  const deletedFolder = await prisma.folder.delete({
-    where: {
-      id: folderId,
-      userId: user?.id,
-    },
-  });
+  try {
+    await prisma.folder.delete({
+      where: {
+        id: folderId,
+        userId: user?.id,
+      },
+    });
+  } catch (e) {
+    return catchError(e);
+  }
 
   revalidatePath("/myrecipes");
   redirect("/myrecipes/all");
 }
 
-export async function deleteRecipe(folderName: string, recipeId: string) {
+export async function deleteRecipe(
+  folderName: string,
+  recipeId: string,
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
 
-  const deletedRecipe = await prisma.recipe.delete({
-    where: {
-      id: recipeId,
-      userId: user?.id,
-    },
-  });
+  try {
+    await prisma.recipe.delete({
+      where: {
+        id: recipeId,
+        userId: user?.id,
+      },
+    });
+  } catch (e) {
+    return catchError(e);
+  }
 
   revalidatePath("/myrecipes");
   redirect(`/myrecipes/${folderName}`);
 }
 
-export async function createRecipe(data: CreateRecipeData) {
+export async function createRecipe(
+  data: CreateRecipeData,
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
 
-  const zodResult = CreateRecipeSchema.safeParse(data);
-
-  if (!zodResult.success) {
-    const { error } = zodResult;
-    return { success: false, error: error.format() };
-  }
-
-  const {
-    data: {
+  try {
+    const {
       name,
       numOfDoughballs,
       flourAmount,
@@ -156,22 +141,21 @@ export async function createRecipe(data: CreateRecipeData) {
       sugarAmount,
       selectedFolders,
       notes,
-    },
-  } = zodResult;
+    } = CreateRecipeSchema.parse(data);
 
-  const allIngredients = {
-    flourAmount,
-    waterAmount,
-    saltAmount,
-    yeastAmount,
-    oilAmount,
-    sugarAmount,
-  };
-  const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
-  const doughballWeight = getTotalDoughWeight(allIngredients) / numOfDoughballs;
+    const allIngredients = {
+      flourAmount,
+      waterAmount,
+      saltAmount,
+      yeastAmount,
+      oilAmount,
+      sugarAmount,
+    };
+    const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
+    const doughballWeight =
+      getTotalDoughWeight(allIngredients) / numOfDoughballs;
 
-  try {
-    const savedRecipe = await prisma.recipe.create({
+    await prisma.recipe.create({
       data: {
         userId: user.id,
         name,
@@ -186,7 +170,7 @@ export async function createRecipe(data: CreateRecipeData) {
       },
     });
   } catch (e) {
-    console.log(e);
+    return catchError(e);
   }
 
   revalidatePath("/myrecipes");
@@ -197,22 +181,15 @@ export async function updateRecipe(
   recipeId: string,
   connectedFolders: { id: string; name: string }[],
   data: CreateRecipeData,
-) {
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
-    return;
+    throw new Error("You are not authorized");
   }
 
-  const zodResult = CreateRecipeSchema.safeParse(data);
-
-  if (!zodResult.success) {
-    const { error } = zodResult;
-    return { success: false, error: error.format() };
-  }
-
-  const {
-    data: {
+  try {
+    const {
       name,
       numOfDoughballs,
       flourAmount,
@@ -223,31 +200,30 @@ export async function updateRecipe(
       sugarAmount,
       selectedFolders: updatedFolderSelection,
       notes,
-    },
-  } = zodResult;
+    } = CreateRecipeSchema.parse(data);
 
-  const allIngredients = {
-    flourAmount,
-    waterAmount,
-    saltAmount,
-    yeastAmount,
-    oilAmount,
-    sugarAmount,
-  };
-  const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
-  const doughballWeight = getTotalDoughWeight(allIngredients) / numOfDoughballs;
+    const allIngredients = {
+      flourAmount,
+      waterAmount,
+      saltAmount,
+      yeastAmount,
+      oilAmount,
+      sugarAmount,
+    };
+    const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
+    const doughballWeight =
+      getTotalDoughWeight(allIngredients) / numOfDoughballs;
 
-  const foldersToConnect = updatedFolderSelection.filter(
-    (newFolderName) =>
-      !connectedFolders.some((folder) => folder.name === newFolderName),
-  );
+    const foldersToConnect = updatedFolderSelection.filter(
+      (newFolderName) =>
+        !connectedFolders.some((folder) => folder.name === newFolderName),
+    );
 
-  const foldersToDisconnect = connectedFolders.filter(
-    (folder) => !updatedFolderSelection.includes(folder.name),
-  );
+    const foldersToDisconnect = connectedFolders.filter(
+      (folder) => !updatedFolderSelection.includes(folder.name),
+    );
 
-  try {
-    const savedRecipe = await prisma.recipe.update({
+    await prisma.recipe.update({
       where: {
         userId: user.id,
         id: recipeId,
@@ -267,7 +243,7 @@ export async function updateRecipe(
       },
     });
   } catch (e) {
-    console.log(e);
+    return catchError(e);
   }
 
   revalidatePath("/myrecipes");

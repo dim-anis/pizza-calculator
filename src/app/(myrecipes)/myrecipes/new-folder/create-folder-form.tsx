@@ -1,5 +1,11 @@
 "use client";
 
+import { createFolder } from "@/lib/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldPath, useForm } from "react-hook-form";
+import { CreateFolder, CreateFolderSchema } from "./definitions";
+import { ActionState } from "@/lib/definitions";
+import { AlertDestructive } from "@/components/alert-destructive";
 import {
   Form,
   FormControl,
@@ -9,33 +15,23 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { updateFolder } from "@/lib/actions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldPath, useForm } from "react-hook-form";
-import { CreateFolder, CreateFolderSchema } from "../../new-folder/definitions";
 import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
-import { ActionState } from "@/lib/definitions";
-import { AlertDestructive } from "@/components/alert-destructive";
 
-export default function EditFolderForm({
-  oldFolderName,
-}: {
-  oldFolderName: string;
-}) {
+export default function CreateFolderForm() {
   const [uncaughtError, setUncaughtError] = useState<ActionState>(null);
   const [pending, startTransition] = useTransition();
   const form = useForm<CreateFolder>({
     mode: "onChange",
     resolver: zodResolver(CreateFolderSchema),
     defaultValues: {
-      name: oldFolderName,
+      name: "",
     },
   });
 
-  async function handleSubmit(folderData: CreateFolder) {
+  async function handleSubmit(data: CreateFolder) {
     startTransition(async () => {
-      const result = await updateFolder(oldFolderName, folderData);
+      const result = await createFolder(data);
 
       if (result?.status === "error") {
         if (
@@ -53,7 +49,6 @@ export default function EditFolderForm({
       }
     });
   }
-
   return (
     <Form {...form}>
       {uncaughtError && (
@@ -69,7 +64,7 @@ export default function EditFolderForm({
               <FormControl>
                 <Input
                   type="text"
-                  placeholder="Type your new folder name here"
+                  placeholder="Type your folder name here"
                   {...field}
                 />
               </FormControl>
@@ -78,7 +73,7 @@ export default function EditFolderForm({
           )}
         />
         <SubmitButton type="submit" pending={pending}>
-          Update folder
+          Create folder
         </SubmitButton>
       </form>
     </Form>

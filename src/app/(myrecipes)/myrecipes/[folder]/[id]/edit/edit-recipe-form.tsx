@@ -5,7 +5,7 @@ import {
   getTotalDoughWeight,
   ingredientRatiosToQuantities,
 } from "@/lib/helpers";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -21,7 +21,7 @@ import { updateRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { FieldPath, useForm } from "react-hook-form";
 import {
   CreateRecipeData,
   CreateRecipeSchema,
@@ -38,8 +38,10 @@ import { ingredients, optionalIngredients } from "../../../../../../lib/data";
 import { Folder } from "@prisma/client";
 import { RecipeWithFolders } from "../../loaders";
 import { Textarea } from "@/components/ui/textarea";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
+import { ActionState } from "@/lib/definitions";
+import { AlertDestructive } from "@/components/alert-destructive";
 
 type Params = {
   folder: string;
@@ -53,6 +55,7 @@ export default function EditRecipeForm({
   recipe: RecipeWithFolders;
   folders: Folder[];
 }) {
+  const [uncaughtError, setUncaughtError] = useState<ActionState>(null);
   const [pending, startTransition] = useTransition();
   const ingredientQuantities = ingredientRatiosToQuantities(
     recipe.doughballWeight,
@@ -93,12 +96,30 @@ export default function EditRecipeForm({
 
   async function handleSubmit(formData: CreateRecipeData) {
     startTransition(async () => {
-      await updateRecipe(recipe.id, recipe.folders, formData);
+      const result = await updateRecipe(recipe.id, recipe.folders, formData);
+
+      if (result?.status === "error") {
+        if (
+          result.message === "invalid form data" ||
+          result.message === "duplicate key"
+        ) {
+          result.errors?.forEach((error) => {
+            form.setError(error.path as FieldPath<CreateRecipeData>, {
+              message: error.message,
+            });
+          });
+        } else {
+          setUncaughtError(result);
+        }
+      }
     });
   }
 
   return (
     <Form {...form}>
+      {uncaughtError && (
+        <AlertDestructive description={uncaughtError.message} />
+      )}
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col justify-around space-y-6 bg-white"

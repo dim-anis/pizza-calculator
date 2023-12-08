@@ -19,8 +19,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
+import { ActionState } from "@/lib/definitions";
+import { AlertDestructive } from "@/components/alert-destructive";
 
 export default function FolderTitleToolbar({
   folderName,
@@ -29,7 +31,18 @@ export default function FolderTitleToolbar({
   folderName: string;
   folderId: string;
 }) {
+  const [uncaughtError, setUncaughtError] = useState<ActionState>(null);
   const [pending, startTransition] = useTransition();
+  async function handleDelete(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    startTransition(async () => {
+      const result = await deleteFolder(folderId);
+      if (result?.status === "error") {
+        setUncaughtError(result);
+      }
+    });
+  }
+
   return (
     <div className="flex items-center space-x-2">
       <Link
@@ -70,19 +83,26 @@ export default function FolderTitleToolbar({
                   This action cannot be undone. Are you sure you want to
                   permanently delete this folder?
                 </DialogDescription>
+                {uncaughtError && (
+                  <AlertDestructive
+                    className="flex-1"
+                    description={uncaughtError.message}
+                  />
+                )}
               </DialogHeader>
               <DialogFooter>
-                <SubmitButton
-                  variant="destructive"
-                  pending={pending}
-                  onClick={async () =>
-                    startTransition(async () => {
-                      await deleteFolder(folderId);
-                    })
-                  }
+                <form
+                  className="inline-flex"
+                  onSubmit={async (e) => handleDelete(e)}
                 >
-                  Delete folder
-                </SubmitButton>
+                  <SubmitButton
+                    type="submit"
+                    pending={pending}
+                    variant="destructive"
+                  >
+                    Delete folder
+                  </SubmitButton>
+                </form>
               </DialogFooter>
             </DialogContent>
           </DropdownMenu>

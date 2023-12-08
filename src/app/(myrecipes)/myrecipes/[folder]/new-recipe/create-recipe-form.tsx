@@ -17,7 +17,7 @@ import { createRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { FieldPath, useForm } from "react-hook-form";
 import { CreateRecipeData, CreateRecipeSchema } from "./definitions";
 import {
   Select,
@@ -29,8 +29,10 @@ import {
 } from "@/components/ui/select";
 import { ingredients, optionalIngredients } from "../../../../../lib/data";
 import { Textarea } from "@/components/ui/textarea";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
+import { AlertDestructive } from "@/components/alert-destructive";
+import { ActionState } from "@/lib/definitions";
 
 type Params = {
   folder: string;
@@ -42,6 +44,7 @@ export default function CreateRecipeForm({
 }: {
   folders: { id: string; name: string }[];
 }) {
+  const [uncaughtError, setUncaughtError] = useState<ActionState>();
   const [pending, startTransition] = useTransition();
   const params: Params = useParams();
   const folderName = decodeURIComponent(params["folder"]);
@@ -66,12 +69,30 @@ export default function CreateRecipeForm({
 
   async function handleSubmit(formData: CreateRecipeData) {
     startTransition(async () => {
-      await createRecipe(formData);
+      const result = await createRecipe(formData);
+
+      if (result?.status === "error") {
+        if (
+          result.message === "invalid form data" ||
+          result.message === "duplicate key"
+        ) {
+          result.errors?.forEach((error) => {
+            form.setError(error.path as FieldPath<CreateRecipeData>, {
+              message: error.message,
+            });
+          });
+        } else {
+          setUncaughtError(result);
+        }
+      }
     });
   }
 
   return (
     <Form {...form}>
+      {uncaughtError && (
+        <AlertDestructive description={uncaughtError.message} />
+      )}
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col justify-around space-y-6 bg-white"
