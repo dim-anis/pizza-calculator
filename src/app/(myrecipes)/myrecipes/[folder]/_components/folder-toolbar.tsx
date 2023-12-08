@@ -84,10 +84,7 @@ export default function FolderTitleToolbar({
                   permanently delete this folder?
                 </DialogDescription>
                 {uncaughtError && (
-                  <AlertDestructive
-                    className="flex-1"
-                    description={uncaughtError.message}
-                  />
+                  <AlertDestructive description={uncaughtError.message} />
                 )}
               </DialogHeader>
               <DialogFooter>

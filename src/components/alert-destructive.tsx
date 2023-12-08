@@ -4,16 +4,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type AlertProps = {
   description: string;
-  className: string;
 };
 
-export function AlertDestructive({
-  description,
-  className,
-  ...props
-}: AlertProps) {
+export function AlertDestructive({ description, ...props }: AlertProps) {
   return (
-    <Alert variant="destructive" className={className} {...props}>
+    <Alert variant="destructive" {...props}>
       <AlertCircle className="h-4 w-4" />
       <AlertTitle>Error</AlertTitle>
       <AlertDescription>{description}</AlertDescription>

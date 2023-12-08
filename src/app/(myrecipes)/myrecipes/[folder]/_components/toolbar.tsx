@@ -71,10 +71,7 @@ export function Toolbar() {
                 recipe.
               </DialogDescription>
               {uncaughtError && (
-                <AlertDestructive
-                  className="flex-1"
-                  description={uncaughtError.message}
-                />
+                <AlertDestructive description={uncaughtError.message} />
               )}
             </DialogHeader>
             <DialogFooter>
