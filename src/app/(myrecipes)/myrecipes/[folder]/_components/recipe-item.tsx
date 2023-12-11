@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/helpers";
 import { Recipe } from "@prisma/client";
 import Link from "next/link";
@@ -26,3 +27,14 @@ export default function RecipeItem({
     </Link>
   );
 }
+
+RecipeItem.Skeleton = function RecipeItemSkeleton() {
+  return (
+    <div className="-mx-2 p-2">
+      <div className="flex flex-col gap-1">
+        <Skeleton className="h-6 w-1/5" />
+        <Skeleton className="h-5 w-1/6" />
+      </div>
+    </div>
+  );
+};

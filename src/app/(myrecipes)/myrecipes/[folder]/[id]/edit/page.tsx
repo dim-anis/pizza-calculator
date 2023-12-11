@@ -4,7 +4,7 @@ import {
 } from "../../../../../../lib/queries";
 import EditRecipeForm from "./edit-recipe-form";
 
-export default async function CreateRecipePage({
+export default async function EditRecipePage({
   params,
 }: {
   params: { id: string };
