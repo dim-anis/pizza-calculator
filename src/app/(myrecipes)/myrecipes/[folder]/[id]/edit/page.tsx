@@ -1,4 +1,7 @@
-import { getAllFolders, getRecipeWithFolders } from "../../loaders";
+import {
+  getAllFolders,
+  getRecipeWithFolders,
+} from "../../../../../../lib/queries";
 import EditRecipeForm from "./edit-recipe-form";
 
 export default async function CreateRecipePage({

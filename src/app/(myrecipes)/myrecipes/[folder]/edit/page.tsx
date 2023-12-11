@@ -1,5 +1,5 @@
 import { toTitleCase } from "@/lib/helpers";
-import { getFolderWithRecipes } from "../loaders";
+import { getFolderWithRecipes } from "../../../../../lib/queries";
 import EditFolderForm from "./edit-folder-form";
 
 export default async function UpdateFolderPage({

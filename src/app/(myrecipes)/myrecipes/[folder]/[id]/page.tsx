@@ -1,4 +1,4 @@
-import { getRecipeWithFolders } from "../loaders";
+import { getRecipeWithFolders } from "../../../../../lib/queries";
 import { Toolbar } from "../_components/toolbar";
 import { buttonVariants } from "@/components/ui/button";
 import { Folder } from "lucide-react";

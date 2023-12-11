@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/select";
 import { ingredients, optionalIngredients } from "../../../../../../lib/data";
 import { Folder } from "@prisma/client";
-import { RecipeWithFolders } from "../../loaders";
+import { RecipeWithFolders } from "../../../../../../lib/queries";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";

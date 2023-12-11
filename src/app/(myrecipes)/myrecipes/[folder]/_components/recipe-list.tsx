@@ -1,6 +1,6 @@
-import { getFolderWithRecipes } from "../loaders";
+import { getFolderWithRecipes } from "../../../../../lib/queries";
 import RecipeItem from "./recipe-item";
-import FolderEmptyView from "../folder-empty-view";
+import FolderEmptyView from "./folder-empty-view";
 import FolderTitleToolbar from "./folder-toolbar";
 
 export default async function RecipeList({

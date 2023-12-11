@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getArrayFromOneTo } from "@/lib/helpers";
-import { RecipeWithFolders } from "../loaders";
+import { RecipeWithFolders } from "../../../../../lib/queries";
 
 export default function RecipeDetails({
   recipe,

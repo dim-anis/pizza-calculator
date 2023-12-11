@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getFolderNamesWithRecipeCount } from "../loaders";
+import { getFolderNamesWithRecipeCount } from "../../../../../lib/queries";
 import FolderItem from "./folder-list-item";
 import { buttonVariants } from "@/components/ui/button";
 

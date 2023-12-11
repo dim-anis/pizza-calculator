@@ -1,4 +1,4 @@
-import { getAllFolders } from "../loaders";
+import { getAllFolders } from "../../../../../lib/queries";
 import CreateRecipeForm from "./create-recipe-form";
 
 export default async function CreateRecipePage() {

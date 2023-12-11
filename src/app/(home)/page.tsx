@@ -1,5 +1,5 @@
 import Calculator from "./components/Calculator";
-import { getDefaultRecipes } from "../(myrecipes)/myrecipes/[folder]/loaders";
+import { getDefaultRecipes } from "../../lib/queries";
 
 export default async function Home() {
   const defaultRecipes = await getDefaultRecipes();
