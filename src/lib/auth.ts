@@ -1,10 +1,30 @@
 import { NextAuthOptions } from "next-auth";
 import prisma from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import GitHubProvider from "next-auth/providers/github";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import { Adapter, AdapterUser } from "next-auth/adapters";
+
+function CustomPrismaAdapter(p: typeof prisma): Adapter {
+  return {
+    ...PrismaAdapter(p),
+    async createUser(user: Omit<AdapterUser, "id">) {
+      const created = await p.user.create({
+        data: {
+          ...user,
+          folders: {
+            create: { name: "all" },
+          },
+        },
+      });
+
+      return created as AdapterUser;
+    },
+  };
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
