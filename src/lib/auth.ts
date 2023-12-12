@@ -31,9 +31,13 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   providers: [
-    GitHubProvider({
+    GitHub({
       clientId: process.env.GITHUB_ID ?? "",
       clientSecret: process.env.GITHUB_SECRET ?? "",
+    }),
+    Google({
+      clientId: process.env.GOOGLE_ID ?? "",
+      clientSecret: process.env.GOOGLE_SECRET ?? "",
     }),
   ],
   callbacks: {
