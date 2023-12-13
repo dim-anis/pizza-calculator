@@ -1,5 +1,5 @@
 import { EmptyPlaceholder } from "@/components/empty-placeholder";
-import { FileText } from "lucide-react";
+import { Icons } from "@/components/icons";
 
 export default function Blog() {
   return (
@@ -9,7 +9,7 @@ export default function Blog() {
           Latest articles
         </h1>
         <EmptyPlaceholder>
-          <FileText />
+          <Icons.file />
           No posts yet...
         </EmptyPlaceholder>
       </div>

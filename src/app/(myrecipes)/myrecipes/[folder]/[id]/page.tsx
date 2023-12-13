@@ -1,9 +1,9 @@
 import { getRecipeWithFolders } from "../../../../../lib/queries";
 import { Toolbar } from "../_components/toolbar";
 import { buttonVariants } from "@/components/ui/button";
-import { Folder } from "lucide-react";
 import Link from "next/link";
 import RecipeDetails from "./recipe-details";
+import { Icons } from "@/components/icons";
 
 export default async function RecipePage({
   params,
@@ -29,7 +29,7 @@ export default async function RecipePage({
                   variant: "ghost",
                 })} inline-flex h-8 items-center justify-center whitespace-nowrap rounded-md border border-dashed border-input bg-transparent px-3 text-xs font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50`}
               >
-                <Folder className="mr-2 h-4 w-4" />
+                <Icons.folder className="mr-2 h-4 w-4" />
                 {folder.name}
               </Link>
             ))}

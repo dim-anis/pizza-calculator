@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ChevronLeft, PenSquare, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -18,6 +17,7 @@ import SubmitButton from "@/components/submit-button";
 import { FormEvent, useState, useTransition } from "react";
 import { ActionState } from "@/lib/definitions";
 import { AlertDestructive } from "@/components/alert-destructive";
+import { Icons } from "@/components/icons";
 
 type Params = {
   folder: string;
@@ -48,19 +48,19 @@ export function Toolbar() {
           size: "icon",
         })}
       >
-        <ChevronLeft className="h-5 w-5" />
+        <Icons.chevronLeft className="h-5 w-5" />
       </Link>
       <div className="flex">
         <Link
           href={`/myrecipes/${params.folder}/${params.id}/edit`}
           className={buttonVariants({ variant: "ghost", size: "icon" })}
         >
-          <PenSquare className="h-5 w-5" />
+          <Icons.recipeEdit className="h-5 w-5" />
         </Link>
         <Dialog>
           <DialogTrigger>
             <Button variant="ghost" size="icon" onClick={() => console.log()}>
-              <Trash2 className="h-5 w-5" />
+              <Icons.trash className="h-5 w-5" />
             </Button>
           </DialogTrigger>
           <DialogContent>

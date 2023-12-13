@@ -3,10 +3,10 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Github, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { Icons } from "./icons";
 
 export default function UserAuthForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,7 @@ export default function UserAuthForm() {
     <>
       <Input disabled />
       <Button className={cn(buttonVariants())} disabled>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoading && <Icons.loader className="mr-2 h-4 w-4 animate-spin" />}
         Sign In with Email
       </Button>
       <div className="relative">
@@ -42,7 +42,7 @@ export default function UserAuthForm() {
           disabled={isLoading || isGithubLoading || isGoogleLoading}
         >
           {isGoogleLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Icons.loader className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <svg
               role="img"
@@ -66,9 +66,9 @@ export default function UserAuthForm() {
           disabled={isLoading || isGithubLoading || isGoogleLoading}
         >
           {isGithubLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Icons.loader className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <Github className="mr-2 h-4 w-4" />
+            <Icons.github className="mr-2 h-4 w-4" />
           )}
           Github
         </Button>

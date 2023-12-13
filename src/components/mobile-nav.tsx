@@ -1,6 +1,5 @@
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { Pizza } from "lucide-react";
 import Link from "next/link";
 import {
   NavigationMenu,
@@ -10,6 +9,7 @@ import {
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
 import { MainNavItem } from "@/lib/definitions";
+import { Icons } from "./icons";
 
 type MobileNavProps = {
   items: MainNavItem[];
@@ -24,7 +24,7 @@ export function MobileNav({ children, items }: MobileNavProps) {
     >
       <div className="relative z-20 grid gap-6 rounded-md bg-popover p-4 text-popover-foreground shadow-md">
         <Link href="/" className="flex items-center space-x-2">
-          <Pizza />
+          <Icons.logo className="h-10 w-10" />
           <span className="font-bold">{siteConfig.name}</span>
         </Link>
         {children}

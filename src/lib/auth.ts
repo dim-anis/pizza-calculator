@@ -13,7 +13,7 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
         data: {
           ...user,
           folders: {
-            create: { name: "all" },
+            create: { name: "All" },
           },
         },
       });

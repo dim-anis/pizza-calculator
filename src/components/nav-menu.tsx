@@ -9,11 +9,11 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
-import { PanelLeftClose, PanelLeftOpen, Pizza } from "lucide-react";
 import { Button } from "./ui/button";
 import { MobileNav } from "./mobile-nav";
 import { MainNavItem } from "@/lib/definitions";
 import { siteConfig } from "@/config/site";
+import { Icons } from "./icons";
 
 type MainNavProps = {
   children?: React.ReactNode;
@@ -26,7 +26,7 @@ export default function NavBar({ children, items }: MainNavProps) {
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <Pizza />
+        <Icons.logo className="h-10 w-10" />
         <span className="hidden font-bold sm:inline-block">
           {siteConfig.name}
         </span>
@@ -53,7 +53,7 @@ export default function NavBar({ children, items }: MainNavProps) {
         className="flex items-center space-x-2 px-1 md:hidden"
         onClick={() => setShowMobileMenu(!showMobileMenu)}
       >
-        {showMobileMenu ? <PanelLeftClose /> : <PanelLeftOpen />}
+        {showMobileMenu ? <Icons.panelClose /> : <Icons.panelOpen />}
         <span className="font-bold">Menu</span>
       </Button>
       {showMobileMenu && items && (

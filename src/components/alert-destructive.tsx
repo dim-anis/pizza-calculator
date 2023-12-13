@@ -1,6 +1,5 @@
-import { AlertCircle } from "lucide-react";
-
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Icons } from "./icons";
 
 type AlertProps = {
   description: string;
@@ -9,7 +8,7 @@ type AlertProps = {
 export function AlertDestructive({ description, ...props }: AlertProps) {
   return (
     <Alert variant="destructive" {...props}>
-      <AlertCircle className="h-4 w-4" />
+      <Icons.alert className="h-4 w-4" />
       <AlertTitle>Error</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
     </Alert>

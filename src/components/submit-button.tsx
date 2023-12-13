@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button, ButtonProps } from "./ui/button";
-import { Loader } from "lucide-react";
+import { Icons } from "./icons";
 
 type SubmitButtonProps = ButtonProps & { pending: boolean };
 
@@ -12,7 +12,7 @@ export default function SubmitButton({
 }: SubmitButtonProps) {
   return (
     <Button className={cn(className)} disabled={pending} {...props}>
-      {pending ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : null}
+      {pending ? <Icons.loader className="mr-2 h-4 w-4 animate-spin" /> : null}
       {children}
     </Button>
   );
