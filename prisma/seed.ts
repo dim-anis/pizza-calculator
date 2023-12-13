@@ -63,7 +63,10 @@ async function main() {
         yeastRatio: recipe.ingredients.yeast,
         oilRatio: recipe.ingredients.oil,
         folders: {
-          connect: [{ name: "All" }, { name: folderNames[randomNum] }],
+          connect: [
+            { userId_name: { name: "All", userId: user.id } },
+            { userId_name: { name: folderNames[randomNum], userId: user.id } },
+          ],
         },
       },
     });

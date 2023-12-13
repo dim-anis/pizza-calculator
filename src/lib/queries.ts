@@ -84,7 +84,10 @@ export async function getFolderWithRecipes(folderName: string) {
   const folder = await prisma.folder.findUnique({
     where: {
       userId: user.id,
-      name: folderName,
+      userId_name: {
+        name: folderName,
+        userId: user.id,
+      },
     },
     include: {
       recipes: {

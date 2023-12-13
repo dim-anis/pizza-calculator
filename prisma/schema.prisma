@@ -69,14 +69,15 @@ model VerificationToken {
 
 model Folder {
   id        String   @id @default(cuid())
+  name      String   @db.VarChar(50)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  recipes   Recipe[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  name      String   @unique
-  recipes   Recipe[]
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index(userId)
+  @@unique([userId, name])
+  @@index([userId])
   @@map("folders")
 }
 
@@ -87,7 +88,7 @@ model Recipe {
   folders         Folder[]
   userId          String?
   user            User?    @relation(fields: [userId], references: [id])
-  name            String @unique
+  name            String
   doughballWeight Int
   flourRatio      Float    @default(0)
   waterRatio      Float    @default(0)
@@ -97,6 +98,7 @@ model Recipe {
   yeastRatio      Float    @default(0)
   notes           String?  @db.Text
 
+  @@unique([userId, name])
   @@index(userId)
   @@map("recipes")
 }

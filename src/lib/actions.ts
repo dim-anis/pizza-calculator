@@ -58,8 +58,10 @@ export async function updateFolder(
     const { name } = CreateFolderSchema.parse(folderData);
     await prisma.folder.update({
       where: {
-        name: oldName,
-        userId: user.id,
+        userId_name: {
+          userId: user.id,
+          name: oldName,
+        },
       },
       data: {
         name,
@@ -161,7 +163,9 @@ export async function createRecipe(
         name,
         folders: {
           connect: [
-            ...["All", ...selectedFolders].map((folder) => ({ name: folder })),
+            ...["All", ...selectedFolders].map((folder) => ({
+              userId_name: { userId: user.id, name: folder },
+            })),
           ],
         },
         doughballWeight,
@@ -232,9 +236,15 @@ export async function updateRecipe(
         userId: user.id,
         name,
         folders: {
-          connect: [...foldersToConnect.map((folder) => ({ name: folder }))],
+          connect: [
+            ...foldersToConnect.map((folder) => ({
+              userId_name: { userId: user.id, name: folder },
+            })),
+          ],
           disconnect: [
-            ...foldersToDisconnect.map((folder) => ({ name: folder.name })),
+            ...foldersToDisconnect.map((folder) => ({
+              userId_name: { userId: user.id, name: folder.name },
+            })),
           ],
         },
         notes,
