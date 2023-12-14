@@ -1,5 +1,4 @@
 import { EmptyPlaceholder } from "@/components/empty-placeholder";
-import { Icons } from "@/components/icons";
 
 export default function Blog() {
   return (
@@ -9,8 +8,11 @@ export default function Blog() {
           Latest articles
         </h1>
         <EmptyPlaceholder>
-          <Icons.file />
-          No posts yet...
+          <EmptyPlaceholder.Icon name="file" />
+          <EmptyPlaceholder.Title>No blog posts yet</EmptyPlaceholder.Title>
+          <EmptyPlaceholder.Description>
+            Blog posts are yet to be added.
+          </EmptyPlaceholder.Description>
         </EmptyPlaceholder>
       </div>
     </div>
