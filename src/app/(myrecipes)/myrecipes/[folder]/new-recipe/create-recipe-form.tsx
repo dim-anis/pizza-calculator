@@ -106,7 +106,6 @@ export default function CreateRecipeForm({
               <FormControl>
                 <Input
                   type="text"
-                  inputMode="numeric"
                   placeholder="Type your recipe name here"
                   {...field}
                 />
