@@ -78,6 +78,12 @@ export default function EditRecipeForm({
     defaultValues: {
       name: recipe.name,
       ...ingredientQuantities,
+      flourAmount: ingredientQuantities.flourAmount || "",
+      waterAmount: ingredientQuantities.waterAmount || "",
+      saltAmount: ingredientQuantities.saltAmount || "",
+      yeastAmount: ingredientQuantities.yeastAmount || "",
+      sugarAmount: ingredientQuantities.sugarAmount || "",
+      oilAmount: ingredientQuantities.oilAmount || "",
       numOfDoughballs: totalDoughWeight / recipe.doughballWeight,
       selectedFolders: recipe.folders.map((folder) => folder.name),
       selectedOptionalIngredients: [

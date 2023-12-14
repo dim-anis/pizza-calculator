@@ -68,12 +68,27 @@ export function ingredientQuantitiesToRatios({
   oilAmount,
 }: DoughIngredients) {
   const ratios = {
-    flourRatio: calculateBakersPercentage(flourAmount, flourAmount),
-    waterRatio: calculateBakersPercentage(waterAmount, flourAmount),
-    saltRatio: calculateBakersPercentage(saltAmount ?? 0, flourAmount),
-    yeastRatio: calculateBakersPercentage(yeastAmount ?? 0, flourAmount),
-    sugarRatio: calculateBakersPercentage(sugarAmount ?? 0, flourAmount),
-    oilRatio: calculateBakersPercentage(oilAmount ?? 0, flourAmount),
+    flourRatio: calculateBakersPercentage(
+      Number(flourAmount),
+      Number(flourAmount),
+    ),
+    waterRatio: calculateBakersPercentage(
+      Number(waterAmount),
+      Number(flourAmount),
+    ),
+    saltRatio: calculateBakersPercentage(
+      Number(saltAmount),
+      Number(flourAmount),
+    ),
+    yeastRatio: calculateBakersPercentage(
+      Number(yeastAmount),
+      Number(flourAmount),
+    ),
+    sugarRatio: calculateBakersPercentage(
+      Number(sugarAmount),
+      Number(flourAmount),
+    ),
+    oilRatio: calculateBakersPercentage(Number(oilAmount), Number(flourAmount)),
   };
 
   return ratios;
@@ -84,10 +99,13 @@ export function getArrayFromOneTo(n: number) {
 }
 
 export function getTotalDoughWeight(ingredients: DoughIngredients) {
-  return Object.values(ingredients).reduce(
-    (totalWeight, currItemWeight) => totalWeight + currItemWeight,
+  const totalWeight = Object.values(ingredients).reduce(
+    (totalWeight, currItemWeight) =>
+      Number(totalWeight) + Number(currItemWeight),
     0,
   );
+
+  return Number(totalWeight);
 }
 
 export function capitalize(word: string) {
