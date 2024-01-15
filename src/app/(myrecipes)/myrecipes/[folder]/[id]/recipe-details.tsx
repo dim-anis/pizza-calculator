@@ -1,7 +1,10 @@
 "use client";
 
 import IngredientList from "@/components/ingredient-list";
-import { ingredientRatiosToQuantities } from "@/lib/helpers";
+import {
+  calculateNutritionalContent,
+  ingredientRatiosToQuantities,
+} from "@/lib/helpers";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
@@ -13,7 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getArrayFromOneTo } from "@/lib/helpers";
-import { RecipeWithFolders } from "../../../../../lib/queries";
+import { type RecipeWithFolders } from "@/lib/queries";
+import NutrtitionFacts from "./nutrition-facts";
 
 export default function RecipeDetails({
   recipe,
@@ -32,6 +36,8 @@ export default function RecipeDetails({
       oilRatio: recipe.oilRatio,
     },
   );
+
+  const nutritionalContent = calculateNutritionalContent(ingredientQuantities);
 
   return (
     <div className="space-y-4">
@@ -61,6 +67,7 @@ export default function RecipeDetails({
         </div>
         <IngredientList ingredientAmounts={ingredientQuantities} />
       </div>
+      <NutrtitionFacts {...nutritionalContent} />
       <div className="space-y-2">
         {recipe.notes ? (
           <>

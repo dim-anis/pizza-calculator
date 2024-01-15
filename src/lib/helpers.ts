@@ -5,6 +5,7 @@ import {
 } from "@/lib/definitions";
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
+import { nutritionalContent } from "../../public/nutriContent";
 
 export function formatDate(input: string | number): string {
   const date = new Date(input);
@@ -147,4 +148,51 @@ export function catchError(e: unknown): ActionState {
     status: "error",
     message: `Something went wrong. Please try again.`,
   };
+}
+
+export function calculateNutritionalContent({
+  flourAmount,
+  oilAmount,
+  sugarAmount,
+}: Record<keyof DoughIngredients, number>) {
+  const normalizationFactor = 0.01;
+  const normalize = (amount: number) => amount * normalizationFactor;
+
+  const { flourNormalized, oilNormalized, sugarNormalized } = {
+    flourNormalized: normalize(flourAmount),
+    oilNormalized: normalize(oilAmount),
+    sugarNormalized: normalize(sugarAmount),
+  };
+
+  const calories = Math.round(
+    flourNormalized * nutritionalContent.flour.calories +
+      oilNormalized * nutritionalContent.oil.calories +
+      sugarNormalized * nutritionalContent.sugar.calories,
+  );
+
+  const protein = Number(
+    (
+      flourNormalized * nutritionalContent.flour.protein +
+      oilNormalized * nutritionalContent.oil.protein +
+      sugarNormalized * nutritionalContent.sugar.protein
+    ).toPrecision(2),
+  );
+
+  const fat = Number(
+    (
+      flourNormalized * nutritionalContent.flour.fat +
+      oilNormalized * nutritionalContent.oil.fat +
+      sugarNormalized * nutritionalContent.sugar.fat
+    ).toPrecision(2),
+  );
+
+  const carbs = Number(
+    (
+      flourNormalized * nutritionalContent.flour.carbs +
+      oilNormalized * nutritionalContent.oil.carbs +
+      sugarNormalized * nutritionalContent.sugar.carbs
+    ).toPrecision(2),
+  );
+
+  return { calories, protein, fat, carbs };
 }
