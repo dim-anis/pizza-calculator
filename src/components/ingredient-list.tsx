@@ -31,7 +31,7 @@ export default function IngredientList({
               <TableRow key={ingredient.id}>
                 <TableCell>{ingredient.label}</TableCell>
                 <TableCell className="text-right">
-                  {ingredientAmounts[ingredient.id]}g
+                  {ingredientAmounts[ingredient.id]} g
                 </TableCell>
               </TableRow>
             ),
@@ -42,7 +42,7 @@ export default function IngredientList({
               <TableRow key={ingredient.id}>
                 <TableCell>{ingredient.label}</TableCell>
                 <TableCell className="text-right">
-                  {ingredientAmounts[ingredient.id]}g
+                  {ingredientAmounts[ingredient.id]} g
                 </TableCell>
               </TableRow>
             ),
