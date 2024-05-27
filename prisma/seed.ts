@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { defaultPizzaRecipes, customRecipes } from "../public/recipes";
 
 const folderNames = [
