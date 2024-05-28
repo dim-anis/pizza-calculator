@@ -1,10 +1,11 @@
-import { getFolderWithRecipes } from "../../../../../lib/queries";
+import { getFolderWithRecipes } from "@/lib/queries";
 import RecipeItem from "./recipe-item";
 import FolderTitleToolbar from "./folder-toolbar";
 import { EmptyPlaceholder } from "@/components/empty-placeholder";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
+import Empty from "@/components/empty";
 
 export default async function RecipeList({
   folderName,
@@ -24,12 +25,10 @@ export default async function RecipeList({
         <FolderTitleToolbar folderName={folderName} folderId={folder.id} />
       </div>
       {folder?.recipes?.length === 0 ? (
-        <EmptyPlaceholder>
-          <EmptyPlaceholder.Icon name="file" />
-          <EmptyPlaceholder.Title>No recipes found</EmptyPlaceholder.Title>
-          <EmptyPlaceholder.Description>
-            You don&apos;t have any recipes in this folder yet.
-          </EmptyPlaceholder.Description>
+        <Empty
+          title={"No recipes found"}
+          description={"You don't have any recipes in this folder yet."}
+        >
           <Link
             className={`${buttonVariants({
               variant: "default",
@@ -39,7 +38,7 @@ export default async function RecipeList({
             <Icons.add className="mr-2 h-4 w-4" />
             Add recipe
           </Link>
-        </EmptyPlaceholder>
+        </Empty>
       ) : (
         <ul className="flex flex-col space-y-2">
           {folder?.recipes?.map((recipe) => (
