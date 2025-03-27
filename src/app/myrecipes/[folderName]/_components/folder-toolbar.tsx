@@ -33,7 +33,7 @@ export default function FolderTitleToolbar({
   async function handleDelete(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      const result = await deleteFolder(folderId);
+      await deleteFolder(folderId);
     });
   }
 
