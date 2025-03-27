@@ -16,7 +16,7 @@ export type SiteConfig = {
 export const recipeWithIngredients =
   Prisma.validator<Prisma.RecipeDefaultArgs>()({
     include: {
-      recipeServing: { omit: { id: true } },
+      recipeServing: { omit: { id: true, recipeId: true } },
       ingredients: {
         include: {
           ingredient: {
@@ -78,7 +78,7 @@ const folderSchema = z.object({
 export const recipeSchema = z.object({
   id: z.string().optional(),
   name: z.string(),
-  notes: z.string().nullish(),
+  notes: z.string().optional(),
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required")
@@ -96,8 +96,8 @@ export type RecipeForm = z.infer<typeof recipeSchema>;
 export type IngredientWithWeight = z.infer<typeof recipeIngredientSchema>;
 
 export const bakersFormulaIngredientSchema = z.object({
-  id: z.number().optional(),
-  recipeId: z.string().optional(),
+  id: z.number(),
+  recipeId: z.string(),
   ingredientId: z.number(),
   ingredient: z.object({
     name: z.string(),

@@ -312,6 +312,7 @@ export default function CreateRecipeForm({
                 </h3>
                 <FormField
                   control={form.control}
+                  //@ts-expect-error display error within the form
                   name={`ingredients.root`}
                   render={() => (
                     <FormItem>

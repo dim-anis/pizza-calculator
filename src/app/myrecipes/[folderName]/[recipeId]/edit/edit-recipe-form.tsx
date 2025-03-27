@@ -344,6 +344,7 @@ export default function EditRecipeForm({
               </h3>
               <FormField
                 control={form.control}
+                //@ts-expect-error display error within the form
                 name={`ingredients.root`}
                 render={() => (
                   <FormItem>

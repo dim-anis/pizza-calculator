@@ -164,7 +164,11 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: string) {
     },
     include: {
       recipeServing: true,
-      ingredients: { include: { ingredient: true } },
+      ingredients: {
+        include: {
+          ingredient: { include: { type: { select: { isLiquid: true } } } },
+        },
+      },
       folders: true,
     },
   });
