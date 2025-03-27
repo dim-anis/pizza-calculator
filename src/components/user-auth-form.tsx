@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Icons } from "./icons";
 
 export default function UserAuthForm() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const searchParams = useSearchParams();
