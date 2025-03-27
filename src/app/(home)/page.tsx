@@ -1,4 +1,4 @@
-import Calculator from "./components/calculator";
+import Calculator from "./_components/calculator";
 import { getDefaultRecipes } from "@/lib/queries";
 
 export default async function Home() {
