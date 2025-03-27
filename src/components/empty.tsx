@@ -1,5 +1,4 @@
 import { EmptyPlaceholder } from "./empty-placeholder";
-import { buttonVariants } from "./ui/button";
 import { PropsWithChildren } from "react";
 
 type Props = { title: string; description: string };
