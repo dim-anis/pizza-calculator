@@ -29,14 +29,16 @@ export default function UserDropdown() {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel>
-            <p className="text-sm font-medium leading-none">
-              {session.user?.name}
-            </p>
-            {session.user?.email && (
-              <p className="text-xs leading-none text-muted-foreground">
-                {session.user?.email}
+            <div className="space-y-2">
+              <p className="text-sm font-medium leading-none">
+                {session.user?.name}
               </p>
-            )}
+              {session.user?.email && (
+                <p className="text-xs leading-none text-muted-foreground">
+                  {session.user?.email}
+                </p>
+              )}
+            </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
