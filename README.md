@@ -12,7 +12,7 @@ A pizza dough recipe calculator and organizer built in Next.js using the app rou
 - API Routes and Middlewares
 - Authentication using **NextAuth.js**
 - ORM using **Prisma**
-- Database on **PlanetScale**
+- Database on **Turso**
 - Styled using **Tailwind CSS**
 - Validations using **Zod**
 - Written in **TypeScript**

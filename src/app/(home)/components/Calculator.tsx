@@ -2,69 +2,53 @@
 
 import { useState } from "react";
 import IngredientList from "@/components/ingredient-list";
-import { ingredientRatiosToQuantities } from "@/lib/helpers";
+import { calculateIngredientWeights } from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DefaultRecipesForm, { CalculatorFormData } from "./DefaultRecipesForm";
+import DefaultRecipesForm from "./default-recipes-form";
 import { UseFormReset } from "react-hook-form";
-import { Recipe } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-type CalculatorProps = {
-  defaultRecipes: Recipe[];
+type Props = {
+  recipes: RecipeWithIngredients[];
 };
 
-export default function Calculator({ defaultRecipes }: CalculatorProps) {
-  const [userRecipe, setUserRecipe] = useState<Recipe>();
-  const [numOfDoughballs, setNumOfDoughballs] = useState(2);
-  const recipe = userRecipe || defaultRecipes[0];
-
-  const ingredientQuantities = ingredientRatiosToQuantities(
-    numOfDoughballs * recipe.doughballWeight,
-    {
-      flourRatio: recipe.flourRatio,
-      waterRatio: recipe.waterRatio,
-      saltRatio: recipe.saltRatio,
-      yeastRatio: recipe.yeastRatio,
-      sugarRatio: recipe.sugarRatio,
-      oilRatio: recipe.oilRatio,
-    },
+export default function Calculator({ recipes }: Props) {
+  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithIngredients>(
+    recipes[0],
   );
 
-  function onSubmit(formData: CalculatorFormData) {
-    const {
-      settings: { numOfDoughballs, doughHydration, doughballWeight },
-    } = formData;
+  const ingredientsWithWeights = calculateIngredientWeights(
+    selectedRecipe.recipeServing.quantity * selectedRecipe.recipeServing.weight,
+    selectedRecipe.ingredients,
+  );
 
-    setNumOfDoughballs(numOfDoughballs);
-    setUserRecipe({
-      ...recipe,
-      waterRatio: doughHydration / 100,
-      doughballWeight,
+  function onSubmit(updatedRecipe: BakersFormulaForm) {
+    setSelectedRecipe({
+      ...updatedRecipe,
+      ingredients: updatedRecipe.ingredients.map((i) => ({
+        ...i,
+        percentage: i.percentage * 100,
+      })),
     });
   }
 
   function onSelectChange(
     recipeName: string,
-    resetForm: UseFormReset<CalculatorFormData>,
+    resetForm: UseFormReset<BakersFormulaForm>,
   ) {
-    const selectedRecipe = defaultRecipes.find(
-      (recipe) => recipe.name === recipeName,
-    );
+    const selectedRecipe = recipes.find((recipe) => recipe.name === recipeName);
     if (selectedRecipe) {
-      setUserRecipe(selectedRecipe);
-      resetForm({
-        name: selectedRecipe.name,
-        settings: {
-          numOfDoughballs: numOfDoughballs,
-          doughballWeight: selectedRecipe.doughballWeight,
-          doughHydration: selectedRecipe.waterRatio * 100,
-        },
-      });
+      setSelectedRecipe(selectedRecipe);
+      resetForm(selectedRecipe);
     }
   }
 
   return (
-    <section className="container space-y-3 py-4 md:py-6 lg:py-12">
-      <div className="mx-auto grid items-center gap-6 md:max-w-[64rem] md:grid-cols-2">
+    <section className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12">
+      <div className="mx-auto grid items-center gap-6 max-w-5xl md:grid-cols-2 border-1 p-6 rounded-2xl">
         <Tabs defaultValue="basicSettings">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
@@ -74,15 +58,7 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
           </TabsList>
           <TabsContent value="basicSettings">
             <DefaultRecipesForm
-              pizzaRecipes={defaultRecipes}
-              defaultValues={{
-                name: recipe.name,
-                settings: {
-                  numOfDoughballs: numOfDoughballs,
-                  doughballWeight: recipe.doughballWeight,
-                  doughHydration: Number(recipe.waterRatio) * 100,
-                },
-              }}
+              recipes={recipes}
               handleSubmit={onSubmit}
               handleSelectChange={onSelectChange}
             />
@@ -97,13 +73,26 @@ export default function Calculator({ defaultRecipes }: CalculatorProps) {
           {/*   /> */}
           {/* </TabsContent> */}
         </Tabs>
-        <div className="w-full rounded-xl border bg-card p-8 text-card-foreground shadow">
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
-            {recipe.name}
-          </h2>
-          <p className="mt-7 max-w-3xl text-lg text-slate-600">Ingredients:</p>
-          <IngredientList ingredientAmounts={ingredientQuantities} />
-        </div>
+        <Card>
+          <CardHeader>
+            <div className="flex justify-end gap-2">
+              <Button variant={"secondary"} size={"sm"}>
+                <Icons.bookmark className="h-4 w-4 mr-1" />
+                Save
+              </Button>
+              <Button variant={"secondary"} size={"sm"}>
+                <Icons.print className="h-4 w-4 mr-1" />
+                Print
+              </Button>
+            </div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
+              {selectedRecipe.name}
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <IngredientList ingredients={ingredientsWithWeights} />
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

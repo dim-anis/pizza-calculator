@@ -12,9 +12,6 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
       const created = await p.user.create({
         data: {
           ...user,
-          folders: {
-            create: { name: "All" },
-          },
         },
       });
 

@@ -10,7 +10,7 @@ type HomeLayoutProps = {
 export default function HomeLayout({ children }: HomeLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="container z-40 bg-background">
+      <header className="container max-w-[1400px] mx-auto z-40 bg-background">
         <div className="flex h-20 items-center justify-between py-6">
           <NavBar items={homeConfig.mainNav} />
           <UserDropdown />

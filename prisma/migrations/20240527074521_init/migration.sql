@@ -100,9 +100,6 @@ CREATE UNIQUE INDEX "verification_tokens_token_key" ON "verification_tokens"("to
 CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_tokens"("identifier", "token");
 
 -- CreateIndex
-CREATE INDEX "folders_userId_idx" ON "folders"("userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "folders_userId_name_key" ON "folders"("userId", "name");
 
 -- CreateIndex

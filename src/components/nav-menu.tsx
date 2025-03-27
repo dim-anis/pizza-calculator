@@ -11,7 +11,7 @@ import {
 } from "./ui/navigation-menu";
 import { Button } from "./ui/button";
 import { MobileNav } from "./mobile-nav";
-import { MainNavItem } from "@/lib/definitions";
+import { MainNavItem } from "@/lib/types";
 import { siteConfig } from "@/config/site";
 import { Icons } from "./icons";
 

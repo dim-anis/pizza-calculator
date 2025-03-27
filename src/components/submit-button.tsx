@@ -1,8 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Button, ButtonProps } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Icons } from "./icons";
+import { VariantProps } from "class-variance-authority";
 
-type SubmitButtonProps = ButtonProps & { pending: boolean };
+type SubmitButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & { pending: boolean };
 
 export default function SubmitButton({
   children,

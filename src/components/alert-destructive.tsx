@@ -1,16 +1,28 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Alert as AlertCN,
+  AlertDescription,
+  AlertTitle,
+  alertVariants,
+} from "@/components/ui/alert";
 import { Icons } from "./icons";
+import { VariantProps } from "class-variance-authority";
 
-type AlertProps = {
-  description: string;
-};
+type AlertProps = React.ComponentProps<"div"> &
+  VariantProps<typeof alertVariants> & {
+    title: string;
+    description: string;
+  };
 
-export function AlertDestructive({ description, ...props }: AlertProps) {
+export function Alert({ description, title, variant, ...props }: AlertProps) {
   return (
-    <Alert variant="destructive" {...props}>
-      <Icons.alert className="h-4 w-4" />
-      <AlertTitle>Error</AlertTitle>
+    <AlertCN variant={variant} {...props} className="border-destructive">
+      {variant === "destructive" ? (
+        <Icons.alert className="h-4 w-4" />
+      ) : (
+        <Icons.success className="h-4 w-4" />
+      )}
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
-    </Alert>
+    </AlertCN>
   );
 }

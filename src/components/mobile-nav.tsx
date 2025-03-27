@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
-import { MainNavItem } from "@/lib/definitions";
+import { MainNavItem } from "@/lib/types";
 import { Icons } from "./icons";
 
 type MobileNavProps = {

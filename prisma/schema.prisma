@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
@@ -8,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "file:../db_dumps/local.db"
 }
 
 model Account {
@@ -28,7 +25,7 @@ model Account {
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index(userId)
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -39,21 +36,22 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index(userId)
+  @@index([userId])
   @@map("sessions")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  createdAt     DateTime  @default(now())
+  id            String       @id @default(cuid())
+  createdAt     DateTime     @default(now())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  sessions      Session[]
-  recipes       Recipe[]
   folders       Folder[]
+  recipes       Recipe[]
+  ingredients   Ingredient[]
+  sessions      Session[]
 
   @@map("users")
 }
@@ -71,34 +69,74 @@ model Folder {
   id        String   @id @default(cuid())
   name      String
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  recipes   Recipe[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  recipes   Recipe[] @relation("FolderToRecipe")
 
   @@unique([userId, name])
-  @@index([userId])
   @@map("folders")
 }
 
-model Recipe {
-  id              String   @id @default(cuid())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  folders         Folder[]
-  userId          String?
-  user            User?    @relation(fields: [userId], references: [id])
-  name            String
-  doughballWeight Int
-  flourRatio      Float    @default(0)
-  waterRatio      Float    @default(0)
-  saltRatio       Float    @default(0)
-  oilRatio        Float    @default(0)
-  sugarRatio      Float    @default(0)
-  yeastRatio      Float    @default(0)
-  notes           String?
+model Ingredient {
+  id      Int                @id @default(autoincrement())
+  name    String
+  recipes RecipeIngredient[]
+  typeId  Int                @default(0)
+  type    IngredientType     @relation(fields: [typeId], references: [id])
+  userId  String
+  user    User               @relation(fields: [userId], references: [id])
+  isFlour Boolean            @default(false)
 
   @@unique([userId, name])
-  @@index(userId)
+  @@map("ingredients")
+}
+
+model IngredientType {
+  id          Int          @id @default(autoincrement())
+  type        String       @unique
+  description String
+  ingredients Ingredient[]
+  isLiquid    Boolean      @default(false)
+
+  @@map("ingredient_types")
+}
+
+model RecipeIngredient {
+  id           Int        @id @default(autoincrement())
+  ingredientId Int
+  recipeId     String
+  percentage   Float      @default(0)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_ingredients")
+}
+
+model RecipeServing {
+  id       Int     @id @default(autoincrement())
+  quantity Int     @default(1)
+  weight   Float   @default(0)
+  recipeId String?
+  recipe   Recipe?
+
+  @@map("recipe_servings")
+}
+
+model Recipe {
+  id              String             @id @default(cuid())
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  userId          String?
+  name            String
+  notes           String?
+  ingredients     RecipeIngredient[]
+  user            User?              @relation(fields: [userId], references: [id])
+  folders         Folder[]           @relation("FolderToRecipe")
+  recipeServing   RecipeServing      @relation(fields: [recipeServingId], references: [id], onDelete: Cascade)
+  recipeServingId Int                @unique
+
+  @@unique([userId, name])
+  @@index([userId])
   @@map("recipes")
 }

@@ -1,76 +1,121 @@
 import { prisma } from "@/lib/prisma";
 import { defaultPizzaRecipes, customRecipes } from "../public/recipes";
 
-const folderNames = [
-  "All",
-  "Neapolitan Pizza Recipes",
-  "My favourites",
-  "Grandma's Recipes",
-  "This Slaps",
-  "Greasy Pizzas",
-  "Experimental Recipes",
-];
+async function createDefaultRecipes() {
+  const ingredients = await prisma.ingredient.findMany();
 
-function getRandomArbitrary(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  await Promise.all(
+    defaultPizzaRecipes.map((recipe) =>
+      prisma.recipe.create({
+        data: {
+          user: undefined,
+          name: recipe.name,
+          ingredients: {
+            create: recipe.ingredients.map((ir) => ({
+              ingredientId: ingredients.find((i) => i.name === ir.name).id,
+              percentage: ir.percentage,
+            })),
+          },
+          recipeServing: {
+            create: {
+              weight: recipe.settings.weight_per_pizza,
+              quantity: recipe.settings.number_of_pizzas,
+            },
+          },
+        },
+      }),
+    ),
+  );
 }
 
 async function main() {
-  await prisma.recipe.deleteMany();
-  await prisma.folder.deleteMany();
-  const user = await prisma.user.findFirst();
+  await createDefaultRecipes();
 
-  if (!user) return;
-
-  console.log("Creating folders...");
-  for (const folderName of folderNames) {
-    await prisma.folder.create({
-      data: {
-        userId: user.id,
-        name: folderName,
-      },
-    });
-  }
-
-  console.log("Creating default recipes...");
-  for (const recipe of defaultPizzaRecipes) {
-    const randomNum = getRandomArbitrary(1, defaultPizzaRecipes.length - 1);
-    await prisma.recipe.create({
-      data: {
-        userId: null,
-        name: recipe.name,
-        doughballWeight: recipe.settings.weight_per_pizza,
-        flourRatio: recipe.ingredients.flour,
-        waterRatio: recipe.ingredients.water,
-        saltRatio: recipe.ingredients.salt,
-        yeastRatio: recipe.ingredients.yeast,
-        oilRatio: recipe.ingredients.oil,
-      },
-    });
-  }
-
-  console.log("Creating custom recipes...");
-  for (const recipe of customRecipes) {
-    const randomNum = getRandomArbitrary(1, defaultPizzaRecipes.length - 1);
-    await prisma.recipe.create({
-      data: {
-        userId: user.id,
-        name: recipe.name,
-        doughballWeight: recipe.settings.weight_per_pizza,
-        flourRatio: recipe.ingredients.flour,
-        waterRatio: recipe.ingredients.water,
-        saltRatio: recipe.ingredients.salt,
-        yeastRatio: recipe.ingredients.yeast,
-        oilRatio: recipe.ingredients.oil,
-        folders: {
-          connect: [
-            { userId_name: { name: "All", userId: user.id } },
-            { userId_name: { name: folderNames[randomNum], userId: user.id } },
-          ],
-        },
-      },
-    });
-  }
+  // const DATABASE_VERSION = 2;
+  //
+  // // await prisma.$executeRawUnsafe(`PRAGMA user_version = ${DATABASE_VERSION}`);
+  //
+  // const [{ user_version }] = (await prisma.$queryRaw`PRAGMA user_version`) as [
+  //   {
+  //     user_version: number;
+  //   },
+  // ];
+  //
+  // const currentDbVersion = user_version ?? 0;
+  //
+  // if (currentDbVersion >= DATABASE_VERSION) {
+  //   return;
+  // }
+  //
+  // await prisma.$executeRaw`PRAGMA journal_mode = 'wal';`;
+  //
+  // await prisma.recipe.deleteMany();
+  // await prisma.folder.deleteMany();
+  //
+  // console.log("Adding ingredients...");
+  // for (const { name } of ingredients) {
+  //   await prisma.ingredient.create({
+  //     data: {
+  //       name,
+  //     },
+  //   });
+  // }
+  //
+  // console.log("Creating default recipes...");
+  // await Promise.all(
+  //   defaultPizzaRecipes.map(({ name, settings, ingredients }) => {
+  //     return prisma.recipe.create({
+  //       data: {
+  //         userId: null,
+  //         name,
+  //         doughballWeight: settings.weight_per_pizza,
+  //         ingredients: {
+  //           create: ingredients.map(({ id, percentage }) => ({
+  //             percentage,
+  //             ingredientId: id,
+  //           })),
+  //         },
+  //       },
+  //     });
+  //   }),
+  // );
+  //
+  // console.log(`Creating users...`);
+  // for (const { name, folders } of users) {
+  //   const { id: userId } = await prisma.user.create({
+  //     data: {
+  //       name,
+  //     },
+  //   });
+  //
+  //   if (folders) {
+  //     await Promise.all(
+  //       folders.map(({ name, recipes }) =>
+  //         prisma.folder.create({
+  //           data: {
+  //             name,
+  //             userId,
+  //             ...(recipes && {
+  //               recipes: {
+  //                 create: recipes.map((recipe) => ({
+  //                   userId,
+  //                   name: recipe.name,
+  //                   doughballWeight: recipe.settings.weight_per_pizza,
+  //                   ingredients: {
+  //                     create: recipe.ingredients.map(({ id, percentage }) => ({
+  //                       percentage,
+  //                       ingredientId: id,
+  //                     })),
+  //                   },
+  //                 })),
+  //               },
+  //             }),
+  //           },
+  //         }),
+  //       ),
+  //     );
+  //   }
+  // }
 }
 
 main()

@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthPage) {
     if (isAuth) {
-      return NextResponse.redirect(new URL("/myrecipes/all", req.url));
+      return NextResponse.redirect(new URL("/myrecipes", req.url));
     }
 
     return null;

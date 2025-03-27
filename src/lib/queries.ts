@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
-import { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { FolderWithCount } from "./types";
 
 export async function getAllFolders() {
   const user = await getCurrentUser();
@@ -10,7 +10,7 @@ export async function getAllFolders() {
     redirect("/login");
   }
 
-  const folders = await prisma.folder.findMany({
+  return await prisma.folder.findMany({
     where: {
       userId: user.id,
     },
@@ -18,11 +18,19 @@ export async function getAllFolders() {
       ["createdAt"]: "desc",
     },
   });
+}
 
-  return folders.sort((a, b) => {
-    if (a.name === "All") return -1; // "All" comes first
-    if (b.name === "All") return 1; // "All" comes first
-    return 0;
+export async function getAllIngredients() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return await prisma.ingredient.findMany({
+    where: {
+      userId: user.id,
+    },
   });
 }
 
@@ -50,6 +58,15 @@ export async function getDefaultRecipes() {
   return await prisma.recipe.findMany({
     where: {
       userId: null,
+    },
+    include: {
+      recipeServing: true,
+      ingredients: {
+        include: {
+          ingredient: { include: { type: { select: { isLiquid: true } } } },
+        },
+      },
+      folders: true,
     },
     orderBy: {
       ["createdAt"]: "desc",
@@ -105,21 +122,9 @@ export async function getFolderWithRecipes(folderName: string) {
   return folder;
 }
 
-export type RecipeWithFolders = Prisma.RecipeGetPayload<{
-  include: {
-    folders: {
-      select: {
-        id: true;
-        name: true;
-        createdAt: true;
-      };
-    };
-  };
-}>;
-
-export async function getRecipeWithFolders(
+export async function getRecipeWithIngredientsWithWeightsWithFolders(
   recipeId: string,
-): Promise<RecipeWithFolders> {
+) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -132,6 +137,8 @@ export async function getRecipeWithFolders(
       id: recipeId,
     },
     include: {
+      recipeServing: true,
+      ingredients: { include: { ingredient: true } },
       folders: true,
     },
   });
@@ -143,14 +150,34 @@ export async function getRecipeWithFolders(
   return recipe;
 }
 
-const foldersWithCount = Prisma.validator<Prisma.FolderDefaultArgs>()({
-  select: { id: true, name: true, _count: { select: { recipes: true } } },
-});
+export async function getRecipeWithIngredientsWithFolders(recipeId: string) {
+  const user = await getCurrentUser();
 
-type FolderWithCount = Prisma.FolderGetPayload<typeof foldersWithCount>;
+  if (!user) {
+    redirect("/login");
+  }
+
+  const recipe = await prisma.recipe.findUnique({
+    where: {
+      userId: user.id,
+      id: recipeId,
+    },
+    include: {
+      recipeServing: true,
+      ingredients: { include: { ingredient: true } },
+      folders: true,
+    },
+  });
+
+  if (!recipe) {
+    throw new Error("Failed to fetch the recipe!");
+  }
+
+  return recipe;
+}
 
 export async function getFolderNamesWithRecipeCount(): Promise<
-  FolderWithCount[]
+  [FolderWithCount[], number]
 > {
   const user = await getCurrentUser();
 
@@ -158,27 +185,24 @@ export async function getFolderNamesWithRecipeCount(): Promise<
     redirect("/login");
   }
 
-  const folders = await prisma.folder.findMany({
-    where: {
-      userId: user.id,
-    },
-    select: {
-      id: true,
-      name: true,
-      _count: {
-        select: {
-          recipes: true,
+  return await prisma.$transaction([
+    prisma.folder.findMany({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: {
+            recipes: true,
+          },
         },
       },
-    },
-    orderBy: {
-      ["createdAt"]: "desc",
-    },
-  });
-
-  return folders.sort((a, b) => {
-    if (a.name === "All") return -1; // "All" comes first
-    if (b.name === "All") return 1; // "All" comes first
-    return 0;
-  });
+      orderBy: {
+        ["createdAt"]: "desc",
+      },
+    }),
+    prisma.recipe.count({ where: { userId: user.id } }),
+  ]);
 }

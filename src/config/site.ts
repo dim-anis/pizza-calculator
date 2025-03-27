@@ -1,7 +1,9 @@
-import { SiteConfig } from "@/lib/definitions";
+import { SiteConfig } from "@/lib/types";
 
 export const siteConfig: SiteConfig = {
-  name: "Pizza Calculator",
+  name: "Breadulator",
   description:
-    "Calculate baking ratios for pizza recipes. Share recipes online.",
+    "Calculate baker’s percentages, save your recipes, and keep your bakes organized with Breadulator.",
+  url: "localhost:3000",
+  ogImage: "",
 };

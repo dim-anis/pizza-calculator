@@ -16,15 +16,20 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PenSquare,
-  PlusCircle,
+  Plus,
   Search,
   Trash2,
   X,
+  Printer,
+  Bookmark,
+  Apple,
+  CircleCheck,
 } from "lucide-react";
 
 export const Icons = {
   loader: Loader2,
   alert: AlertCircle,
+  success: CircleCheck,
   panelOpen: PanelLeftOpen,
   panelClose: PanelLeftClose,
   check: Check,
@@ -41,8 +46,11 @@ export const Icons = {
   folderEdit: FolderEdit,
   trash: Trash2,
   more: MoreHorizontal,
-  add: PlusCircle,
+  add: Plus,
   github: Github,
+  print: Printer,
+  bookmark: Bookmark,
+  apple: Apple,
   google: ({ ...props }: LucideProps) => (
     <svg
       role="img"

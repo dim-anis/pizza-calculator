@@ -20,7 +20,7 @@ export default function UserDropdown() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="link" size="icon">
+          <Button variant="link" size="icon" className="rounded-full">
             <Avatar>
               <AvatarImage src={session.user?.image || undefined} />
               <AvatarFallback>AB</AvatarFallback>
@@ -40,7 +40,7 @@ export default function UserDropdown() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/myrecipes/all" passHref>
+            <Link href="/myrecipes" passHref>
               My recipes
             </Link>
           </DropdownMenuItem>

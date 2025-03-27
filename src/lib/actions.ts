@@ -4,20 +4,15 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "./prisma";
 import { getCurrentUser } from "./session";
 import { redirect } from "next/navigation";
+import { calculateIngredientRatios, parseZodIssues } from "@/lib/helpers";
 import {
-  catchError,
-  getTotalDoughWeight,
-  ingredientQuantitiesToRatios,
-} from "@/lib/helpers";
-import {
-  CreateRecipeData,
-  CreateRecipeSchema,
-} from "@/app/(myrecipes)/myrecipes/[folder]/new-recipe/definitions";
-import {
+  RecipeForm,
+  recipeSchema,
+  ActionState,
   CreateFolder,
-  CreateFolderSchema,
-} from "@/app/(myrecipes)/myrecipes/new-folder/definitions";
-import { ActionState } from "./definitions";
+  createFolderSchema,
+} from "@/lib/types";
+import { Prisma } from "@prisma/client";
 
 export async function createFolder(
   folderData: CreateFolder,
@@ -29,7 +24,7 @@ export async function createFolder(
   }
 
   try {
-    const { name } = CreateFolderSchema.parse(folderData);
+    const { name } = createFolderSchema.parse(folderData);
     await prisma.folder.create({
       data: {
         userId: user.id,
@@ -37,7 +32,21 @@ export async function createFolder(
       },
     });
   } catch (e) {
-    return catchError(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // Unique constraint violation (Prisma example)
+        return {
+          success: false,
+          message: "Title must be unique",
+          errors: { name: ["Folder title already exists"] },
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Unexpected error, try again",
+      };
+    }
   }
 
   revalidatePath("/myrecipes");
@@ -55,7 +64,7 @@ export async function updateFolder(
   }
 
   try {
-    const { name } = CreateFolderSchema.parse(folderData);
+    const { name } = createFolderSchema.parse(folderData);
     await prisma.folder.update({
       where: {
         userId_name: {
@@ -68,7 +77,21 @@ export async function updateFolder(
       },
     });
   } catch (e) {
-    return catchError(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // Unique constraint violation (Prisma example)
+        return {
+          success: false,
+          message: "Title must be unique",
+          errors: { name: ["Folder title already exists"] },
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Unexpected error, try again",
+      };
+    }
   }
 
   revalidatePath(`/myrecipes/${encodeURIComponent(folderData.name)}`);
@@ -90,17 +113,18 @@ export async function deleteFolder(folderId: string): Promise<ActionState> {
       },
     });
   } catch (e) {
-    return catchError(e);
+    console.log(e);
+    return {
+      success: false,
+      message: "Unexpected error, try again",
+    };
   }
 
   revalidatePath("/myrecipes");
-  redirect("/myrecipes/all");
+  redirect("/myrecipes");
 }
 
-export async function deleteRecipe(
-  folderName: string,
-  recipeId: string,
-): Promise<ActionState> {
+export async function deleteRecipe(recipeId: string): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -111,20 +135,18 @@ export async function deleteRecipe(
     await prisma.recipe.delete({
       where: {
         id: recipeId,
-        userId: user?.id,
+        userId: user.id,
       },
     });
   } catch (e) {
-    return catchError(e);
+    console.log(e);
   }
 
   revalidatePath("/myrecipes");
-  redirect(`/myrecipes/${folderName}`);
+  redirect("/myrecipes");
 }
 
-export async function createRecipe(
-  data: CreateRecipeData,
-): Promise<ActionState> {
+export async function createRecipe(data: RecipeForm): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -132,60 +154,74 @@ export async function createRecipe(
   }
 
   try {
-    const {
-      name,
-      numOfDoughballs,
-      flourAmount,
-      waterAmount,
-      saltAmount,
-      yeastAmount,
-      oilAmount,
-      sugarAmount,
-      selectedFolders,
-      notes,
-    } = CreateRecipeSchema.parse(data);
+    const parsed = recipeSchema.safeParse(data);
 
-    const allIngredients = {
-      flourAmount,
-      waterAmount,
-      saltAmount,
-      yeastAmount,
-      oilAmount,
-      sugarAmount,
-    };
-    const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
-    const doughballWeight =
-      getTotalDoughWeight(allIngredients) / numOfDoughballs;
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: "Please fix the errors in the form",
+        errors: parseZodIssues(parsed.error.issues),
+      };
+    }
+
+    const { name, ingredients, folders, recipeServing, notes } =
+      recipeSchema.parse(data);
+
+    const ingredientRatios = calculateIngredientRatios(ingredients);
+    const weightPerServing =
+      ingredients.reduce(
+        (totalWeight, currIngredient) => totalWeight + currIngredient.weight,
+        0,
+      ) / recipeServing.quantity;
 
     await prisma.recipe.create({
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } },
         name,
-        folders: {
-          connect: [
-            ...["All", ...selectedFolders].map((folder) => ({
-              userId_name: { userId: user.id, name: folder },
-            })),
-          ],
+        ingredients: {
+          create: ingredientRatios.map((ir) => ({
+            ingredientId: ir.ingredientId,
+            percentage: ir.percentage,
+          })),
         },
-        doughballWeight,
-        ...ingredientRatios,
+        recipeServing: {
+          create: {
+            weight: weightPerServing,
+            quantity: recipeServing.quantity,
+          },
+        },
+        folders: {
+          connect: folders.map((folder) => ({
+            userId_name: { userId: user.id, name: folder.name },
+          })),
+        },
         notes,
       },
     });
   } catch (e) {
-    return catchError(e);
+    console.error(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // Unique constraint violation (Prisma example)
+        return {
+          success: false,
+          message: "Title must be unique",
+          errors: { name: ["Recipe title already exists"] },
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Unexpected error, try again",
+      };
+    }
   }
 
   revalidatePath("/myrecipes");
-  redirect("/myrecipes/all");
+  redirect("/myrecipes");
 }
 
-export async function updateRecipe(
-  recipeId: string,
-  connectedFolders: { id: string; name: string }[],
-  data: CreateRecipeData,
-): Promise<ActionState> {
+export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -193,69 +229,81 @@ export async function updateRecipe(
   }
 
   try {
+    const parsed = recipeSchema.safeParse(data);
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: "Please fix the errors in the form",
+        errors: parseZodIssues(parsed.error.issues),
+      };
+    }
+
     const {
+      id,
       name,
-      numOfDoughballs,
-      flourAmount,
-      waterAmount,
-      saltAmount,
-      yeastAmount,
-      oilAmount,
-      sugarAmount,
-      selectedFolders: updatedFolderSelection,
+      ingredients: newIngredients,
+      folders,
+      recipeServing,
       notes,
-    } = CreateRecipeSchema.parse(data);
+    } = recipeSchema.parse(data);
 
-    const allIngredients = {
-      flourAmount,
-      waterAmount,
-      saltAmount,
-      yeastAmount,
-      oilAmount,
-      sugarAmount,
-    };
-    const ingredientRatios = ingredientQuantitiesToRatios(allIngredients);
-    const doughballWeight =
-      getTotalDoughWeight(allIngredients) / numOfDoughballs;
-
-    const foldersToConnect = updatedFolderSelection.filter(
-      (newFolderName) =>
-        !connectedFolders.some((folder) => folder.name === newFolderName),
-    );
-
-    const foldersToDisconnect = connectedFolders.filter(
-      (folder) => !updatedFolderSelection.includes(folder.name),
-    );
+    const ingredientRatios = calculateIngredientRatios(newIngredients);
+    const weightPerServing =
+      newIngredients.reduce(
+        (totalWeight, currIngredient) => totalWeight + currIngredient.weight,
+        0,
+      ) / recipeServing.quantity;
 
     await prisma.recipe.update({
       where: {
         userId: user.id,
-        id: recipeId,
+        id,
       },
       data: {
-        userId: user.id,
+        user: { connect: { id: user.id } },
         name,
+        recipeServing: {
+          update: {
+            quantity: recipeServing.quantity,
+            weight: weightPerServing,
+          },
+        },
+        ingredients: {
+          deleteMany: {},
+          createMany: {
+            data: ingredientRatios.map((ir) => ({
+              ingredientId: ir.ingredientId,
+              percentage: ir.percentage,
+            })),
+          },
+        },
         folders: {
-          connect: [
-            ...foldersToConnect.map((folder) => ({
-              userId_name: { userId: user.id, name: folder },
-            })),
-          ],
-          disconnect: [
-            ...foldersToDisconnect.map((folder) => ({
-              userId_name: { userId: user.id, name: folder.name },
-            })),
-          ],
+          set: folders.map(({ name }) => ({
+            userId_name: { userId: user.id, name },
+          })),
         },
         notes,
-        doughballWeight,
-        ...ingredientRatios,
       },
     });
   } catch (e) {
-    return catchError(e);
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // Unique constraint violation (Prisma example)
+        return {
+          success: false,
+          message: "Title must be unique",
+          errors: { name: ["Recipe title already exists"] },
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Unexpected error, try again",
+      };
+    }
   }
 
   revalidatePath("/myrecipes");
-  redirect("/myrecipes/all");
+  redirect("/myrecipes");
 }
