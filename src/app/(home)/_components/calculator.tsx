@@ -52,7 +52,7 @@ export default function Calculator({ recipes }: Props) {
       id="calculator"
       className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12"
     >
-      <div className="mx-auto grid items-center gap-6 max-w-5xl md:grid-cols-2 border-1 p-6 rounded-2xl">
+      <div className="mx-auto grid gap-6 max-w-5xl md:grid-cols-2 border-1 p-6 rounded-2xl">
         <Tabs defaultValue="basicSettings">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
@@ -77,21 +77,24 @@ export default function Calculator({ recipes }: Props) {
           {/*   /> */}
           {/* </TabsContent> */}
         </Tabs>
-        <Card>
+        <Card className="border-none shadow-none">
           <CardHeader>
-            <div className="flex justify-end gap-2">
-              <Button variant={"secondary"} size={"sm"}>
-                <Icons.bookmark className="h-4 w-4 mr-1" />
-                Save
-              </Button>
-              <Button variant={"secondary"} size={"sm"}>
-                <Icons.print className="h-4 w-4 mr-1" />
-                Print
-              </Button>
+            <div className="flex flex-row justify-between">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
+                {selectedRecipe.name}
+              </h2>
+              <div className="flex gap-2">
+                <Button variant={"secondary"} size={"sm"}>
+                  <Icons.bookmark className="h-4 w-4" />
+                </Button>
+                <Button variant={"secondary"} size={"sm"}>
+                  <Icons.print className="h-4 w-4" />
+                </Button>
+                <Button variant={"secondary"} size="sm">
+                  Share
+                </Button>
+              </div>
             </div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl">
-              {selectedRecipe.name}
-            </h2>
           </CardHeader>
           <CardContent>
             <IngredientList ingredients={ingredientsWithWeights} />
