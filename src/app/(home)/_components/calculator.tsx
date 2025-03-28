@@ -48,7 +48,10 @@ export default function Calculator({ recipes }: Props) {
   }
 
   return (
-    <section className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12">
+    <section
+      id="calculator"
+      className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12"
+    >
       <div className="mx-auto grid items-center gap-6 max-w-5xl md:grid-cols-2 border-1 p-6 rounded-2xl">
         <Tabs defaultValue="basicSettings">
           <TabsList className="grid w-full grid-cols-2">
