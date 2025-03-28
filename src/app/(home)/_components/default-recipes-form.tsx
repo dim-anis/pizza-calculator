@@ -97,42 +97,44 @@ export default function DefaultRecipesForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name={`recipeServing.quantity`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Number of servings</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder={`Select number of servings`}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={`recipeServing.weight`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Weight per serving</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder={`Select serving weight`}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row space-x-2">
+            <FormField
+              control={form.control}
+              name={`recipeServing.quantity`}
+              render={({ field }) => (
+                <FormItem className="grow-1">
+                  <FormLabel>Number of servings</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder={`Select number of servings`}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name={`recipeServing.weight`}
+              render={({ field }) => (
+                <FormItem className="grow-1">
+                  <FormLabel>Weight per serving</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder={`Select serving weight`}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           {liquidIngredients.length > 1 ? (
             <div className="space-y-2">
               <FormLabel>Hydration (composite)</FormLabel>
