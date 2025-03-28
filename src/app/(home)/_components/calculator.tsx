@@ -43,7 +43,13 @@ export default function Calculator({ recipes }: Props) {
     const selectedRecipe = recipes.find((recipe) => recipe.name === recipeName);
     if (selectedRecipe) {
       setSelectedRecipe(selectedRecipe);
-      resetForm(selectedRecipe);
+      resetForm({
+        ...selectedRecipe,
+        ingredients: selectedRecipe.ingredients.map((i) => ({
+          ...i,
+          percentage: i.percentage * 100,
+        })),
+      });
     }
   }
 
