@@ -103,13 +103,12 @@ model IngredientType {
 }
 
 model RecipeIngredient {
-  id            Int        @id @default(autoincrement())
-  ingredientId  Int
-  recipeId      String
-  percentage    Float      @default(0)
-  weightInGrams Int?
-  recipe        Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  ingredient    Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  id           Int        @id @default(autoincrement())
+  ingredientId Int
+  recipeId     String
+  percentage   Float      @default(0)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
 
   @@map("recipe_ingredients")
 }
@@ -125,17 +124,16 @@ model RecipeServing {
 }
 
 model Recipe {
-  id              String             @id @default(cuid())
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  userId          String?
-  name            String
-  notes           String?
-  ingredients     RecipeIngredient[]
-  user            User?              @relation(fields: [userId], references: [id])
-  folders         Folder[]           @relation("FolderToRecipe")
-  recipeServing   RecipeServing      @relation(fields: [recipeServingId], references: [id], onDelete: Cascade)
-  recipeServingId Int                @unique
+  id          String             @id @default(cuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  userId      String?
+  name        String
+  notes       String?
+  ingredients RecipeIngredient[]
+  user        User?              @relation(fields: [userId], references: [id])
+  folders     Folder[]           @relation("FolderToRecipe")
+  servings    Int                @default(1)
 
   @@unique([userId, name])
   @@index([userId])
