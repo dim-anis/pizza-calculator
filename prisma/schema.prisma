@@ -124,17 +124,16 @@ model RecipeServing {
 }
 
 model Recipe {
-  id              String             @id @default(cuid())
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  userId          String?
-  name            String
-  notes           String?
-  ingredients     RecipeIngredient[]
-  user            User?              @relation(fields: [userId], references: [id])
-  folders         Folder[]           @relation("FolderToRecipe")
-  recipeServing   RecipeServing      @relation(fields: [recipeServingId], references: [id], onDelete: Cascade)
-  recipeServingId Int                @unique
+  id          String             @id @default(cuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  userId      String?
+  name        String
+  notes       String?
+  ingredients RecipeIngredient[]
+  user        User?              @relation(fields: [userId], references: [id])
+  folders     Folder[]           @relation("FolderToRecipe")
+  servings    Int                @default(1)
 
   @@unique([userId, name])
   @@index([userId])
