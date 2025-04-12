@@ -7,15 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RecipeIngredientWithName } from "@/lib/types";
+import { RecipeWithIngredients } from "@/lib/types";
 
 type IngredientListProps = {
-  ingredients: (RecipeIngredientWithName & { weight: number })[];
+  ingredients: RecipeWithIngredients["ingredients"][number][];
 };
 
 export default function IngredientList({ ingredients }: IngredientListProps) {
   const totalWeight = ingredients.reduce(
-    (totalWeight, curr) => totalWeight + curr.weight,
+    (totalWeight, curr) => totalWeight + curr.weightInGrams,
     0,
   );
   return (
@@ -29,15 +29,15 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {ingredients.map((ingredient) => (
-          <TableRow key={ingredient.id}>
+        {ingredients.map((ingredient, idx) => (
+          <TableRow key={idx}>
             <TableCell className="font-medium">
               {ingredient.ingredient.name}
             </TableCell>
             <TableCell className="text-right">
-              {Number.isInteger(ingredient.weight)
-                ? ingredient.weight
-                : Math.round(ingredient.weight * 10) / 10}{" "}
+              {Number.isInteger(ingredient.weightInGrams)
+                ? ingredient.weightInGrams
+                : Math.round(ingredient.weightInGrams * 10) / 10}{" "}
               g
             </TableCell>
           </TableRow>

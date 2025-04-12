@@ -1,6 +1,6 @@
 "use client";
 
-import { calculateIngredientWeights, getArrayFromOneTo } from "@/lib/helpers";
+import { getArrayFromOneTo } from "@/lib/helpers";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,6 +16,7 @@ import { updateRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldPath, useFieldArray, useForm } from "react-hook-form";
 import {
+  IngredientWithType,
   RecipeForm,
   recipeSchema,
   RecipeWithIngredientsWithFolders,
@@ -32,7 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
 import { Alert } from "@/components/alert-destructive";
-import { Folder, Ingredient } from "@prisma/client";
+import { Folder } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -61,7 +62,7 @@ import { Icons } from "@/components/icons";
 
 type Props = {
   userFolders: Folder[];
-  userIngredients: Ingredient[];
+  userIngredients: IngredientWithType[];
   recipe: RecipeWithIngredientsWithFolders;
 };
 
@@ -83,10 +84,6 @@ export default function EditRecipeForm({
     resolver: zodResolver(recipeSchema),
     defaultValues: {
       ...recipe,
-      ingredients: calculateIngredientWeights(
-        recipe.recipeServing?.quantity * recipe.recipeServing?.weight,
-        recipe.ingredients,
-      ),
       notes: recipe.notes || "",
     },
   });
@@ -123,7 +120,7 @@ export default function EditRecipeForm({
     });
   }
 
-  function handleSelectIngredients(ingredient: Ingredient) {
+  function handleSelectIngredients(ingredient: IngredientWithType) {
     const selectedIngredientIndex = selectedIngredients.findIndex(
       ({ ingredient: { name: selectedIngredientName } }) =>
         ingredient.name === selectedIngredientName,
@@ -147,11 +144,12 @@ export default function EditRecipeForm({
 
     appendSelectedIngredient({
       ingredientId: ingredient.id,
+      weightInGrams: 0,
       ingredient: {
         name: ingredient.name,
+        type: ingredient.type,
         isFlour: ingredient.isFlour,
       },
-      weight: 0,
     });
   }
 
@@ -194,7 +192,7 @@ export default function EditRecipeForm({
             />
             <FormField
               control={form.control}
-              name="recipeServing.quantity"
+              name="servings"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Number of servings</FormLabel>
@@ -363,7 +361,7 @@ export default function EditRecipeForm({
                     <FormField
                       key={ingredientId}
                       control={form.control}
-                      name={`ingredients.${index}.weight`}
+                      name={`ingredients.${index}.weightInGrams`}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>{ingredientName}</FormLabel>

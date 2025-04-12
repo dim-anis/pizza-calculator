@@ -1,5 +1,5 @@
 import { ZodIssue } from "zod";
-import { RecipeForm, RecipeIngredientWithName } from "./types";
+import { RecipeForm, RecipeWithIngredients } from "./types";
 
 export function formatDate(input: string | number): string {
   const date = new Date(input);
@@ -17,7 +17,7 @@ export const validationErrorMessages = {
 
 export function calculateIngredientWeights(
   totalDoughWeight: number,
-  ingredients: RecipeIngredientWithName[],
+  ingredients: RecipeWithIngredients["ingredients"][number][],
 ) {
   const totalPercentage = ingredients.reduce(
     (total, { percentage }) => total + percentage,
@@ -27,29 +27,33 @@ export function calculateIngredientWeights(
   return ingredients
     .map((ingredient) => ({
       ...ingredient,
-      weight: (totalDoughWeight * ingredient.percentage) / totalPercentage,
+      weightInGrams:
+        (totalDoughWeight * ingredient.percentage) / totalPercentage,
     }))
-    .sort((a, b) => b.percentage - a.percentage);
+    .sort((a, b) => b.weightInGrams - a.weightInGrams);
 }
 
 function calculateBakersPercentage(
-  ingredientAmount: number,
-  flourAmount: number,
+  ingredientWeight: number,
+  flourWeight: number,
 ) {
-  return Math.round((ingredientAmount / flourAmount) * 1000) / 1000;
+  return Math.round((ingredientWeight / flourWeight) * 100 * 10) / 10;
 }
 
 export function calculateIngredientRatios(
   ingredients: RecipeForm["ingredients"],
 ) {
   const totalFlourWeight = ingredients.reduce(
-    (total, { ingredient, weight: ingredientWeight }) =>
-      total + (ingredient.isFlour ? ingredientWeight : 0),
+    (total, { ingredient, weightInGrams }) =>
+      total + (ingredient.isFlour ? weightInGrams : 0),
     0,
   );
   return ingredients.map((ingredient) => ({
     ...ingredient,
-    percentage: calculateBakersPercentage(ingredient.weight, totalFlourWeight),
+    percentage: calculateBakersPercentage(
+      ingredient.weightInGrams,
+      totalFlourWeight,
+    ),
   }));
 }
 
@@ -58,9 +62,9 @@ export function getArrayFromOneTo(n: number) {
 }
 
 export function getTotalDoughWeight(
-  ingredients: (RecipeIngredientWithName & { weight: number })[],
+  ingredients: RecipeWithIngredients["ingredients"][number][],
 ) {
-  return ingredients.reduce((total, item) => total + item.weight, 0);
+  return ingredients.reduce((total, item) => total + item.weightInGrams, 0);
 }
 
 export function capitalize(word: string) {

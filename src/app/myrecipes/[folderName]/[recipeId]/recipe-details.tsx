@@ -1,7 +1,6 @@
 "use client";
 
 import IngredientList from "@/components/ingredient-list";
-import { calculateIngredientWeights } from "@/lib/helpers";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
@@ -20,13 +19,11 @@ type Params = {
 };
 
 export default function RecipeDetails({ recipe }: Params) {
-  const [numOfServings, setNumOfServings] = useState(
-    recipe.recipeServing.quantity,
-  );
-  const ingredientQuantities = calculateIngredientWeights(
-    recipe.recipeServing.weight * numOfServings,
-    recipe.ingredients,
-  );
+  const [numOfServings, setNumOfServings] = useState(recipe.servings);
+  const ingredientsAdjustedForNumServings = recipe.ingredients.map((i) => ({
+    ...i,
+    weightInGrams: i.weightInGrams * numOfServings,
+  }));
 
   return (
     <div className="space-y-4">
@@ -52,7 +49,7 @@ export default function RecipeDetails({ recipe }: Params) {
             </Select>
           </div>
         </div>
-        <IngredientList ingredients={ingredientQuantities} />
+        <IngredientList ingredients={ingredientsAdjustedForNumServings} />
       </div>
       <div className="space-y-2">
         {recipe.notes ? (

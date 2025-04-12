@@ -15,7 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UseFormReset, useFieldArray, useForm } from "react-hook-form";
+import {
+  DefaultValues,
+  UseFormReset,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   BakersFormulaForm,
@@ -25,6 +30,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
+  defaultValues: DefaultValues<RecipeWithIngredients>;
   recipes: RecipeWithIngredients[];
   handleSubmit: (data: BakersFormulaForm) => void;
   handleSelectChange: (
@@ -34,6 +40,7 @@ type Props = {
 };
 
 export default function DefaultRecipesForm({
+  defaultValues,
   recipes,
   handleSubmit,
   handleSelectChange,
@@ -41,13 +48,7 @@ export default function DefaultRecipesForm({
   const form = useForm<BakersFormulaForm>({
     mode: "onChange",
     resolver: zodResolver(bakersFormulaSchema),
-    defaultValues: {
-      ...recipes[0],
-      ingredients: recipes[0].ingredients.map((i) => ({
-        ...i,
-        percentage: i.percentage * 100,
-      })),
-    },
+    defaultValues,
   });
 
   const { fields: ingredients } = useFieldArray({
@@ -84,9 +85,9 @@ export default function DefaultRecipesForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {recipes.map((recipe) => {
+                    {recipes.map((recipe, idx) => {
                       return (
-                        <SelectItem key={recipe.id} value={recipe.name}>
+                        <SelectItem key={idx} value={recipe.name}>
                           {recipe.name}
                         </SelectItem>
                       );
@@ -100,7 +101,7 @@ export default function DefaultRecipesForm({
           <div className="flex flex-row space-x-2">
             <FormField
               control={form.control}
-              name={`recipeServing.quantity`}
+              name={`servings`}
               render={({ field }) => (
                 <FormItem className="grow-1">
                   <FormLabel>Number of servings</FormLabel>
@@ -118,7 +119,7 @@ export default function DefaultRecipesForm({
             />
             <FormField
               control={form.control}
-              name={`recipeServing.weight`}
+              name={`servingWeight`}
               render={({ field }) => (
                 <FormItem className="grow-1">
                   <FormLabel>Weight per serving</FormLabel>

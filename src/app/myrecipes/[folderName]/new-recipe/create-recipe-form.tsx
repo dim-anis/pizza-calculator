@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { createRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldPath, useFieldArray, useForm } from "react-hook-form";
-import { RecipeForm, recipeSchema } from "@/lib/types";
+import { IngredientWithType, RecipeForm, recipeSchema } from "@/lib/types";
 import {
   Select,
   SelectContent,
@@ -28,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
 import { Alert } from "@/components/alert-destructive";
-import { Folder, Ingredient } from "@prisma/client";
+import { Folder } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -57,7 +57,7 @@ import { Icons } from "@/components/icons";
 
 type Props = {
   userFolders: Folder[];
-  userIngredients: Ingredient[];
+  userIngredients: IngredientWithType[];
 };
 
 export default function CreateRecipeForm({
@@ -78,14 +78,17 @@ export default function CreateRecipeForm({
     defaultValues: {
       name: undefined,
       folders: [],
-      ingredients: userIngredients.map((i) => ({
-        ...i,
-        ingredientId: i.id,
-        ingredient: { name: i.name, isFlour: i.isFlour },
+      ingredients: userIngredients.map((ui) => ({
+        ...ui,
+        ingredientId: ui.id,
+        weightInGrams: undefined,
+        ingredient: {
+          name: ui.name,
+          type: ui.type,
+          isFlour: ui.isFlour,
+        },
       })),
-      recipeServing: {
-        quantity: 1,
-      },
+      servings: 1,
     },
   });
 
@@ -118,6 +121,39 @@ export default function CreateRecipeForm({
           });
         });
       }
+    });
+  }
+
+  function handleSelectIngredients(userIngredient: IngredientWithType) {
+    const selectedIngredientIndex = selectedIngredients.findIndex(
+      (selectedInredient) =>
+        selectedInredient.ingredient.name === userIngredient.name,
+    );
+
+    if (selectedIngredientIndex !== -1) {
+      const flours = selectedIngredients.filter(
+        ({ ingredient }) => ingredient.isFlour,
+      );
+
+      if (
+        selectedIngredients[selectedIngredientIndex].ingredient.isFlour &&
+        flours.length < 2
+      ) {
+        return;
+      }
+
+      removeSelectedIngredient(selectedIngredientIndex);
+      return;
+    }
+
+    appendSelectedIngredient({
+      ingredientId: userIngredient.id,
+      weightInGrams: 0,
+      ingredient: {
+        name: userIngredient.name,
+        type: userIngredient.type,
+        isFlour: userIngredient.isFlour,
+      },
     });
   }
 
@@ -160,7 +196,7 @@ export default function CreateRecipeForm({
             />
             <FormField
               control={form.control}
-              name="recipeServing.quantity"
+              name="servings"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Number of servings</FormLabel>
@@ -328,7 +364,7 @@ export default function CreateRecipeForm({
                   <FormField
                     key={ingredient.id}
                     control={form.control}
-                    name={`ingredients.${index}.weight`}
+                    name={`ingredients.${index}.weightInGrams`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{ingredient.ingredient.name}</FormLabel>
@@ -392,28 +428,7 @@ export default function CreateRecipeForm({
                       <CommandItem
                         key={userIngredient.id}
                         className="flex items-center px-2"
-                        onSelect={() => {
-                          const selectedIngredientIndex =
-                            selectedIngredients.findIndex(
-                              (selectedInredient) =>
-                                selectedInredient.ingredient.name ===
-                                userIngredient.name,
-                            );
-
-                          if (selectedIngredientIndex !== -1) {
-                            removeSelectedIngredient(selectedIngredientIndex);
-                            return;
-                          }
-
-                          appendSelectedIngredient({
-                            ingredientId: userIngredient.id,
-                            ingredient: {
-                              name: userIngredient.name,
-                              isFlour: userIngredient.isFlour,
-                            },
-                            weight: 0,
-                          });
-                        }}
+                        onSelect={() => handleSelectIngredients(userIngredient)}
                       >
                         <div className="ml-2">
                           <p className="text-sm font-medium leading-none">

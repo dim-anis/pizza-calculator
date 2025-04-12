@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "./prisma";
 import { getCurrentUser } from "./session";
 import { redirect } from "next/navigation";
-import { calculateIngredientRatios, parseZodIssues } from "@/lib/helpers";
+import { parseZodIssues } from "@/lib/helpers";
 import {
   RecipeForm,
   recipeSchema,
@@ -154,42 +154,33 @@ export async function createRecipe(data: RecipeForm): Promise<ActionState> {
   }
 
   try {
-    const parsed = recipeSchema.safeParse(data);
+    const {
+      success,
+      error,
+      data: validatedData,
+    } = recipeSchema.safeParse(data);
 
-    if (!parsed.success) {
+    if (!success) {
       return {
         success: false,
         message: "Please fix the errors in the form",
-        errors: parseZodIssues(parsed.error.issues),
+        errors: parseZodIssues(error.issues),
       };
     }
 
-    const { name, ingredients, folders, recipeServing, notes } =
-      recipeSchema.parse(data);
-
-    const ingredientRatios = calculateIngredientRatios(ingredients);
-    const weightPerServing =
-      ingredients.reduce(
-        (totalWeight, currIngredient) => totalWeight + currIngredient.weight,
-        0,
-      ) / recipeServing.quantity;
+    const { name, ingredients, folders, servings, notes } = validatedData;
 
     await prisma.recipe.create({
       data: {
         user: { connect: { id: user.id } },
         name,
         ingredients: {
-          create: ingredientRatios.map((ir) => ({
+          create: ingredients.map((ir) => ({
             ingredientId: ir.ingredientId,
-            percentage: ir.percentage,
+            weightInGrams: ir.weightInGrams / servings,
           })),
         },
-        recipeServing: {
-          create: {
-            weight: weightPerServing,
-            quantity: recipeServing.quantity,
-          },
-        },
+        servings,
         folders: {
           connect: folders.map((folder) => ({
             userId_name: { userId: user.id, name: folder.name },
@@ -229,13 +220,17 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
   }
 
   try {
-    const parsed = recipeSchema.safeParse(data);
+    const {
+      success,
+      error,
+      data: validatedData,
+    } = recipeSchema.safeParse(data);
 
-    if (!parsed.success) {
+    if (!success) {
       return {
         success: false,
         message: "Please fix the errors in the form",
-        errors: parseZodIssues(parsed.error.issues),
+        errors: parseZodIssues(error.issues),
       };
     }
 
@@ -244,16 +239,9 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
       name,
       ingredients: newIngredients,
       folders,
-      recipeServing,
+      servings,
       notes,
-    } = recipeSchema.parse(data);
-
-    const ingredientRatios = calculateIngredientRatios(newIngredients);
-    const weightPerServing =
-      newIngredients.reduce(
-        (totalWeight, currIngredient) => totalWeight + currIngredient.weight,
-        0,
-      ) / recipeServing.quantity;
+    } = validatedData;
 
     await prisma.recipe.update({
       where: {
@@ -263,21 +251,16 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
       data: {
         user: { connect: { id: user.id } },
         name,
-        recipeServing: {
-          update: {
-            quantity: recipeServing.quantity,
-            weight: weightPerServing,
-          },
-        },
         ingredients: {
           deleteMany: {},
           createMany: {
-            data: ingredientRatios.map((ir) => ({
+            data: newIngredients.map((ir) => ({
               ingredientId: ir.ingredientId,
-              percentage: ir.percentage,
+              weightInGrams: ir.weightInGrams / servings,
             })),
           },
         },
+        servings,
         folders: {
           set: folders.map(({ name }) => ({
             userId_name: { userId: user.id, name },

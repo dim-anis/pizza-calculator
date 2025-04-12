@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { FolderWithCount } from "./types";
+import { calculateIngredientRatios, getTotalDoughWeight } from "./helpers";
 
 export async function getAllFolders() {
   const user = await getCurrentUser();
@@ -31,6 +32,9 @@ export async function getAllIngredients() {
     where: {
       userId: user.id,
     },
+    include: {
+      type: true,
+    },
   });
 }
 
@@ -55,13 +59,13 @@ export async function getRecipesGroupedByFolder() {
 }
 
 export async function getDefaultRecipes() {
-  return await prisma.recipe.findMany({
+  const recipes = await prisma.recipe.findMany({
     where: {
       userId: null,
     },
     include: {
-      recipeServing: true,
       ingredients: {
+        omit: { id: true },
         include: {
           ingredient: { include: { type: { select: { isLiquid: true } } } },
         },
@@ -72,6 +76,12 @@ export async function getDefaultRecipes() {
       ["createdAt"]: "desc",
     },
   });
+
+  return recipes.map((r) => ({
+    ...r,
+    ingredients: calculateIngredientRatios(r.ingredients),
+    servingWeight: getTotalDoughWeight(r.ingredients) / r.servings,
+  }));
 }
 
 export async function getAllRecipes() {
@@ -137,7 +147,6 @@ export async function getRecipeWithIngredientsWithWeightsWithFolders(
       id: recipeId,
     },
     include: {
-      recipeServing: true,
       ingredients: { include: { ingredient: true } },
       folders: true,
     },
@@ -163,7 +172,6 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: string) {
       id: recipeId,
     },
     include: {
-      recipeServing: true,
       ingredients: {
         include: {
           ingredient: { include: { type: { select: { isLiquid: true } } } },

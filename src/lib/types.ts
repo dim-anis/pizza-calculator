@@ -13,14 +13,34 @@ export type SiteConfig = {
   ogImage: string;
 };
 
+export const ingredientWithType =
+  Prisma.validator<Prisma.IngredientDefaultArgs>()({
+    include: { type: true },
+  });
+
+export type IngredientWithType = Prisma.IngredientGetPayload<
+  typeof ingredientWithType
+>;
+
 export const recipeWithIngredients =
   Prisma.validator<Prisma.RecipeDefaultArgs>()({
+    omit: {
+      id: true,
+      userId: true,
+      createdAt: true,
+      updatedAt: true,
+      notes: true,
+    },
     include: {
-      recipeServing: { omit: { id: true, recipeId: true } },
       ingredients: {
+        omit: { id: true, recipeId: true },
         include: {
           ingredient: {
-            select: { name: true, type: { select: { isLiquid: true } } },
+            select: {
+              name: true,
+              isFlour: true,
+              type: { select: { isLiquid: true } },
+            },
           },
         },
       },
@@ -31,23 +51,9 @@ export type RecipeWithIngredients = Prisma.RecipeGetPayload<
   typeof recipeWithIngredients
 >;
 
-export const recipeIngredientWithName =
-  Prisma.validator<Prisma.RecipeIngredientDefaultArgs>()({
-    include: {
-      ingredient: {
-        select: { name: true, type: { select: { isLiquid: true } } },
-      },
-    },
-  });
-
-export type RecipeIngredientWithName = Prisma.RecipeIngredientGetPayload<
-  typeof recipeIngredientWithName
->;
-
 export const recipeWithIngredientsWithFolders =
   Prisma.validator<Prisma.RecipeDefaultArgs>()({
     include: {
-      recipeServing: { omit: { id: true } },
       ingredients: { include: { ingredient: { include: { type: true } } } },
       folders: {
         select: { id: true, name: true, createdAt: true },
@@ -66,8 +72,11 @@ const recipeIngredientSchema = z.object({
   ingredient: z.object({
     name: z.string(),
     isFlour: z.boolean(),
+    type: z.object({
+      isLiquid: z.boolean(),
+    }),
   }),
-  weight: z.coerce.number().positive(),
+  weightInGrams: z.coerce.number().positive(),
 });
 
 const folderSchema = z.object({
@@ -86,26 +95,13 @@ export const recipeSchema = z.object({
       message: "At least one ingredient must be flour-based",
     }),
   folders: z.array(folderSchema),
-  recipeServing: z.object({
-    quantity: z.coerce.number().min(1),
-    weight: z.coerce.number().optional(),
-  }),
+  servings: z.coerce.number().min(1),
 });
 
 export type RecipeForm = z.infer<typeof recipeSchema>;
 export type IngredientWithWeight = z.infer<typeof recipeIngredientSchema>;
 
-export const bakersFormulaIngredientSchema = z.object({
-  id: z.number(),
-  recipeId: z.string(),
-  ingredientId: z.number(),
-  ingredient: z.object({
-    name: z.string(),
-    isFlour: z.boolean(),
-    type: z.object({
-      isLiquid: z.boolean(),
-    }),
-  }),
+export const bakersFormulaIngredientSchema = recipeIngredientSchema.extend({
   percentage: z.coerce.number().positive(),
 });
 
@@ -118,10 +114,8 @@ export const bakersFormulaSchema = z.object({
     .refine((data) => data.some(({ ingredient }) => ingredient.isFlour), {
       message: "At least one ingredient must be flour-based",
     }),
-  recipeServing: z.object({
-    quantity: z.coerce.number().min(1),
-    weight: z.coerce.number().min(1),
-  }),
+  servings: z.coerce.number().min(1),
+  servingWeight: z.coerce.number().min(1),
 });
 
 export type BakersFormulaForm = z.infer<typeof bakersFormulaSchema>;

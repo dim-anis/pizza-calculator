@@ -12,27 +12,21 @@ import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 type Props = {
-  recipes: RecipeWithIngredients[];
+  recipes: (RecipeWithIngredients & { servingWeight: number })[];
 };
 
 export default function Calculator({ recipes }: Props) {
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithIngredients>(
-    recipes[0],
-  );
-
-  const ingredientsWithWeights = calculateIngredientWeights(
-    selectedRecipe.recipeServing.quantity * selectedRecipe.recipeServing.weight,
-    selectedRecipe.ingredients,
-  );
+  const [selectedRecipe, setSelectedRecipe] = useState<
+    RecipeWithIngredients & { servingWeight: number }
+  >(recipes[0]);
 
   function onSubmit(updatedRecipe: BakersFormulaForm) {
-    //@ts-expect-error figure out later, not important
     setSelectedRecipe({
       ...updatedRecipe,
-      ingredients: updatedRecipe.ingredients.map((i) => ({
-        ...i,
-        percentage: i.percentage * 100,
-      })),
+      ingredients: calculateIngredientWeights(
+        updatedRecipe.servings * updatedRecipe.servingWeight,
+        updatedRecipe.ingredients,
+      ),
     });
   }
 
@@ -43,13 +37,7 @@ export default function Calculator({ recipes }: Props) {
     const selectedRecipe = recipes.find((recipe) => recipe.name === recipeName);
     if (selectedRecipe) {
       setSelectedRecipe(selectedRecipe);
-      resetForm({
-        ...selectedRecipe,
-        ingredients: selectedRecipe.ingredients.map((i) => ({
-          ...i,
-          percentage: i.percentage * 100,
-        })),
-      });
+      resetForm(selectedRecipe);
     }
   }
 
@@ -68,6 +56,7 @@ export default function Calculator({ recipes }: Props) {
           </TabsList>
           <TabsContent value="basicSettings">
             <DefaultRecipesForm
+              defaultValues={selectedRecipe}
               recipes={recipes}
               handleSubmit={onSubmit}
               handleSelectChange={onSelectChange}
@@ -103,7 +92,7 @@ export default function Calculator({ recipes }: Props) {
             </div>
           </CardHeader>
           <CardContent>
-            <IngredientList ingredients={ingredientsWithWeights} />
+            <IngredientList ingredients={selectedRecipe.ingredients} />
           </CardContent>
         </Card>
       </div>
