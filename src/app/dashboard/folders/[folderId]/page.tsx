@@ -20,7 +20,7 @@ export default async function FolderPage({ params }: Params) {
         <h2 className="text-2xl font-bold tracking-tight lg:text-3xl truncate">
           {folderName}
         </h2>
-        <FolderTitleToolbar folderName={folderName} folderId={folderId} />
+        <FolderTitleToolbar folderId={folderId} />
       </div>
       <RecipeList recipes={recipes} />
     </>
