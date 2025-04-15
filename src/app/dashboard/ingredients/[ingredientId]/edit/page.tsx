@@ -18,8 +18,7 @@ export default async function EditIngredientPage({ params }: Params) {
       <IngredientForm
         defaultValues={{
           ...ingredient,
-          //@ts-expect-error
-          typeId: ingredient.typeId.toString(),
+          typeId: ingredient.typeId,
         }}
         ingredientTypes={ingredientTypes}
       />
