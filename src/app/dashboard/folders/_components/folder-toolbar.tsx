@@ -22,13 +22,7 @@ import { FormEvent, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
 import { Icons } from "@/components/icons";
 
-export default function FolderTitleToolbar({
-  folderName,
-  folderId,
-}: {
-  folderName: string;
-  folderId: string;
-}) {
+export default function FolderTitleToolbar({ folderId }: { folderId: string }) {
   const [pending, startTransition] = useTransition();
   async function handleDelete(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
