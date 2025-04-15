@@ -18,8 +18,7 @@ import { FormEvent, useTransition } from "react";
 import { Icons } from "@/components/icons";
 
 type Params = {
-  ingredientType: string;
-  ingredientName: string;
+  ingredientId: string;
 };
 
 export function IngredientToolbar() {
@@ -31,7 +30,7 @@ export function IngredientToolbar() {
   async function handleDeleteIngredient(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      await deleteIngredient(params.ingredientName);
+      await deleteIngredient(Number(params.ingredientId));
     });
   }
 
@@ -42,7 +41,7 @@ export function IngredientToolbar() {
       </Button>
       <div className="flex">
         <Link
-          href={`/ingredients/${params.ingredientType}/${params.ingredientName}/edit`}
+          href={`/dashboard/ingredients/${params.ingredientId}/edit`}
           className={buttonVariants({ variant: "ghost", size: "icon" })}
         >
           <Icons.edit className="h-5 w-5" />
@@ -55,7 +54,7 @@ export function IngredientToolbar() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{`Delete ${decodeURIComponent(params.ingredientName)}?`}</DialogTitle>
+              <DialogTitle>Are you sure absolutely sure?</DialogTitle>
               <DialogDescription>
                 This action cannot be undone. This will permanently delete your
                 ingredient.
