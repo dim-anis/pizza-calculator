@@ -30,9 +30,11 @@ import {
   ShoppingBasket,
   LayoutGrid,
   MoreVertical,
+  Share,
 } from "lucide-react";
 
 export const Icons = {
+  share: Share,
   all: LayoutGrid,
   ingredient: ShoppingBasket,
   dry: Wheat,

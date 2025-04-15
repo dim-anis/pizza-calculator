@@ -10,6 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 type Props = {
   recipes: (RecipeWithIngredients & { servingWeight: number })[];
@@ -74,21 +81,37 @@ export default function Calculator({ recipes }: Props) {
         </Tabs>
         <Card className="border-none shadow-none">
           <CardHeader>
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between truncate">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
                 {selectedRecipe.name}
               </h2>
-              <div className="flex gap-2">
-                <Button variant={"secondary"} size={"sm"}>
-                  <Icons.bookmark className="h-4 w-4" />
-                </Button>
-                <Button variant={"secondary"} size={"sm"}>
-                  <Icons.print className="h-4 w-4" />
-                </Button>
-                <Button variant={"secondary"} size="sm">
-                  Share
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Icons.more />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href={``}>
+                      <Icons.bookmark className="mr-2 h-4 w-4" />
+                      <span>{`Save`}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={``}>
+                      <Icons.print className="mr-2 h-4 w-4" />
+                      <span>{`Print`}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={``}>
+                      <Icons.share className="mr-2 h-4 w-4" />
+                      <span>{`Share`}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardHeader>
           <CardContent>
