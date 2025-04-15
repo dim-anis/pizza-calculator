@@ -6,17 +6,17 @@ import { calculateIngredientWeights } from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipesForm from "./default-recipes-form";
 import { UseFormReset } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
+// import { Button } from "@/components/ui/button";
+// import { Icons } from "@/components/icons";
 import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import Link from "next/link";
 
 type Props = {
   recipes: (RecipeWithIngredients & { servingWeight: number })[];
@@ -85,33 +85,33 @@ export default function Calculator({ recipes }: Props) {
               <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
                 {selectedRecipe.name}
               </h2>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Icons.more />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
-                    <Link href={``}>
-                      <Icons.bookmark className="mr-2 h-4 w-4" />
-                      <span>{`Save`}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={``}>
-                      <Icons.print className="mr-2 h-4 w-4" />
-                      <span>{`Print`}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={``}>
-                      <Icons.share className="mr-2 h-4 w-4" />
-                      <span>{`Share`}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* <DropdownMenu> */}
+              {/*   <DropdownMenuTrigger asChild> */}
+              {/*     <Button variant="ghost" size="icon"> */}
+              {/*       <Icons.more /> */}
+              {/*     </Button> */}
+              {/*   </DropdownMenuTrigger> */}
+              {/*   <DropdownMenuContent> */}
+              {/*     <DropdownMenuItem asChild> */}
+              {/*       <Link href={``}> */}
+              {/*         <Icons.bookmark className="mr-2 h-4 w-4" /> */}
+              {/*         <span>{`Save`}</span> */}
+              {/*       </Link> */}
+              {/*     </DropdownMenuItem> */}
+              {/*     <DropdownMenuItem asChild> */}
+              {/*       <Link href={``}> */}
+              {/*         <Icons.print className="mr-2 h-4 w-4" /> */}
+              {/*         <span>{`Print`}</span> */}
+              {/*       </Link> */}
+              {/*     </DropdownMenuItem> */}
+              {/*     <DropdownMenuItem asChild> */}
+              {/*       <Link href={``}> */}
+              {/*         <Icons.share className="mr-2 h-4 w-4" /> */}
+              {/*         <span>{`Share`}</span> */}
+              {/*       </Link> */}
+              {/*     </DropdownMenuItem> */}
+              {/*   </DropdownMenuContent> */}
+              {/* </DropdownMenu> */}
             </div>
           </CardHeader>
           <CardContent>
