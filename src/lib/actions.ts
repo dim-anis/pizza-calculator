@@ -270,8 +270,8 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
     }
   }
 
-  revalidatePath("/recipes");
-  redirect("/recipes");
+  revalidatePath("/dashboard/recipes");
+  redirect("/dashboard/recipes");
 }
 
 export async function createOrUpdateIngredient(
