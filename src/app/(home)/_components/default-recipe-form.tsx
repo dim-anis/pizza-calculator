@@ -39,7 +39,7 @@ type Props = {
   ) => void;
 };
 
-export default function DefaultRecipesForm({
+export default function DefaultRecipeForm({
   defaultValues,
   recipes,
   handleSubmit,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import IngredientList from "@/components/ingredient-list";
 import { calculateIngredientWeights } from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DefaultRecipesForm from "./default-recipes-form";
+import DefaultRecipeForm from "./default-recipe-form";
 import { UseFormReset } from "react-hook-form";
 // import { Button } from "@/components/ui/button";
 // import { Icons } from "@/components/icons";
