@@ -10,6 +10,7 @@ import { UseFormReset } from "react-hook-form";
 // import { Icons } from "@/components/icons";
 import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 // import {
 //   DropdownMenu,
 //   DropdownMenuContent,
@@ -53,71 +54,74 @@ export default function Calculator({ recipes }: Props) {
       id="calculator"
       className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12"
     >
-      <div className="mx-auto grid gap-6 max-w-5xl md:grid-cols-2 border-1 p-6 rounded-2xl">
-        <Tabs defaultValue="basicSettings">
-          <TabsList className="grid w-full grid-cols-2">
+      <div className="mx-auto max-w-5xl border-1 p-6 rounded-2xl ">
+        <Tabs defaultValue="basicSettings" className="space-y-6">
+          <TabsList className="mx-auto grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
             <TabsTrigger value="advancedSettings" disabled>
               Advanced
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="basicSettings">
-            <DefaultRecipesForm
-              defaultValues={selectedRecipe}
-              recipes={recipes}
-              handleSubmit={onSubmit}
-              handleSelectChange={onSelectChange}
-            />
-          </TabsContent>
-          {/* <TabsContent value="advancedSettings"> */}
-          {/*   <CustomRecipeForm */}
-          {/*     defaultValues={{ */}
-          {/*       name: defaultPizzaName, */}
-          {/*       settings: defaultPizzaSettings, */}
-          {/*     }} */}
-          {/*     handleSubmit={onSubmit} */}
-          {/*   /> */}
-          {/* </TabsContent> */}
+          <div className="grid gap-6 md:gap-4 md:grid-cols-[1fr_auto_1fr]">
+            <TabsContent value="basicSettings">
+              <DefaultRecipesForm
+                defaultValues={selectedRecipe}
+                recipes={recipes}
+                handleSubmit={onSubmit}
+                handleSelectChange={onSelectChange}
+              />
+            </TabsContent>
+            {/* <TabsContent value="advancedSettings"> */}
+            {/*   <CustomRecipeForm */}
+            {/*     defaultValues={{ */}
+            {/*       name: defaultPizzaName, */}
+            {/*       settings: defaultPizzaSettings, */}
+            {/*     }} */}
+            {/*     handleSubmit={onSubmit} */}
+            {/*   /> */}
+            {/* </TabsContent> */}
+            <Separator orientation="vertical" />
+            <Card className="border-none shadow-none">
+              <CardHeader>
+                <div className="flex flex-row justify-between truncate">
+                  <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
+                    {selectedRecipe.name}
+                  </h2>
+                  {/* <DropdownMenu> */}
+                  {/*   <DropdownMenuTrigger asChild> */}
+                  {/*     <Button variant="ghost" size="icon"> */}
+                  {/*       <Icons.more /> */}
+                  {/*     </Button> */}
+                  {/*   </DropdownMenuTrigger> */}
+                  {/*   <DropdownMenuContent> */}
+                  {/*     <DropdownMenuItem asChild> */}
+                  {/*       <Link href={``}> */}
+                  {/*         <Icons.bookmark className="mr-2 h-4 w-4" /> */}
+                  {/*         <span>{`Save`}</span> */}
+                  {/*       </Link> */}
+                  {/*     </DropdownMenuItem> */}
+                  {/*     <DropdownMenuItem asChild> */}
+                  {/*       <Link href={``}> */}
+                  {/*         <Icons.print className="mr-2 h-4 w-4" /> */}
+                  {/*         <span>{`Print`}</span> */}
+                  {/*       </Link> */}
+                  {/*     </DropdownMenuItem> */}
+                  {/*     <DropdownMenuItem asChild> */}
+                  {/*       <Link href={``}> */}
+                  {/*         <Icons.share className="mr-2 h-4 w-4" /> */}
+                  {/*         <span>{`Share`}</span> */}
+                  {/*       </Link> */}
+                  {/*     </DropdownMenuItem> */}
+                  {/*   </DropdownMenuContent> */}
+                  {/* </DropdownMenu> */}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <IngredientList ingredients={selectedRecipe.ingredients} />
+              </CardContent>
+            </Card>
+          </div>
         </Tabs>
-        <Card className="border-none shadow-none">
-          <CardHeader>
-            <div className="flex flex-row justify-between truncate">
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
-                {selectedRecipe.name}
-              </h2>
-              {/* <DropdownMenu> */}
-              {/*   <DropdownMenuTrigger asChild> */}
-              {/*     <Button variant="ghost" size="icon"> */}
-              {/*       <Icons.more /> */}
-              {/*     </Button> */}
-              {/*   </DropdownMenuTrigger> */}
-              {/*   <DropdownMenuContent> */}
-              {/*     <DropdownMenuItem asChild> */}
-              {/*       <Link href={``}> */}
-              {/*         <Icons.bookmark className="mr-2 h-4 w-4" /> */}
-              {/*         <span>{`Save`}</span> */}
-              {/*       </Link> */}
-              {/*     </DropdownMenuItem> */}
-              {/*     <DropdownMenuItem asChild> */}
-              {/*       <Link href={``}> */}
-              {/*         <Icons.print className="mr-2 h-4 w-4" /> */}
-              {/*         <span>{`Print`}</span> */}
-              {/*       </Link> */}
-              {/*     </DropdownMenuItem> */}
-              {/*     <DropdownMenuItem asChild> */}
-              {/*       <Link href={``}> */}
-              {/*         <Icons.share className="mr-2 h-4 w-4" /> */}
-              {/*         <span>{`Share`}</span> */}
-              {/*       </Link> */}
-              {/*     </DropdownMenuItem> */}
-              {/*   </DropdownMenuContent> */}
-              {/* </DropdownMenu> */}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <IngredientList ingredients={selectedRecipe.ingredients} />
-          </CardContent>
-        </Card>
       </div>
     </section>
   );
