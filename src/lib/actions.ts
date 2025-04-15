@@ -84,8 +84,8 @@ export async function deleteFolder(folderId: string): Promise<ActionState> {
     };
   }
 
-  revalidatePath("/recipes");
-  redirect("/recipes");
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
 }
 
 export async function deleteIngredient(id: number): Promise<void> {
