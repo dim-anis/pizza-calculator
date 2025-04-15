@@ -9,13 +9,15 @@ import {
   RecipeForm,
   recipeSchema,
   ActionState,
-  CreateFolder,
-  createFolderSchema,
+  FolderForm,
+  folderFormSchema,
+  IngredientForm,
+  ingredientFormSchema,
 } from "@/lib/types";
 import { Prisma } from "@prisma/client";
 
-export async function createFolder(
-  folderData: CreateFolder,
+export async function createOrUpdateFolder(
+  folderData: FolderForm,
 ): Promise<ActionState> {
   const user = await getCurrentUser();
 
@@ -24,9 +26,16 @@ export async function createFolder(
   }
 
   try {
-    const { name } = createFolderSchema.parse(folderData);
-    await prisma.folder.create({
-      data: {
+    const { id, name } = folderFormSchema.parse(folderData);
+
+    await prisma.folder.upsert({
+      where: {
+        id,
+      },
+      update: {
+        name,
+      },
+      create: {
         userId: user.id,
         name,
       },
@@ -49,53 +58,8 @@ export async function createFolder(
     }
   }
 
-  revalidatePath("/myrecipes");
-  redirect(`/myrecipes/${encodeURIComponent(folderData.name)}`);
-}
-
-export async function updateFolder(
-  oldName: string,
-  folderData: CreateFolder,
-): Promise<ActionState> {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("You are not authorized");
-  }
-
-  try {
-    const { name } = createFolderSchema.parse(folderData);
-    await prisma.folder.update({
-      where: {
-        userId_name: {
-          userId: user.id,
-          name: oldName,
-        },
-      },
-      data: {
-        name,
-      },
-    });
-  } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        // Unique constraint violation (Prisma example)
-        return {
-          success: false,
-          message: "Title must be unique",
-          errors: { name: ["Folder title already exists"] },
-        };
-      }
-    } else {
-      return {
-        success: false,
-        message: "Unexpected error, try again",
-      };
-    }
-  }
-
-  revalidatePath(`/myrecipes/${encodeURIComponent(folderData.name)}`);
-  redirect(`/myrecipes/${encodeURIComponent(folderData.name)}`);
+  revalidatePath("/dashboard/folders");
+  redirect(`/dashboard/folders/${folderData.id}`);
 }
 
 export async function deleteFolder(folderId: string): Promise<ActionState> {
@@ -120,11 +84,31 @@ export async function deleteFolder(folderId: string): Promise<ActionState> {
     };
   }
 
-  revalidatePath("/myrecipes");
-  redirect("/myrecipes");
+  revalidatePath("/recipes");
+  redirect("/recipes");
 }
 
-export async function deleteRecipe(recipeId: string): Promise<ActionState> {
+export async function deleteIngredient(id: number): Promise<void> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("You are not authorized");
+  }
+
+  try {
+    await prisma.ingredient.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+
+  revalidatePath("/dashboard/ingredients");
+}
+
+export async function deleteRecipe(id: number): Promise<void> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -134,16 +118,15 @@ export async function deleteRecipe(recipeId: string): Promise<ActionState> {
   try {
     await prisma.recipe.delete({
       where: {
-        id: recipeId,
-        userId: user.id,
+        id,
       },
     });
   } catch (e) {
     console.log(e);
   }
 
-  revalidatePath("/myrecipes");
-  redirect("/myrecipes");
+  revalidatePath("/dashboard/recipes");
+  redirect("/dashboard/recipes");
 }
 
 export async function createRecipe(data: RecipeForm): Promise<ActionState> {
@@ -208,8 +191,8 @@ export async function createRecipe(data: RecipeForm): Promise<ActionState> {
     }
   }
 
-  revalidatePath("/myrecipes");
-  redirect("/myrecipes");
+  revalidatePath("/dashboard/recipes");
+  redirect("/dashboard/recipes");
 }
 
 export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
@@ -287,6 +270,73 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
     }
   }
 
-  revalidatePath("/myrecipes");
-  redirect("/myrecipes");
+  revalidatePath("/recipes");
+  redirect("/recipes");
+}
+
+export async function createOrUpdateIngredient(
+  data: IngredientForm,
+  prevIngredientName?: string,
+): Promise<ActionState> {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("You are not authorized");
+  }
+
+  try {
+    const parsed = ingredientFormSchema.safeParse(data);
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: "Please fix the errors in the form",
+        errors: parseZodIssues(parsed.error.issues),
+      };
+    }
+
+    if (prevIngredientName) {
+      await prisma.ingredient.update({
+        where: {
+          userId_name: {
+            userId: user.id,
+            name: prevIngredientName,
+          },
+        },
+        data: {
+          name: parsed.data.name,
+          typeId: parsed.data.typeId,
+          isFlour: parsed.data.isFlour,
+        },
+      });
+    } else {
+      await prisma.ingredient.create({
+        data: {
+          userId: user.id,
+          name: parsed.data.name,
+          typeId: parsed.data.typeId,
+          isFlour: parsed.data.isFlour,
+        },
+      });
+    }
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        // Unique constraint violation (Prisma example)
+        return {
+          success: false,
+          message: "Title must be unique",
+          errors: { name: ["Recipe title already exists"] },
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Unexpected error, try again",
+      };
+    }
+  }
+
+  revalidatePath("/dashboard/ingredients");
+  redirect("/dashboard/ingredients");
 }

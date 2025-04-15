@@ -173,7 +173,7 @@ export default function DefaultRecipesForm({
               </Card>
             </div>
           ) : (
-            ingredients.map(({ ingredient, id }, index) => {
+            liquidIngredients.map(({ ingredient, id }, index) => {
               return (
                 <FormField
                   key={id}
@@ -181,7 +181,7 @@ export default function DefaultRecipesForm({
                   name={`ingredients.${index}.percentage`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{`Hydration ${ingredient.name}`}</FormLabel>
+                      <FormLabel>{`Hydration (${ingredient.name})`}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"

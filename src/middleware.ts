@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthPage) {
     if (isAuth) {
-      return NextResponse.redirect(new URL("/myrecipes", req.url));
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
     return null;
@@ -29,5 +29,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/myrecipes/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*", "/login", "/register"],
 };

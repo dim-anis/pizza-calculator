@@ -105,7 +105,7 @@ model IngredientType {
 model RecipeIngredient {
   id            Int        @id @default(autoincrement())
   ingredientId  Int
-  recipeId      String
+  recipeId      Int
   percentage    Float      @default(0)
   weightInGrams Int
   recipe        Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
@@ -115,7 +115,7 @@ model RecipeIngredient {
 }
 
 model Recipe {
-  id          String             @id @default(cuid())
+  id          Int                @id @default(autoincrement())
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   userId      String?
@@ -126,7 +126,6 @@ model Recipe {
   folders     Folder[]           @relation("FolderToRecipe")
   servings    Int                @default(1)
 
-  @@unique([userId, name])
   @@index([userId])
   @@map("recipes")
 }

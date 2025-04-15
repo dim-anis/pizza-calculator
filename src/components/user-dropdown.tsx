@@ -42,8 +42,13 @@ export default function UserDropdown() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/myrecipes" passHref>
+            <Link href="/dashboard/recipes" passHref>
               My recipes
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/ingredients" passHref>
+              My ingredients
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem

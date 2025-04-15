@@ -67,7 +67,7 @@ export type RecipeWithIngredientsWithFolders = Prisma.RecipeGetPayload<
 
 const recipeIngredientSchema = z.object({
   id: z.number().optional(),
-  recipeId: z.string().optional(),
+  recipeId: z.number().optional(),
   ingredientId: z.number(),
   ingredient: z.object({
     name: z.string(),
@@ -85,7 +85,7 @@ const folderSchema = z.object({
 });
 
 export const recipeSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   name: z.string(),
   notes: z.string().optional(),
   ingredients: z
@@ -106,7 +106,7 @@ export const bakersFormulaIngredientSchema = recipeIngredientSchema.extend({
 });
 
 export const bakersFormulaSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   name: z.string(),
   ingredients: z
     .array(bakersFormulaIngredientSchema)
@@ -129,14 +129,33 @@ export type ActionState = {
   errors?: Record<string, string[]>;
 };
 
-export const createFolderSchema = z.object({
+export const folderFormSchema = z.object({
+  id: z.string().optional(),
   name: z.coerce.string().min(1, { message: "Folder name is required." }),
 });
 
-export type CreateFolder = z.infer<typeof createFolderSchema>;
+export type FolderForm = z.infer<typeof folderFormSchema>;
 
 export const foldersWithCount = Prisma.validator<Prisma.FolderDefaultArgs>()({
   select: { id: true, name: true, _count: { select: { recipes: true } } },
 });
 
 export type FolderWithCount = Prisma.FolderGetPayload<typeof foldersWithCount>;
+
+export const ingredientTypeWithCount =
+  Prisma.validator<Prisma.IngredientTypeDefaultArgs>()({
+    select: { id: true, type: true, _count: { select: { ingredients: true } } },
+  });
+
+export type IngredientTypeWithCount = Prisma.IngredientTypeGetPayload<
+  typeof ingredientTypeWithCount
+>;
+
+export const ingredientFormSchema = z.object({
+  id: z.number().optional(),
+  name: z.string(),
+  typeId: z.coerce.number(),
+  isFlour: z.boolean(),
+});
+
+export type IngredientForm = z.infer<typeof ingredientFormSchema>;
