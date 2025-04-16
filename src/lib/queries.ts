@@ -106,17 +106,15 @@ export async function getDefaultRecipes() {
     where: {
       userId: null,
     },
-    include: {
+    select: {
+      name: true,
+      servings: true,
       ingredients: {
         omit: { id: true },
         include: {
           ingredient: { include: { type: { select: { isLiquid: true } } } },
         },
       },
-      folders: true,
-    },
-    orderBy: {
-      ["createdAt"]: "desc",
     },
   });
 

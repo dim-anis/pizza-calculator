@@ -24,14 +24,9 @@ export type IngredientWithType = Prisma.IngredientGetPayload<
 
 export const recipeWithIngredients =
   Prisma.validator<Prisma.RecipeDefaultArgs>()({
-    omit: {
-      id: true,
-      userId: true,
-      createdAt: true,
-      updatedAt: true,
-      notes: true,
-    },
-    include: {
+    select: {
+      name: true,
+      servings: true,
       ingredients: {
         omit: { id: true, recipeId: true },
         include: {
