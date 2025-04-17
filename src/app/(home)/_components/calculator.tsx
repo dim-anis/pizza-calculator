@@ -54,11 +54,7 @@ export default function Calculator({ recipes }: Props) {
       className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12"
     >
       <div className="mx-auto max-w-5xl border-1 p-6 rounded-2xl ">
-        <Tabs
-          defaultValue="basicSettings"
-          className="space-y-6"
-          onValueChange={() => console.log("changed tabs")}
-        >
+        <Tabs defaultValue="basicSettings" className="space-y-6">
           <TabsList className="mx-auto grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
             <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
