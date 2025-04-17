@@ -168,7 +168,7 @@ export default function DefaultRecipeForm({
                         <Input
                           type="text"
                           inputMode="numeric"
-                          placeholder={`Select ${inputField.name} hydration level`}
+                          placeholder={`Select ${inputField.name.toLowerCase()} level`}
                           className="bg-background"
                           {...field}
                         />
@@ -197,7 +197,7 @@ export default function DefaultRecipeForm({
                               <Input
                                 type="text"
                                 inputMode="numeric"
-                                placeholder={`Select ${ingredient.name} hydration level`}
+                                placeholder={`Select ${ingredient.name.toLowerCase()} hydration level`}
                                 className="bg-background"
                                 {...field}
                               />
