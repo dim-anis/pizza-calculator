@@ -1,7 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { FolderWithCount, IngredientTypeWithCount } from "./types";
+import {
+  FolderWithCount,
+  IngredientTypeWithCount,
+  RecipeWithGroupedIngredients,
+} from "./types";
 import { calculateIngredientRatios, getTotalDoughWeight } from "./helpers";
 
 export async function getAllFolders() {
@@ -101,7 +105,9 @@ export async function getRecipesGroupedByFolder() {
   });
 }
 
-export async function getDefaultRecipes() {
+export async function getDefaultRecipes(): Promise<
+  RecipeWithGroupedIngredients[]
+> {
   const recipes = await prisma.recipe.findMany({
     where: {
       userId: null,
@@ -112,17 +118,43 @@ export async function getDefaultRecipes() {
       ingredients: {
         omit: { id: true },
         include: {
-          ingredient: { include: { type: { select: { isLiquid: true } } } },
+          ingredient: {
+            include: { type: { select: { isLiquid: true } } },
+          },
         },
       },
     },
   });
 
-  return recipes.map((r) => ({
-    ...r,
-    ingredients: calculateIngredientRatios(r.ingredients),
-    servingWeight: getTotalDoughWeight(r.ingredients) / r.servings,
-  }));
+  return recipes.map((r) => {
+    const totalFlourWeight = r.ingredients.reduce(
+      (total, { ingredient, weightInGrams }) =>
+        total + (ingredient.isFlour ? weightInGrams : 0),
+      0,
+    );
+
+    return {
+      ...r,
+      servingWeight: getTotalDoughWeight(r.ingredients) / r.servings,
+      ingredients: {
+        liquids: calculateIngredientRatios(
+          r.ingredients.filter(({ ingredient }) => ingredient.type.isLiquid),
+          totalFlourWeight,
+        ),
+        flours: calculateIngredientRatios(
+          r.ingredients.filter(({ ingredient }) => ingredient.isFlour),
+          totalFlourWeight,
+        ),
+        others: calculateIngredientRatios(
+          r.ingredients.filter(
+            ({ ingredient }) =>
+              !ingredient.isFlour && !ingredient.type.isLiquid,
+          ),
+          totalFlourWeight,
+        ),
+      },
+    };
+  });
 }
 
 export async function getRecipesWithIngredient(ingredientId: number) {

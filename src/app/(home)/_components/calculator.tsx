@@ -8,7 +8,7 @@ import DefaultRecipeForm from "./default-recipe-form";
 import { UseFormReset } from "react-hook-form";
 // import { Button } from "@/components/ui/button";
 // import { Icons } from "@/components/icons";
-import { BakersFormulaForm, RecipeWithIngredients } from "@/lib/types";
+import { BakersFormulaForm, RecipeWithGroupedIngredients } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 // import {
@@ -20,13 +20,12 @@ import { Separator } from "@/components/ui/separator";
 // import Link from "next/link";
 
 type Props = {
-  recipes: (RecipeWithIngredients & { servingWeight: number })[];
+  recipes: RecipeWithGroupedIngredients[];
 };
 
 export default function Calculator({ recipes }: Props) {
-  const [selectedRecipe, setSelectedRecipe] = useState<
-    RecipeWithIngredients & { servingWeight: number }
-  >(recipes[0]);
+  const [selectedRecipe, setSelectedRecipe] =
+    useState<RecipeWithGroupedIngredients>(recipes[0]);
 
   function onSubmit(updatedRecipe: BakersFormulaForm) {
     setSelectedRecipe({
@@ -55,31 +54,33 @@ export default function Calculator({ recipes }: Props) {
       className="container mx-auto space-y-3 py-4 md:py-6 lg:py-12"
     >
       <div className="mx-auto max-w-5xl border-1 p-6 rounded-2xl ">
-        <Tabs defaultValue="basicSettings" className="space-y-6">
+        <Tabs
+          defaultValue="basicSettings"
+          className="space-y-6"
+          onValueChange={() => console.log("changed tabs")}
+        >
           <TabsList className="mx-auto grid w-full grid-cols-2">
             <TabsTrigger value="basicSettings">Basic</TabsTrigger>
-            <TabsTrigger value="advancedSettings" disabled>
-              Advanced
-            </TabsTrigger>
+            <TabsTrigger value="advancedSettings">Advanced</TabsTrigger>
           </TabsList>
           <div className="grid gap-6 md:gap-4 md:grid-cols-[1fr_auto_1fr]">
             <TabsContent value="basicSettings">
-              <DefaultRecipesForm
+              <DefaultRecipeForm
                 defaultValues={selectedRecipe}
                 recipes={recipes}
                 handleSubmit={onSubmit}
                 handleSelectChange={onSelectChange}
               />
             </TabsContent>
-            {/* <TabsContent value="advancedSettings"> */}
-            {/*   <CustomRecipeForm */}
-            {/*     defaultValues={{ */}
-            {/*       name: defaultPizzaName, */}
-            {/*       settings: defaultPizzaSettings, */}
-            {/*     }} */}
-            {/*     handleSubmit={onSubmit} */}
-            {/*   /> */}
-            {/* </TabsContent> */}
+            <TabsContent value="advancedSettings">
+              <DefaultRecipeForm
+                type="advancedForm"
+                defaultValues={selectedRecipe}
+                recipes={recipes}
+                handleSubmit={onSubmit}
+                handleSelectChange={onSelectChange}
+              />
+            </TabsContent>
             <Separator orientation="vertical" />
             <Card className="border-none shadow-none">
               <CardHeader>
@@ -117,7 +118,9 @@ export default function Calculator({ recipes }: Props) {
                 </div>
               </CardHeader>
               <CardContent>
-                <IngredientList ingredients={selectedRecipe.ingredients} />
+                <IngredientList
+                  ingredients={Object.values(selectedRecipe.ingredients).flat()}
+                />
               </CardContent>
             </Card>
           </div>

@@ -25,13 +25,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   BakersFormulaForm,
   bakersFormulaSchema,
-  RecipeWithIngredients,
+  RecipeWithGroupedIngredients,
 } from "@/lib/types";
-import { Card, CardContent } from "@/components/ui/card";
 
 type Props = {
-  defaultValues: DefaultValues<RecipeWithIngredients>;
-  recipes: RecipeWithIngredients[];
+  type?: "defaultForm" | "advancedForm";
+  defaultValues: DefaultValues<RecipeWithGroupedIngredients>;
+  recipes: RecipeWithGroupedIngredients[];
   handleSubmit: (data: BakersFormulaForm) => void;
   handleSelectChange: (
     name: string,
@@ -40,6 +40,7 @@ type Props = {
 };
 
 export default function DefaultRecipeForm({
+  type = "defaultForm",
   defaultValues,
   recipes,
   handleSubmit,
@@ -51,14 +52,31 @@ export default function DefaultRecipeForm({
     defaultValues,
   });
 
-  const { fields: ingredients } = useFieldArray({
+  const { fields: flourIngredients } = useFieldArray({
     control: form.control,
-    name: "ingredients",
+    name: "ingredients.flours",
   });
 
-  const liquidIngredients = ingredients.filter(
-    ({ ingredient }) => ingredient.type.isLiquid,
-  );
+  const { fields: liquidIngredients } = useFieldArray({
+    control: form.control,
+    name: "ingredients.liquids",
+  });
+
+  const { fields: otherIngredients } = useFieldArray({
+    control: form.control,
+    name: "ingredients.others",
+  });
+
+  const inputFields =
+    type === "defaultForm"
+      ? ([
+          { id: "liquids", name: "Hydration", fieldArray: liquidIngredients },
+        ] as const)
+      : ([
+          { id: "flours", name: "Flour", fieldArray: flourIngredients },
+          { id: "liquids", name: "Hydration", fieldArray: liquidIngredients },
+          { id: "others", name: "Other", fieldArray: otherIngredients },
+        ] as const);
 
   return (
     <Form {...form}>
@@ -136,57 +154,22 @@ export default function DefaultRecipeForm({
               )}
             />
           </div>
-          {liquidIngredients.length > 1 ? (
-            <div className="space-y-2">
-              <FormLabel>Hydration (composite)</FormLabel>
-              <Card className="shadow-none bg-muted border-none">
-                <CardContent className="space-y-4">
-                  {ingredients.map(({ ingredient, id }, index) => {
-                    if (ingredient.type.isLiquid) {
-                      return (
-                        <FormField
-                          key={id}
-                          control={form.control}
-                          name={`ingredients.${index}.percentage`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{`${ingredient.name} (%)`}</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  inputMode="numeric"
-                                  placeholder={`Select ${ingredient.name} hydration level`}
-                                  className="bg-background"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            liquidIngredients.map(({ ingredient, id }, index) => {
+          {inputFields.map((inputField, index) => {
+            if (inputField.fieldArray.length === 1) {
               return (
                 <FormField
-                  key={id}
+                  key={inputField.id}
                   control={form.control}
-                  name={`ingredients.${index}.percentage`}
+                  name={`ingredients.${inputField.id}.${index}.percentage`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{`Hydration (${ingredient.name})`}</FormLabel>
+                      <FormLabel>{`${inputField.name} (%)`}</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
                           inputMode="numeric"
-                          placeholder={`Select hydration level`}
+                          placeholder={`Select ${inputField.name} hydration level`}
+                          className="bg-background"
                           {...field}
                         />
                       </FormControl>
@@ -195,8 +178,40 @@ export default function DefaultRecipeForm({
                   )}
                 />
               );
-            })
-          )}
+            } else {
+              return (
+                <fieldset key={inputField.id} className="rounded-xl border">
+                  <legend className="px-1 py-1 ml-1">
+                    <FormLabel>{inputField.name}</FormLabel>
+                  </legend>
+                  <div className="space-y-4 p-4">
+                    {inputField.fieldArray.map(({ ingredient, id }, index) => (
+                      <FormField
+                        key={id}
+                        control={form.control}
+                        name={`ingredients.${inputField.id}.${index}.percentage`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{`${ingredient.name} (%)`}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="text"
+                                inputMode="numeric"
+                                placeholder={`Select ${ingredient.name} hydration level`}
+                                className="bg-background"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </fieldset>
+              );
+            }
+          })}
         </div>
         <Button type="submit">Calculate</Button>
       </form>

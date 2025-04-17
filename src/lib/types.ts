@@ -31,11 +31,8 @@ export const recipeWithIngredients =
         omit: { id: true, recipeId: true },
         include: {
           ingredient: {
-            select: {
-              name: true,
-              isFlour: true,
-              type: { select: { isLiquid: true } },
-            },
+            omit: { id: true, userId: true, typeId: true },
+            include: { type: { select: { isLiquid: true } } },
           },
         },
       },
@@ -45,6 +42,18 @@ export const recipeWithIngredients =
 export type RecipeWithIngredients = Prisma.RecipeGetPayload<
   typeof recipeWithIngredients
 >;
+
+export type RecipeWithGroupedIngredients = Omit<
+  RecipeWithIngredients,
+  "ingredients"
+> & {
+  servingWeight: number;
+  ingredients: {
+    flours: RecipeWithIngredients["ingredients"];
+    liquids: RecipeWithIngredients["ingredients"];
+    others: RecipeWithIngredients["ingredients"];
+  };
+};
 
 export const recipeWithIngredientsWithFolders =
   Prisma.validator<Prisma.RecipeDefaultArgs>()({
@@ -103,12 +112,18 @@ export const bakersFormulaIngredientSchema = recipeIngredientSchema.extend({
 export const bakersFormulaSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
-  ingredients: z
-    .array(bakersFormulaIngredientSchema)
-    .min(1, "At least one ingredient is required")
-    .refine((data) => data.some(({ ingredient }) => ingredient.isFlour), {
-      message: "At least one ingredient must be flour-based",
-    }),
+  ingredients: z.object({
+    liquids: z
+      .array(bakersFormulaIngredientSchema)
+      .min(1, "At least one ingredient is required"),
+    flours: z
+      .array(bakersFormulaIngredientSchema)
+      .min(1, "At least one ingredient is required")
+      .refine((data) => data.some(({ ingredient }) => ingredient.isFlour), {
+        message: "At least one ingredient must be flour-based",
+      }),
+    others: z.array(bakersFormulaIngredientSchema),
+  }),
   servings: z.coerce.number().min(1),
   servingWeight: z.coerce.number().min(1),
 });

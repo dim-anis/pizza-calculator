@@ -1,5 +1,5 @@
 import { ZodIssue } from "zod";
-import { RecipeForm, RecipeWithIngredients } from "./types";
+import { BakersFormulaForm, RecipeForm, RecipeWithIngredients } from "./types";
 
 export function formatDate(input: string | number): string {
   const date = new Date(input);
@@ -17,20 +17,26 @@ export const validationErrorMessages = {
 
 export function calculateIngredientWeights(
   totalDoughWeight: number,
-  ingredients: RecipeWithIngredients["ingredients"][number][],
+  ingredients: BakersFormulaForm["ingredients"],
 ) {
-  const totalPercentage = ingredients.reduce(
-    (total, { percentage }) => total + percentage,
-    0,
-  );
+  const totalPercentage = Object.values(ingredients)
+    .flat()
+    .reduce((total, { percentage }) => total + percentage, 0);
 
-  return ingredients
-    .map((ingredient) => ({
-      ...ingredient,
-      weightInGrams:
-        (totalDoughWeight * ingredient.percentage) / totalPercentage,
-    }))
-    .sort((a, b) => b.weightInGrams - a.weightInGrams);
+  return {
+    flours: ingredients.flours.map((i) => ({
+      ...i,
+      weightInGrams: (totalDoughWeight * i.percentage) / totalPercentage,
+    })),
+    liquids: ingredients.liquids.map((i) => ({
+      ...i,
+      weightInGrams: (totalDoughWeight * i.percentage) / totalPercentage,
+    })),
+    others: ingredients.others.map((i) => ({
+      ...i,
+      weightInGrams: (totalDoughWeight * i.percentage) / totalPercentage,
+    })),
+  };
 }
 
 function calculateBakersPercentage(
@@ -42,12 +48,13 @@ function calculateBakersPercentage(
 
 export function calculateIngredientRatios(
   ingredients: RecipeForm["ingredients"],
+  totalFlourWeight: number,
 ) {
-  const totalFlourWeight = ingredients.reduce(
-    (total, { ingredient, weightInGrams }) =>
-      total + (ingredient.isFlour ? weightInGrams : 0),
-    0,
-  );
+  // const totalFlourWeight = ingredients.reduce(
+  //   (total, { ingredient, weightInGrams }) =>
+  //     total + (ingredient.isFlour ? weightInGrams : 0),
+  //   0,
+  // );
   return ingredients.map((ingredient) => ({
     ...ingredient,
     percentage: calculateBakersPercentage(
