@@ -106,7 +106,6 @@ model RecipeIngredient {
   id            Int        @id @default(autoincrement())
   ingredientId  Int
   recipeId      Int
-  percentage    Float      @default(0)
   weightInGrams Int
   ingredient    Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
   recipe        Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
