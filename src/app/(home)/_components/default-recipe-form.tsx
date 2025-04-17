@@ -154,13 +154,13 @@ export default function DefaultRecipeForm({
               )}
             />
           </div>
-          {inputFields.map((inputField, index) => {
+          {inputFields.map((inputField) => {
             if (inputField.fieldArray.length === 1) {
               return (
                 <FormField
                   key={inputField.id}
                   control={form.control}
-                  name={`ingredients.${inputField.id}.${index}.percentage`}
+                  name={`ingredients.${inputField.id}.0.percentage`}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{`${inputField.name} (%)`}</FormLabel>
