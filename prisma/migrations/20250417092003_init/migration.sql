@@ -53,27 +53,51 @@ CREATE TABLE "folders" (
 );
 
 -- CreateTable
+CREATE TABLE "ingredients" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "typeId" INTEGER NOT NULL DEFAULT 0,
+    "userId" TEXT NOT NULL,
+    "isFlour" BOOLEAN NOT NULL DEFAULT false,
+    CONSTRAINT "ingredients_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "ingredients_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "ingredient_types" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "ingredient_types" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "type" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "isLiquid" BOOLEAN NOT NULL DEFAULT false
+);
+
+-- CreateTable
+CREATE TABLE "recipe_ingredients" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "ingredientId" INTEGER NOT NULL,
+    "recipeId" INTEGER NOT NULL,
+    "percentage" REAL NOT NULL DEFAULT 0,
+    "weightInGrams" INTEGER NOT NULL,
+    CONSTRAINT "recipe_ingredients_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "ingredients" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "recipe_ingredients_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "recipes" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "recipes" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "userId" TEXT,
     "name" TEXT NOT NULL,
-    "doughballWeight" INTEGER NOT NULL,
-    "flourRatio" REAL NOT NULL DEFAULT 0,
-    "waterRatio" REAL NOT NULL DEFAULT 0,
-    "saltRatio" REAL NOT NULL DEFAULT 0,
-    "oilRatio" REAL NOT NULL DEFAULT 0,
-    "sugarRatio" REAL NOT NULL DEFAULT 0,
-    "yeastRatio" REAL NOT NULL DEFAULT 0,
     "notes" TEXT,
+    "servings" INTEGER NOT NULL DEFAULT 1,
     CONSTRAINT "recipes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "_FolderToRecipe" (
     "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+    "B" INTEGER NOT NULL,
     CONSTRAINT "_FolderToRecipe_A_fkey" FOREIGN KEY ("A") REFERENCES "folders" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "_FolderToRecipe_B_fkey" FOREIGN KEY ("B") REFERENCES "recipes" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -103,10 +127,13 @@ CREATE UNIQUE INDEX "verification_tokens_identifier_token_key" ON "verification_
 CREATE UNIQUE INDEX "folders_userId_name_key" ON "folders"("userId", "name");
 
 -- CreateIndex
-CREATE INDEX "recipes_userId_idx" ON "recipes"("userId");
+CREATE UNIQUE INDEX "ingredients_userId_name_key" ON "ingredients"("userId", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "recipes_userId_name_key" ON "recipes"("userId", "name");
+CREATE UNIQUE INDEX "ingredient_types_type_key" ON "ingredient_types"("type");
+
+-- CreateIndex
+CREATE INDEX "recipes_userId_idx" ON "recipes"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_FolderToRecipe_AB_unique" ON "_FolderToRecipe"("A", "B");
