@@ -49,8 +49,8 @@ model User {
   image         String?
   accounts      Account[]
   folders       Folder[]
-  recipes       Recipe[]
   ingredients   Ingredient[]
+  recipes       Recipe[]
   sessions      Session[]
 
   @@map("users")
@@ -81,12 +81,12 @@ model Folder {
 model Ingredient {
   id      Int                @id @default(autoincrement())
   name    String
-  recipes RecipeIngredient[]
   typeId  Int                @default(0)
-  type    IngredientType     @relation(fields: [typeId], references: [id])
   userId  String
-  user    User               @relation(fields: [userId], references: [id])
   isFlour Boolean            @default(false)
+  user    User               @relation(fields: [userId], references: [id])
+  type    IngredientType     @relation(fields: [typeId], references: [id])
+  recipes RecipeIngredient[]
 
   @@unique([userId, name])
   @@map("ingredients")
@@ -96,8 +96,8 @@ model IngredientType {
   id          Int          @id @default(autoincrement())
   type        String       @unique
   description String
-  ingredients Ingredient[]
   isLiquid    Boolean      @default(false)
+  ingredients Ingredient[]
 
   @@map("ingredient_types")
 }
@@ -108,8 +108,8 @@ model RecipeIngredient {
   recipeId      Int
   percentage    Float      @default(0)
   weightInGrams Int
-  recipe        Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   ingredient    Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  recipe        Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@map("recipe_ingredients")
 }
@@ -121,10 +121,10 @@ model Recipe {
   userId      String?
   name        String
   notes       String?
+  servings    Int                @default(1)
   ingredients RecipeIngredient[]
   user        User?              @relation(fields: [userId], references: [id])
   folders     Folder[]           @relation("FolderToRecipe")
-  servings    Int                @default(1)
 
   @@index([userId])
   @@map("recipes")
