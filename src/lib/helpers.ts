@@ -50,11 +50,6 @@ export function calculateIngredientRatios(
   ingredients: RecipeForm["ingredients"],
   totalFlourWeight: number,
 ) {
-  // const totalFlourWeight = ingredients.reduce(
-  //   (total, { ingredient, weightInGrams }) =>
-  //     total + (ingredient.isFlour ? weightInGrams : 0),
-  //   0,
-  // );
   return ingredients.map((ingredient) => ({
     ...ingredient,
     percentage: calculateBakersPercentage(
