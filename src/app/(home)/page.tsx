@@ -9,6 +9,7 @@ export default async function Home() {
   const defaultRecipes = await getDefaultRecipes();
   return (
     <>
+      <div className="absolute z-[-10] bottom-0 h-3/4 w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_50%,#000_70%,transparent_100%)]"></div>
       <section className="space-y-6 py-6 md:pb-6 md:pt-10 lg:py-10 w-full">
         <div className="container mx-auto flex flex-col gap-4 items-center text-center">
           <h1 className="text-3xl font-bold leading-tight tracking-tighter sm:text-4xl md:text-5xl lg:leading-[1.1]">
