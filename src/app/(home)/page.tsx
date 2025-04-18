@@ -2,6 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import Calculator from "./_components/calculator";
 import { getDefaultRecipes } from "@/lib/queries";
 import Link from "next/link";
+import FeatureSection from "./_components/feature-section";
 
 export default async function Home() {
   const defaultRecipes = await getDefaultRecipes();
@@ -32,6 +33,7 @@ export default async function Home() {
         </div>
       </section>
       <Calculator recipes={defaultRecipes} />
+      <FeatureSection />
     </>
   );
 }
