@@ -3,6 +3,7 @@ import Calculator from "./_components/calculator";
 import { getDefaultRecipes } from "@/lib/queries";
 import Link from "next/link";
 import FeatureSection from "./_components/feature-section";
+import CTASection from "./_components/cta-section";
 
 export default async function Home() {
   const defaultRecipes = await getDefaultRecipes();
@@ -34,6 +35,7 @@ export default async function Home() {
       </section>
       <Calculator recipes={defaultRecipes} />
       <FeatureSection />
+      <CTASection />
     </>
   );
 }
