@@ -27,6 +27,7 @@ import {
   bakersFormulaSchema,
   RecipeWithGroupedIngredients,
 } from "@/lib/types";
+import { roundNumTo } from "@/lib/helpers";
 
 type Props = {
   type?: "defaultForm" | "advancedForm";
@@ -171,6 +172,7 @@ export default function DefaultRecipeForm({
                           placeholder={`Select ${inputField.name.toLowerCase()} level`}
                           className="bg-background"
                           {...field}
+                          value={roundNumTo(field.value, 1)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -200,6 +202,7 @@ export default function DefaultRecipeForm({
                                 placeholder={`Select ${ingredient.name.toLowerCase()} hydration level`}
                                 className="bg-background"
                                 {...field}
+                                value={roundNumTo(field.value, 1)}
                               />
                             </FormControl>
                             <FormMessage />

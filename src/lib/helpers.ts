@@ -43,7 +43,7 @@ function calculateBakersPercentage(
   ingredientWeight: number,
   flourWeight: number,
 ) {
-  return Math.round((ingredientWeight / flourWeight) * 100 * 10) / 10;
+  return (ingredientWeight / flourWeight) * 100;
 }
 
 export function calculateIngredientRatios(
