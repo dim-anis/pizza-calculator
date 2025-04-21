@@ -91,9 +91,7 @@ export function parseZodIssues(issues: ZodIssue[]) {
   return parsedIssues;
 }
 
-export function roundWeightTo(weight: number, decimalPlaces = 1) {
+export function roundNumTo(num: number, decimalPlaces = 1) {
   const factor = 10 ** decimalPlaces;
-  return Number.isInteger(weight)
-    ? weight
-    : Math.round(weight * factor) / factor;
+  return Number.isInteger(num) ? num : Math.round(num * factor) / factor;
 }

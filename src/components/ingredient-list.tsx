@@ -7,10 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { roundNumTo } from "@/lib/helpers";
 import { RecipeWithIngredients } from "@/lib/types";
 
 type IngredientListProps = {
-  ingredients: RecipeWithIngredients["ingredients"][number][];
+  ingredients: (RecipeWithIngredients["ingredients"][number] & {
+    percentage?: number;
+  })[];
 };
 
 export default function IngredientList({ ingredients }: IngredientListProps) {
@@ -23,7 +26,8 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
       <TableHeader>
         <TableRow>
           <TableHead className="text-muted-foreground">Ingredient</TableHead>
-          <TableHead className="text-right text-muted-foreground">
+          <TableHead className="text-muted-foreground">Percentage</TableHead>
+          <TableHead className="text-muted-foreground text-right">
             Amount
           </TableHead>
         </TableRow>
@@ -34,11 +38,11 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
             <TableCell className="font-medium">
               {ingredient.ingredient.name}
             </TableCell>
-            <TableCell className="text-right">
-              {Number.isInteger(ingredient.weightInGrams)
-                ? ingredient.weightInGrams
-                : Math.round(ingredient.weightInGrams * 10) / 10}{" "}
-              g
+            {ingredient.percentage && (
+              <TableCell>{roundNumTo(ingredient.percentage, 1)}</TableCell>
+            )}
+            <TableCell className="font-medium text-right">
+              {roundNumTo(ingredient.weightInGrams, 1)}g
             </TableCell>
           </TableRow>
         ))}
@@ -46,6 +50,7 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
       <TableFooter>
         <TableRow>
           <TableCell>Total</TableCell>
+          <TableCell></TableCell>
           <TableCell className="text-right">
             {`~${Math.round(totalWeight)}`} g
           </TableCell>

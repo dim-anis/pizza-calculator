@@ -43,15 +43,22 @@ export type RecipeWithIngredients = Prisma.RecipeGetPayload<
   typeof recipeWithIngredients
 >;
 
+// TODO: clean up ingredient type
 export type RecipeWithGroupedIngredients = Omit<
   RecipeWithIngredients,
   "ingredients"
 > & {
   servingWeight: number;
   ingredients: {
-    flours: RecipeWithIngredients["ingredients"];
-    liquids: RecipeWithIngredients["ingredients"];
-    others: RecipeWithIngredients["ingredients"];
+    flours: (RecipeWithIngredients["ingredients"][number] & {
+      percentage: number;
+    })[];
+    liquids: (RecipeWithIngredients["ingredients"][number] & {
+      percentage: number;
+    })[];
+    others: (RecipeWithIngredients["ingredients"][number] & {
+      percentage: number;
+    })[];
   };
 };
 

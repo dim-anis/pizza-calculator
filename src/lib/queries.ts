@@ -137,12 +137,12 @@ export async function getDefaultRecipes(): Promise<
       ...r,
       servingWeight: getTotalDoughWeight(r.ingredients) / r.servings,
       ingredients: {
-        liquids: calculateIngredientRatios(
-          r.ingredients.filter(({ ingredient }) => ingredient.type.isLiquid),
-          totalFlourWeight,
-        ),
         flours: calculateIngredientRatios(
           r.ingredients.filter(({ ingredient }) => ingredient.isFlour),
+          totalFlourWeight,
+        ),
+        liquids: calculateIngredientRatios(
+          r.ingredients.filter(({ ingredient }) => ingredient.type.isLiquid),
           totalFlourWeight,
         ),
         others: calculateIngredientRatios(
