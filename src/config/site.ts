@@ -5,5 +5,5 @@ export const siteConfig: SiteConfig = {
   description:
     "DoughMath helps you calculate baker’s percentages, scale recipes accurately, and organize your bakes with ease.",
   url: "https://www.doughmath.com/",
-  ogImage: "",
+  ogImage: "https://www.doughmath.com/og.png",
 };
