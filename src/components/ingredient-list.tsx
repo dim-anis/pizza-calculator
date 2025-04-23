@@ -39,7 +39,9 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
               {ingredient.ingredient.name}
             </TableCell>
             {ingredient.percentage && (
-              <TableCell>{roundNumTo(ingredient.percentage, 1)}</TableCell>
+              <TableCell className="font-medium text-muted-foreground">
+                {roundNumTo(ingredient.percentage, 1)}%
+              </TableCell>
             )}
             <TableCell className="font-medium text-right">
               {roundNumTo(ingredient.weightInGrams, 1)}g
