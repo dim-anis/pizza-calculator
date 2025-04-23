@@ -44,7 +44,7 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
               </TableCell>
             )}
             <TableCell className="font-medium text-right">
-              {roundNumTo(ingredient.weightInGrams, 1)}g
+              {roundNumTo(ingredient.weightInGrams, 1)} g
             </TableCell>
           </TableRow>
         ))}
