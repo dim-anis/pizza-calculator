@@ -3,16 +3,9 @@
 import IngredientList from "@/components/ingredient-list";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { calculateIngredientRatios, getArrayFromOneTo } from "@/lib/helpers";
+import { calculateIngredientRatios } from "@/lib/helpers";
 import { RecipeWithIngredientsWithFolders } from "@/lib/types";
-import { Label } from "@/components/ui/label";
+import { Icons } from "@/components/icons";
 
 type Params = {
   recipe: RecipeWithIngredientsWithFolders;
@@ -20,6 +13,11 @@ type Params = {
 
 export default function RecipeDetails({ recipe }: Params) {
   const [numOfServings, setNumOfServings] = useState(recipe.servings);
+
+  function onClick(inc: number) {
+    setNumOfServings(Math.max(1, numOfServings + inc));
+  }
+
   const totalFlourWeight = recipe.ingredients.reduce(
     (total, { ingredient, weightInGrams }) =>
       total + (ingredient.isFlour ? weightInGrams : 0),
@@ -37,25 +35,30 @@ export default function RecipeDetails({ recipe }: Params) {
   return (
     <div className="space-y-4">
       <div className="flex w-full flex-col space-y-2">
-        <div className="flex flex-col items-start justify-between gap-2">
-          <h3 className="font-semibold lg:text-lg">Ingredients</h3>
-          <div className="flex items-center space-x-2 text-sm">
-            <Label>Number of servings</Label>
-            <Select
-              defaultValue={numOfServings.toString()}
-              onValueChange={(value) => setNumOfServings(Number(value))}
+        <h3 className="font-semibold lg:text-lg">Ingredients</h3>
+        <div className="flex items-center space-x-4">
+          <h4 className="font-medium text-sm lg:text-md">Number of servings</h4>
+          <div className="flex items-center justify-center space-x-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 shrink-0 rounded-full"
+              onClick={() => onClick(-1)}
+              disabled={numOfServings <= 1}
             >
-              <SelectTrigger className="w-[auto]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {getArrayFromOneTo(10).map((num) => (
-                  <SelectItem value={`${num}`} key={num}>
-                    <span className="pr-1">{num}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Icons.subtract />
+              <span className="sr-only">Decrease</span>
+            </Button>
+            <div className="font-bold tracking-tighter">{numOfServings}</div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 shrink-0 rounded-full"
+              onClick={() => onClick(1)}
+            >
+              <Icons.add />
+              <span className="sr-only">Increase</span>
+            </Button>
           </div>
         </div>
         <IngredientList ingredients={ingredientsAdjustedForNumServings} />

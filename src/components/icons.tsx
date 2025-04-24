@@ -33,6 +33,7 @@ import {
   Share,
   List,
   Copy,
+  Minus,
 } from "lucide-react";
 
 export const Icons = {
@@ -65,6 +66,7 @@ export const Icons = {
   more: MoreHorizontal,
   moreVertical: MoreVertical,
   add: Plus,
+  subtract: Minus,
   github: Github,
   print: Printer,
   bookmark: Bookmark,
