@@ -12,7 +12,7 @@ import { RecipeWithIngredients } from "@/lib/types";
 
 type IngredientListProps = {
   ingredients: (RecipeWithIngredients["ingredients"][number] & {
-    percentage?: number;
+    percentage: number;
   })[];
 };
 
@@ -38,11 +38,9 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
             <TableCell className="font-medium">
               {ingredient.ingredient.name}
             </TableCell>
-            {ingredient.percentage && (
-              <TableCell className="font-medium text-muted-foreground">
-                {roundNumTo(ingredient.percentage, 1)}%
-              </TableCell>
-            )}
+            <TableCell className="font-medium text-muted-foreground">
+              {roundNumTo(ingredient.percentage, 1)}%
+            </TableCell>
             <TableCell className="font-medium text-right">
               {roundNumTo(ingredient.weightInGrams, 1)} g
             </TableCell>
