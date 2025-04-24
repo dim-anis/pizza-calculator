@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getArrayFromOneTo } from "@/lib/helpers";
+import { calculateIngredientRatios, getArrayFromOneTo } from "@/lib/helpers";
 import { RecipeWithIngredientsWithFolders } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 
@@ -20,7 +20,16 @@ type Params = {
 
 export default function RecipeDetails({ recipe }: Params) {
   const [numOfServings, setNumOfServings] = useState(recipe.servings);
-  const ingredientsAdjustedForNumServings = recipe.ingredients.map((i) => ({
+  const totalFlourWeight = recipe.ingredients.reduce(
+    (total, { ingredient, weightInGrams }) =>
+      total + (ingredient.isFlour ? weightInGrams : 0),
+    0,
+  );
+  const recipeWithPercentages = calculateIngredientRatios(
+    recipe.ingredients,
+    totalFlourWeight,
+  );
+  const ingredientsAdjustedForNumServings = recipeWithPercentages.map((i) => ({
     ...i,
     weightInGrams: i.weightInGrams * numOfServings,
   }));
