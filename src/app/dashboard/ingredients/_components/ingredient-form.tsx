@@ -99,7 +99,7 @@ export default function IngredientForm({
               <FormLabel>Ingredient type</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={String(field.value)}
+                defaultValue={field.value ? String(field.value) : ""}
               >
                 <FormControl>
                   <SelectTrigger>
