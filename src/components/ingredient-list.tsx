@@ -26,9 +26,11 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
       <TableHeader>
         <TableRow>
           <TableHead className="text-muted-foreground">Ingredient</TableHead>
-          <TableHead className="text-muted-foreground">Percentage</TableHead>
+          <TableHead className="text-muted-foreground">
+            Baker&apos;s %
+          </TableHead>
           <TableHead className="text-muted-foreground text-right">
-            Amount
+            Quantity
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -42,7 +44,7 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
               {roundNumTo(ingredient.percentage, 1)}%
             </TableCell>
             <TableCell className="font-medium text-right">
-              {roundNumTo(ingredient.weightInGrams, 1)} g
+              {roundNumTo(ingredient.weightInGrams, 1)}g
             </TableCell>
           </TableRow>
         ))}
@@ -52,7 +54,7 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
           <TableCell>Total</TableCell>
           <TableCell></TableCell>
           <TableCell className="text-right">
-            {`~${Math.round(totalWeight)}`} g
+            {`~${Math.round(totalWeight)}`}g
           </TableCell>
         </TableRow>
       </TableFooter>
