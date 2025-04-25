@@ -122,10 +122,23 @@ model Recipe {
   notes        String?
   servings     Int                @default(1)
   ingredients  RecipeIngredient[]
+  subRecipes   RecipeSubRecipe[]
+  usedIn       RecipeSubRecipe[]  @relation("SubRecipeUsage")
   user         User?              @relation(fields: [userId], references: [id])
   folders      Folder[]           @relation("FolderToRecipe")
   isPreferment Boolean            @default(false)
 
   @@index([userId])
   @@map("recipes")
+}
+
+model RecipeSubRecipe {
+  id            Int    @id @default(autoincrement())
+  recipeId      Int
+  subRecipeId   Int
+  weightInGrams Int
+  recipe        Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  subRecipe     Recipe @relation("SubRecipeUsage", fields: [subRecipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_sub_recipes")
 }
