@@ -114,16 +114,17 @@ model RecipeIngredient {
 }
 
 model Recipe {
-  id          Int                @id @default(autoincrement())
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  userId      String?
-  name        String
-  notes       String?
-  servings    Int                @default(1)
-  ingredients RecipeIngredient[]
-  user        User?              @relation(fields: [userId], references: [id])
-  folders     Folder[]           @relation("FolderToRecipe")
+  id           Int                @id @default(autoincrement())
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  userId       String?
+  name         String
+  notes        String?
+  servings     Int                @default(1)
+  ingredients  RecipeIngredient[]
+  user         User?              @relation(fields: [userId], references: [id])
+  folders      Folder[]           @relation("FolderToRecipe")
+  isPreferment Boolean            @default(false)
 
   @@index([userId])
   @@map("recipes")
