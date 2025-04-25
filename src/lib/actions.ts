@@ -25,21 +25,36 @@ export async function createOrUpdateFolder(
     throw new Error("You are not authorized");
   }
 
+  let folderId;
+
   try {
     const { id, name } = folderFormSchema.parse(folderData);
 
-    await prisma.folder.upsert({
-      where: {
-        id,
-      },
-      update: {
-        name,
-      },
-      create: {
-        userId: user.id,
-        name,
-      },
-    });
+    if (id) {
+      await prisma.folder.upsert({
+        where: {
+          id,
+        },
+        update: {
+          name,
+        },
+        create: {
+          userId: user.id,
+          name,
+        },
+      });
+
+      folderId = id;
+    } else {
+      const res = await prisma.folder.create({
+        data: {
+          userId: user.id,
+          name,
+        },
+      });
+
+      folderId = res.id;
+    }
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
@@ -59,7 +74,7 @@ export async function createOrUpdateFolder(
   }
 
   revalidatePath("/dashboard/folders");
-  redirect(`/dashboard/folders/${folderData.id}`);
+  redirect(`/dashboard${folderId ? `/folders/${folderId}` : ""}`);
 }
 
 export async function deleteFolder(folderId: string): Promise<ActionState> {
