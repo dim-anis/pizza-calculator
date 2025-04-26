@@ -128,11 +128,16 @@ export default function EditRecipeForm({
 
     if (selectedIngredientIndex !== -1) {
       const flours = selectedIngredients.filter(
-        ({ ingredient }) => ingredient.isFlour,
+        ({
+          ingredient: {
+            type: { type: ingredientType },
+          },
+        }) => ingredientType === "Flour",
       );
 
       if (
-        selectedIngredients[selectedIngredientIndex].ingredient.isFlour &&
+        selectedIngredients[selectedIngredientIndex].ingredient.type.type ===
+          "Flour" &&
         flours.length < 2
       ) {
         return;
@@ -148,7 +153,6 @@ export default function EditRecipeForm({
       ingredient: {
         name: ingredient.name,
         type: ingredient.type,
-        isFlour: ingredient.isFlour,
       },
     });
   }

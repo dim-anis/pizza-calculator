@@ -321,7 +321,6 @@ export async function createOrUpdateIngredient(
         data: {
           name: parsed.data.name,
           typeId: parsed.data.typeId,
-          isFlour: parsed.data.isFlour,
         },
       });
     } else {
@@ -330,7 +329,6 @@ export async function createOrUpdateIngredient(
           userId: user.id,
           name: parsed.data.name,
           typeId: parsed.data.typeId,
-          isFlour: parsed.data.isFlour,
         },
       });
     }

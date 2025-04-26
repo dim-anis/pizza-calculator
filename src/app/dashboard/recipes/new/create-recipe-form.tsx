@@ -85,7 +85,6 @@ export default function CreateRecipeForm({
         ingredient: {
           name: ui.name,
           type: ui.type,
-          isFlour: ui.isFlour,
         },
       })),
       servings: 1,
@@ -132,11 +131,16 @@ export default function CreateRecipeForm({
 
     if (selectedIngredientIndex !== -1) {
       const flours = selectedIngredients.filter(
-        ({ ingredient }) => ingredient.isFlour,
+        ({
+          ingredient: {
+            type: { type: ingredientType },
+          },
+        }) => ingredientType === "Flour",
       );
 
       if (
-        selectedIngredients[selectedIngredientIndex].ingredient.isFlour &&
+        selectedIngredients[selectedIngredientIndex].ingredient.type.type ===
+          "Flour" &&
         flours.length < 2
       ) {
         return;
@@ -152,7 +156,6 @@ export default function CreateRecipeForm({
       ingredient: {
         name: userIngredient.name,
         type: userIngredient.type,
-        isFlour: userIngredient.isFlour,
       },
     });
   }

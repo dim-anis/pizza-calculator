@@ -83,7 +83,6 @@ model Ingredient {
   name    String
   typeId  Int                @default(0)
   userId  String
-  isFlour Boolean            @default(false)
   user    User               @relation(fields: [userId], references: [id])
   type    IngredientType     @relation(fields: [typeId], references: [id])
   recipes RecipeIngredient[]
@@ -93,10 +92,9 @@ model Ingredient {
 }
 
 model IngredientType {
-  id          Int          @id @default(autoincrement())
-  type        String       @unique
+  id          Int                @id @default(autoincrement())
+  type        IngredientTypeName
   description String
-  isLiquid    Boolean      @default(false)
   ingredients Ingredient[]
 
   @@map("ingredient_types")
@@ -141,4 +139,14 @@ model RecipeSubRecipe {
   subRecipe     Recipe @relation("SubRecipeUsage", fields: [subRecipeId], references: [id], onDelete: Cascade)
 
   @@map("recipe_sub_recipes")
+}
+
+enum IngredientTypeName {
+  Preferment
+  Flour
+  Liquid
+  Fat
+  Dry
+  Yeast
+  Mixed
 }

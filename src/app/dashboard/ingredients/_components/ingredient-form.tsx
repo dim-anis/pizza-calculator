@@ -3,7 +3,6 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createOrUpdateIngredient } from "@/lib/actions";
-import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
   ingredientTypes: IngredientType[];
@@ -41,9 +39,7 @@ export default function IngredientForm({
   const form = useForm<IngredientForm>({
     mode: "onChange",
     resolver: zodResolver(ingredientFormSchema),
-    ...(defaultValues
-      ? { defaultValues }
-      : { defaultValues: { isFlour: false } }),
+    ...(defaultValues ? { defaultValues } : {}),
   });
 
   async function onSubmit(formData: IngredientForm) {
@@ -117,29 +113,6 @@ export default function IngredientForm({
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="isFlour"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start gap-3 rounded-md border p-4 shadow-xs">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="flex flex-col gap-1">
-                <FormLabel className="leading-snug">Flour ingredient</FormLabel>
-                <FormDescription className="leading-snug">
-                  Baker&apos;s percentages are calculated based on flour. To
-                  ensure accurate calculations, mark flour ingredients
-                  explicitly.
-                </FormDescription>
-              </div>
             </FormItem>
           )}
         />

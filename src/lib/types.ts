@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, IngredientTypeName } from "@prisma/client";
 import { z } from "zod";
 
 export type MainNavItem = {
@@ -32,7 +32,7 @@ export const recipeWithIngredients =
         include: {
           ingredient: {
             omit: { id: true, userId: true, typeId: true },
-            include: { type: { select: { isLiquid: true } } },
+            include: { type: { select: { type: true } } },
           },
         },
       },
@@ -82,9 +82,8 @@ const recipeIngredientSchema = z.object({
   ingredientId: z.number(),
   ingredient: z.object({
     name: z.string(),
-    isFlour: z.boolean(),
     type: z.object({
-      isLiquid: z.boolean(),
+      type: z.nativeEnum(IngredientTypeName),
     }),
   }),
   weightInGrams: z.coerce.number().positive(),
@@ -102,9 +101,19 @@ export const recipeSchema = z.object({
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required")
-    .refine((data) => data.some(({ ingredient }) => ingredient.isFlour), {
-      message: "At least one ingredient must be flour-based",
-    }),
+    .refine(
+      (data) =>
+        data.some(
+          ({
+            ingredient: {
+              type: { type },
+            },
+          }) => type === "Flour",
+        ),
+      {
+        message: "At least one ingredient must be flour-based",
+      },
+    ),
   folders: z.array(folderSchema),
   servings: z.coerce.number().min(1),
 });
@@ -126,9 +135,19 @@ export const bakersFormulaSchema = z.object({
     flours: z
       .array(bakersFormulaIngredientSchema)
       .min(1, "At least one ingredient is required")
-      .refine((data) => data.some(({ ingredient }) => ingredient.isFlour), {
-        message: "At least one ingredient must be flour-based",
-      }),
+      .refine(
+        (data) =>
+          data.some(
+            ({
+              ingredient: {
+                type: { type },
+              },
+            }) => type === "Flour",
+          ),
+        {
+          message: "At least one ingredient must be flour-based",
+        },
+      ),
     others: z.array(bakersFormulaIngredientSchema),
   }),
   servings: z.coerce.number().min(1),
@@ -172,7 +191,6 @@ export const ingredientFormSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
   typeId: z.coerce.number(),
-  isFlour: z.boolean(),
 });
 
 export type IngredientForm = z.infer<typeof ingredientFormSchema>;

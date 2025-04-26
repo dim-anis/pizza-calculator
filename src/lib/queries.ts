@@ -7,6 +7,7 @@ import {
   RecipeWithGroupedIngredients,
 } from "./types";
 import { calculateIngredientRatios, getTotalDoughWeight } from "./helpers";
+import { IngredientTypeName } from "@prisma/client";
 
 export async function getAllFolders() {
   const user = await getCurrentUser();
@@ -25,7 +26,7 @@ export async function getAllFolders() {
   });
 }
 
-export async function getIngredients(params?: { type?: string }) {
+export async function getIngredients(params?: { type?: IngredientTypeName }) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -119,7 +120,7 @@ export async function getDefaultRecipes(): Promise<
         omit: { id: true },
         include: {
           ingredient: {
-            include: { type: { select: { isLiquid: true } } },
+            include: { type: true },
           },
         },
       },
@@ -128,8 +129,15 @@ export async function getDefaultRecipes(): Promise<
 
   return recipes.map((r) => {
     const totalFlourWeight = r.ingredients.reduce(
-      (total, { ingredient, weightInGrams }) =>
-        total + (ingredient.isFlour ? weightInGrams : 0),
+      (
+        total,
+        {
+          ingredient: {
+            type: { type: ingredientType },
+          },
+          weightInGrams,
+        },
+      ) => total + (ingredientType === "Flour" ? weightInGrams : 0),
       0,
     );
 
@@ -138,17 +146,32 @@ export async function getDefaultRecipes(): Promise<
       servingWeight: getTotalDoughWeight(r.ingredients) / r.servings,
       ingredients: {
         flours: calculateIngredientRatios(
-          r.ingredients.filter(({ ingredient }) => ingredient.isFlour),
+          r.ingredients.filter(
+            ({
+              ingredient: {
+                type: { type: ingredientType },
+              },
+            }) => ingredientType === "Flour",
+          ),
           totalFlourWeight,
         ),
         liquids: calculateIngredientRatios(
-          r.ingredients.filter(({ ingredient }) => ingredient.type.isLiquid),
+          r.ingredients.filter(
+            ({
+              ingredient: {
+                type: { type: ingredientType },
+              },
+            }) => ingredientType === "Liquid",
+          ),
           totalFlourWeight,
         ),
         others: calculateIngredientRatios(
           r.ingredients.filter(
-            ({ ingredient }) =>
-              !ingredient.isFlour && !ingredient.type.isLiquid,
+            ({
+              ingredient: {
+                type: { type: ingredientType },
+              },
+            }) => ingredientType !== "Flour" && ingredientType !== "Liquid",
           ),
           totalFlourWeight,
         ),
@@ -291,7 +314,7 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: number) {
     include: {
       ingredients: {
         include: {
-          ingredient: { include: { type: { select: { isLiquid: true } } } },
+          ingredient: { include: { type: true } },
         },
       },
       folders: true,

@@ -20,7 +20,7 @@ export default function RecipeDetails({ recipe }: Params) {
 
   const totalFlourWeight = recipe.ingredients.reduce(
     (total, { ingredient, weightInGrams }) =>
-      total + (ingredient.isFlour ? weightInGrams : 0),
+      total + (ingredient.type.type === "Flour" ? weightInGrams : 0),
     0,
   );
   const recipeWithPercentages = calculateIngredientRatios(
