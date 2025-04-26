@@ -25,7 +25,7 @@ export default async function RecipePage({ params }: Params) {
           <div className="flex flex-wrap gap-2">
             {recipe.folders.map((folder) => (
               <Link
-                href={`/recipes/${encodeURIComponent(folder.name)}`}
+                href={`/dashboard/folders/${encodeURIComponent(folder.id)}`}
                 key={folder.id}
                 className={`${buttonVariants({
                   variant: "ghost",
