@@ -81,7 +81,7 @@ model Folder {
 model Ingredient {
   id      Int                @id @default(autoincrement())
   name    String
-  typeId  Int                @default(0)
+  typeId  Int
   userId  String
   user    User               @relation(fields: [userId], references: [id])
   type    IngredientType     @relation(fields: [typeId], references: [id])
