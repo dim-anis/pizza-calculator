@@ -378,11 +378,7 @@ export default function CreateRecipeForm({
                               inputMode="numeric"
                               placeholder={`Enter the amount of ${ingredient.ingredient.name.toLowerCase()}`}
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.value.replace(/[^0-9]/, ""),
-                                )
-                              }
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <Button
