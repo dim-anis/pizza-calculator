@@ -93,7 +93,7 @@ model Ingredient {
 
 model IngredientType {
   id          Int                @id @default(autoincrement())
-  type        IngredientTypeName
+  type        IngredientTypeName @unique
   description String
   ingredients Ingredient[]
 
