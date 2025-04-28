@@ -78,14 +78,28 @@ model Folder {
   @@map("folders")
 }
 
+model IngredientComponent {
+  id            Int   @id @default(autoincrement())
+  parentId      Int
+  ingredientId  Int
+  weightInGrams Float
+
+  parent     Ingredient @relation("IngredientComponents", fields: [parentId], references: [id])
+  ingredient Ingredient @relation("IngredientComponentIngredient", fields: [ingredientId], references: [id])
+
+  @@map("ingredient_components")
+}
+
 model Ingredient {
-  id      Int                @id @default(autoincrement())
-  name    String
-  typeId  Int
-  userId  String
-  user    User               @relation(fields: [userId], references: [id])
-  type    IngredientType     @relation(fields: [typeId], references: [id])
-  recipes RecipeIngredient[]
+  id            Int                   @id @default(autoincrement())
+  name          String
+  typeId        Int
+  userId        String
+  user          User                  @relation(fields: [userId], references: [id])
+  type          IngredientType        @relation(fields: [typeId], references: [id])
+  recipes       RecipeIngredient[]
+  components    IngredientComponent[] @relation("IngredientComponents")
+  asComponentOf IngredientComponent[] @relation("IngredientComponentIngredient")
 
   @@unique([userId, name])
   @@map("ingredients")
