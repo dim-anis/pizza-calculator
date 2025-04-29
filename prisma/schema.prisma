@@ -101,7 +101,6 @@ model Ingredient {
   components    IngredientComponent[] @relation("IngredientComponents")
   asComponentOf IngredientComponent[] @relation("IngredientComponentIngredient")
 
-  @@unique([userId, name])
   @@map("ingredients")
 }
 

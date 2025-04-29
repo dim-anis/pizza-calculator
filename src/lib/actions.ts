@@ -291,7 +291,6 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
 
 export async function createOrUpdateIngredient(
   data: IngredientForm,
-  prevIngredientName?: string,
 ): Promise<ActionState> {
   const user = await getCurrentUser();
 
@@ -310,13 +309,10 @@ export async function createOrUpdateIngredient(
       };
     }
 
-    if (prevIngredientName) {
+    if (ingredient.id) {
       await prisma.ingredient.update({
         where: {
-          userId_name: {
-            userId: user.id,
-            name: prevIngredientName,
-          },
+          id: ingredient.id,
         },
         data: {
           name: parsed.data.name,
@@ -333,21 +329,10 @@ export async function createOrUpdateIngredient(
       });
     }
   } catch (e) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        // Unique constraint violation (Prisma example)
-        return {
-          success: false,
-          message: "Title must be unique",
-          errors: { name: ["Recipe title already exists"] },
-        };
-      }
-    } else {
-      return {
-        success: false,
-        message: "Unexpected error, try again",
-      };
-    }
+    return {
+      success: false,
+      message: "Unexpected error, try again",
+    };
   }
 
   revalidatePath("/dashboard/ingredients");
