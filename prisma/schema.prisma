@@ -84,8 +84,8 @@ model IngredientComponent {
   ingredientId  Int
   weightInGrams Float
 
-  parent     Ingredient @relation("IngredientComponents", fields: [parentId], references: [id])
-  ingredient Ingredient @relation("IngredientComponentIngredient", fields: [ingredientId], references: [id])
+  parent     Ingredient @relation("IngredientComponents", fields: [parentId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation("IngredientComponentIngredient", fields: [ingredientId], references: [id], onDelete: Cascade)
 
   @@map("ingredient_components")
 }
