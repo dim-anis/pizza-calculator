@@ -190,7 +190,8 @@ export type IngredientTypeWithCount = Prisma.IngredientTypeGetPayload<
 export const ingredientFormSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
-  typeId: z.coerce.number(),
+  type: z.nativeEnum(IngredientTypeName),
+  components: z.array(ingredientComponent),
 });
 
 export type IngredientForm = z.infer<typeof ingredientFormSchema>;
