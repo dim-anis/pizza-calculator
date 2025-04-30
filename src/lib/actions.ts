@@ -329,6 +329,7 @@ export async function createOrUpdateIngredient(
       });
     }
   } catch (e) {
+    console.log(e);
     return {
       success: false,
       message: "Unexpected error, try again",
