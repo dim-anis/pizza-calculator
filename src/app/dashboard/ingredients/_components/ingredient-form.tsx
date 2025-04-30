@@ -44,10 +44,7 @@ export default function IngredientForm({
 
   async function onSubmit(formData: IngredientForm) {
     startTransition(async () => {
-      const result = await createOrUpdateIngredient(
-        formData,
-        defaultValues ? defaultValues.name : undefined,
-      );
+      const result = await createOrUpdateIngredient(formData);
 
       if (result.errors) {
         Object.entries(result.errors).forEach(([path, message]) => {
