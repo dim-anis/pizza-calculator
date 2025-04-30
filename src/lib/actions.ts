@@ -299,13 +299,28 @@ export async function createOrUpdateIngredient(
   }
 
   try {
-    const parsed = ingredientFormSchema.safeParse(data);
+    const {
+      success,
+      error,
+      data: ingredient,
+    } = ingredientFormSchema.safeParse(data);
 
-    if (!parsed.success) {
+    if (!success) {
       return {
         success: false,
         message: "Please fix the errors in the form",
-        errors: parseZodIssues(parsed.error.issues),
+        errors: parseZodIssues(error.issues),
+      };
+    }
+
+    const ingredientType = await prisma.ingredientType.findFirst({
+      where: { type: ingredient.type },
+    });
+
+    if (!ingredientType) {
+      return {
+        success: false,
+        message: "Ingredient type doesn't exist",
       };
     }
 
@@ -315,17 +330,34 @@ export async function createOrUpdateIngredient(
           id: ingredient.id,
         },
         data: {
-          name: parsed.data.name,
-          typeId: parsed.data.typeId,
+          name: ingredient.name,
+          typeId: ingredientType.id,
+          components: {
+            deleteMany: {},
+            create: ingredient.components.map((comp) => ({
+              ingredientId: comp.ingredientId,
+              weightInGrams: comp.weightInGrams,
+            })),
+          },
         },
       });
     } else {
-      await prisma.ingredient.create({
-        data: {
-          userId: user.id,
-          name: parsed.data.name,
-          typeId: parsed.data.typeId,
-        },
+      await prisma.$transaction(async (tx) => {
+        const parentIngredient = await tx.ingredient.create({
+          data: {
+            userId: user.id,
+            name: ingredient.name,
+            typeId: ingredientType.id,
+          },
+        });
+
+        await tx.ingredientComponent.createMany({
+          data: ingredient.components.map((ir) => ({
+            parentId: parentIngredient.id,
+            ingredientId: ir.ingredientId,
+            weightInGrams: ir.weightInGrams,
+          })),
+        });
       });
     }
   } catch (e) {
