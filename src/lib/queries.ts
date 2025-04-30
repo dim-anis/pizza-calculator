@@ -40,29 +40,9 @@ export async function getIngredients(params?: { type?: IngredientTypeName }) {
     },
     include: {
       type: true,
+      components: { include: { ingredient: { include: { type: true } } } },
     },
   });
-}
-
-export async function getIngredientByName(name: string) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const ingredient = await prisma.ingredient.findUnique({
-    where: { userId_name: { userId: user.id, name } },
-    include: {
-      type: true,
-    },
-  });
-
-  if (!ingredient) {
-    throw new Error("Ingredient not found");
-  }
-
-  return ingredient;
 }
 
 export async function getIngredientById(id: number) {
@@ -76,6 +56,7 @@ export async function getIngredientById(id: number) {
     where: { id },
     include: {
       type: true,
+      components: { include: { ingredient: { include: { type: true } } } },
     },
   });
 
@@ -113,14 +94,16 @@ export async function getDefaultRecipes(): Promise<
     where: {
       userId: null,
     },
-    select: {
-      name: true,
-      servings: true,
+    include: {
       ingredients: {
-        omit: { id: true },
         include: {
           ingredient: {
-            include: { type: true },
+            include: {
+              type: true,
+              components: {
+                include: { ingredient: { include: { type: true } } },
+              },
+            },
           },
         },
       },
@@ -314,7 +297,14 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: number) {
     include: {
       ingredients: {
         include: {
-          ingredient: { include: { type: true } },
+          ingredient: {
+            include: {
+              type: true,
+              components: {
+                include: { ingredient: { include: { type: true } } },
+              },
+            },
+          },
         },
       },
       folders: true,

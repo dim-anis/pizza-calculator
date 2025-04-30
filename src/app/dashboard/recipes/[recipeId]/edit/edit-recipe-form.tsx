@@ -15,12 +15,7 @@ import { Input } from "@/components/ui/input";
 import { updateRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldPath, useFieldArray, useForm } from "react-hook-form";
-import {
-  IngredientWithType,
-  RecipeForm,
-  recipeSchema,
-  RecipeWithIngredientsWithFolders,
-} from "@/lib/types";
+import { Recipe, RecipeForm, recipeSchema } from "@/lib/types";
 import {
   Select,
   SelectContent,
@@ -33,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState, useTransition } from "react";
 import SubmitButton from "@/components/submit-button";
 import { Alert } from "@/components/alert-destructive";
-import { Folder } from "@prisma/client";
+import { Folder, Prisma } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -59,11 +54,15 @@ import {
 } from "@/components/ui/command";
 import { Check } from "lucide-react";
 import { Icons } from "@/components/icons";
+import { getIngredients } from "@/lib/queries";
 
 type Props = {
   userFolders: Folder[];
-  userIngredients: IngredientWithType[];
-  recipe: RecipeWithIngredientsWithFolders;
+  userIngredients: Omit<
+    Prisma.PromiseReturnType<typeof getIngredients>,
+    "components"
+  >;
+  recipe: Recipe;
 };
 
 export default function EditRecipeForm({
@@ -120,7 +119,9 @@ export default function EditRecipeForm({
     });
   }
 
-  function handleSelectIngredients(ingredient: IngredientWithType) {
+  function handleSelectIngredients(
+    ingredient: Prisma.PromiseReturnType<typeof getIngredients>[number],
+  ) {
     const selectedIngredientIndex = selectedIngredients.findIndex(
       ({ ingredient: { name: selectedIngredientName } }) =>
         ingredient.name === selectedIngredientName,

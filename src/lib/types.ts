@@ -13,79 +13,81 @@ export type SiteConfig = {
   ogImage: string;
 };
 
-export const ingredientWithType =
-  Prisma.validator<Prisma.IngredientDefaultArgs>()({
-    include: { type: true },
-  });
-
-export type IngredientWithType = Prisma.IngredientGetPayload<
-  typeof ingredientWithType
->;
-
-export const recipeWithIngredients =
-  Prisma.validator<Prisma.RecipeDefaultArgs>()({
-    select: {
-      name: true,
-      servings: true,
-      ingredients: {
-        omit: { id: true, recipeId: true },
-        include: {
-          ingredient: {
-            omit: { id: true, userId: true, typeId: true },
-            include: { type: { select: { type: true } } },
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const recipe = Prisma.validator<Prisma.RecipeDefaultArgs>()({
+  omit: { id: true, userId: true },
+  include: {
+    ingredients: {
+      include: {
+        ingredient: {
+          include: {
+            type: true,
+            components: {
+              include: { ingredient: { include: { type: true } } },
+            },
           },
         },
       },
     },
-  });
+    folders: true,
+  },
+});
+export type Recipe = Prisma.RecipeGetPayload<typeof recipe>;
 
-export type RecipeWithIngredients = Prisma.RecipeGetPayload<
-  typeof recipeWithIngredients
->;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const ingredient = Prisma.validator<Prisma.RecipeIngredientDefaultArgs>()({
+  include: {
+    ingredient: { include: { components: true, type: true } },
+  },
+});
 
-// TODO: clean up ingredient type
+export type Ingredient = Prisma.RecipeIngredientGetPayload<typeof ingredient>;
+
+export type IngredientWithPercentage = Ingredient & {
+  percentage: number;
+};
+
 export type RecipeWithGroupedIngredients = Omit<
-  RecipeWithIngredients,
-  "ingredients"
+  Recipe,
+  "ingredients" | "folders"
 > & {
   servingWeight: number;
   ingredients: {
-    flours: (RecipeWithIngredients["ingredients"][number] & {
-      percentage: number;
-    })[];
-    liquids: (RecipeWithIngredients["ingredients"][number] & {
-      percentage: number;
-    })[];
-    others: (RecipeWithIngredients["ingredients"][number] & {
-      percentage: number;
-    })[];
+    flours: IngredientWithPercentage[];
+    liquids: IngredientWithPercentage[];
+    others: IngredientWithPercentage[];
   };
 };
 
-export const recipeWithIngredientsWithFolders =
-  Prisma.validator<Prisma.RecipeDefaultArgs>()({
-    include: {
-      ingredients: { include: { ingredient: { include: { type: true } } } },
-      folders: {
-        select: { id: true, name: true, createdAt: true },
-      },
-    },
-  });
-
-export type RecipeWithIngredientsWithFolders = Prisma.RecipeGetPayload<
-  typeof recipeWithIngredientsWithFolders
->;
-
-const recipeIngredientSchema = z.object({
-  id: z.number().optional(),
-  recipeId: z.number().optional(),
+export const ingredientComponent = z.object({
+  id: z.number(),
+  parentId: z.number(),
   ingredientId: z.number(),
   ingredient: z.object({
     name: z.string(),
     type: z.object({
       type: z.nativeEnum(IngredientTypeName),
+      id: z.number(),
+      description: z.string(),
     }),
   }),
+  weightInGrams: z.coerce.number().positive(),
+});
+
+const ingredientSchema = z.object({
+  name: z.string(),
+  type: z.object({
+    type: z.nativeEnum(IngredientTypeName),
+    id: z.number(),
+    description: z.string(),
+  }),
+  components: z.array(ingredientComponent).optional(),
+});
+
+const recipeIngredientSchema = z.object({
+  id: z.number().optional(),
+  ingredientId: z.number(),
+  ingredient: ingredientSchema,
   weightInGrams: z.coerce.number().positive(),
 });
 
@@ -94,9 +96,7 @@ const folderSchema = z.object({
   name: z.string(),
 });
 
-export const recipeSchema = z.object({
-  id: z.number().optional(),
-  name: z.string(),
+export const baseRecipeSchema = z.object({
   notes: z.string().optional(),
   ingredients: z
     .array(recipeIngredientSchema)
@@ -114,20 +114,28 @@ export const recipeSchema = z.object({
         message: "At least one ingredient must be flour-based",
       },
     ),
+});
+
+export const recipeSchema = baseRecipeSchema.extend({
+  id: z.number().optional(),
+  name: z.string(),
   folders: z.array(folderSchema),
   servings: z.coerce.number().min(1),
 });
 
 export type RecipeForm = z.infer<typeof recipeSchema>;
-export type IngredientWithWeight = z.infer<typeof recipeIngredientSchema>;
 
 export const bakersFormulaIngredientSchema = recipeIngredientSchema.extend({
   percentage: z.coerce.number().positive(),
 });
 
 export const bakersFormulaSchema = z.object({
-  id: z.number().optional(),
+  id: z.number(),
+  userId: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
   name: z.string(),
+  notes: z.string().nullish(),
   ingredients: z.object({
     liquids: z
       .array(bakersFormulaIngredientSchema)

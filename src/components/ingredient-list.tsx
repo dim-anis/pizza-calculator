@@ -8,12 +8,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { roundNumTo } from "@/lib/helpers";
-import { RecipeWithIngredients } from "@/lib/types";
+import { IngredientWithPercentage } from "@/lib/types";
 
 type IngredientListProps = {
-  ingredients: (RecipeWithIngredients["ingredients"][number] & {
-    percentage: number;
-  })[];
+  ingredients: IngredientWithPercentage[];
 };
 
 export default function IngredientList({ ingredients }: IngredientListProps) {

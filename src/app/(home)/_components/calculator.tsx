@@ -30,6 +30,7 @@ export default function Calculator({ recipes }: Props) {
   function onSubmit(updatedRecipe: BakersFormulaForm) {
     setSelectedRecipe({
       ...updatedRecipe,
+      //@ts-expect-error wip
       ingredients: calculateIngredientWeights(
         updatedRecipe.servings * updatedRecipe.servingWeight,
         updatedRecipe.ingredients,
