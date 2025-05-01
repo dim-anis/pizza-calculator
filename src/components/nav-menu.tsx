@@ -14,6 +14,7 @@ import { MobileNav } from "./mobile-nav";
 import { MainNavItem } from "@/lib/types";
 import { siteConfig } from "@/config/site";
 import { Icons } from "./icons";
+import { usePathname } from "next/navigation";
 
 type MainNavProps = {
   children?: React.ReactNode;
@@ -22,6 +23,16 @@ type MainNavProps = {
 
 export default function NavBar({ children, items }: MainNavProps) {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
+
+  const pathname = usePathname();
+  const previousPathname = React.useRef(pathname);
+
+  React.useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      setShowMobileMenu(false);
+      previousPathname.current = pathname;
+    }
+  }, [pathname]);
 
   return (
     <div className="flex gap-6 md:gap-10">
