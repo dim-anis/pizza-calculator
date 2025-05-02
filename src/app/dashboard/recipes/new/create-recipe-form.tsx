@@ -163,6 +163,7 @@ export default function CreateRecipeForm({
       ingredient: {
         name: userIngredient.name,
         type: userIngredient.type,
+        components: [],
       },
     });
   }
@@ -340,6 +341,7 @@ export default function CreateRecipeForm({
                       placeholder="Add notes about the recipe"
                       className="resize-none"
                       {...field}
+                      value={field.value ? field.value : ""}
                     />
                   </FormControl>
                   <FormMessage />

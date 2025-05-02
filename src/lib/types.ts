@@ -15,8 +15,10 @@ export type SiteConfig = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const recipe = Prisma.validator<Prisma.RecipeDefaultArgs>()({
-  omit: { id: true, userId: true },
-  include: {
+  select: {
+    notes: true,
+    servings: true,
+    name: true,
     ingredients: {
       include: {
         ingredient: {
@@ -36,8 +38,9 @@ export type Recipe = Prisma.RecipeGetPayload<typeof recipe>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ingredient = Prisma.validator<Prisma.RecipeIngredientDefaultArgs>()({
-  include: {
-    ingredient: { include: { components: true, type: true } },
+  select: {
+    weightInGrams: true,
+    ingredient: { select: { name: true, components: true, type: true } },
   },
 });
 
@@ -81,7 +84,7 @@ const ingredientSchema = z.object({
     id: z.number(),
     description: z.string(),
   }),
-  components: z.array(ingredientComponent).optional(),
+  components: z.array(ingredientComponent).optional().default([]),
 });
 
 const recipeIngredientSchema = z.object({
@@ -97,7 +100,7 @@ const folderSchema = z.object({
 });
 
 export const baseRecipeSchema = z.object({
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
   ingredients: z
     .array(recipeIngredientSchema)
     .min(1, "At least one ingredient is required")
@@ -135,7 +138,7 @@ export const bakersFormulaSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string(),
-  notes: z.string().nullish(),
+  notes: z.string().nullable().optional(),
   ingredients: z.object({
     liquids: z
       .array(bakersFormulaIngredientSchema)

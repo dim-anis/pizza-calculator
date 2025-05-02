@@ -154,6 +154,7 @@ export default function EditRecipeForm({
       ingredient: {
         name: ingredient.name,
         type: ingredient.type,
+        components: [],
       },
     });
   }
@@ -330,6 +331,7 @@ export default function EditRecipeForm({
                       placeholder="Add notes about the recipe"
                       className="resize-none"
                       {...field}
+                      value={field.value ? field.value : ""}
                     />
                   </FormControl>
                   <FormMessage />
