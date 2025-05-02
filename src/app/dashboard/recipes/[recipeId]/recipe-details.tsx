@@ -85,13 +85,11 @@ export default function RecipeDetails({ recipe }: Params) {
         <IngredientList ingredients={ingredientsAdjustedForNumServings} />
       </div>
       <div className="space-y-2">
-        {recipe.notes ? (
+        {recipe.notes && (
           <>
             <h3 className="font-semibold lg:text-lg">Notes:</h3>
             <p>{recipe.notes}</p>
           </>
-        ) : (
-          <Button>Add notes</Button>
         )}
       </div>
     </div>
