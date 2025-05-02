@@ -20,9 +20,11 @@ const recipe = Prisma.validator<Prisma.RecipeDefaultArgs>()({
     servings: true,
     name: true,
     ingredients: {
-      include: {
+      select: {
+        weightInGrams: true,
         ingredient: {
-          include: {
+          select: {
+            name: true,
             type: true,
             components: {
               include: { ingredient: { include: { type: true } } },

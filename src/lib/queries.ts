@@ -296,12 +296,14 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: number) {
     },
     include: {
       ingredients: {
-        include: {
+        select: {
+          weightInGrams: true,
           ingredient: {
-            include: {
+            select: {
+              name: true,
               type: true,
               components: {
-                include: { ingredient: { include: { type: true } } },
+                include: { ingredient: { select: { name: true, type: true } } },
               },
             },
           },
