@@ -18,7 +18,7 @@ export default async function RecipePage({ params }: Params) {
     <div className="flex h-full flex-col items-start justify-start space-y-4">
       <RecipeToolbar />
       <div className="h-full w-full space-y-6">
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col space-y-4">
           <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
             {recipe.name}
           </h2>
@@ -28,7 +28,7 @@ export default async function RecipePage({ params }: Params) {
                 href={`/dashboard/folders/${encodeURIComponent(folder.id)}`}
                 key={folder.id}
                 className={`${buttonVariants({
-                  variant: "ghost",
+                  variant: "outline",
                   size: "sm",
                 })}`}
               >
