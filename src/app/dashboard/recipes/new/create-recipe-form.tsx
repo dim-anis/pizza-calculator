@@ -82,15 +82,7 @@ export default function CreateRecipeForm({
     defaultValues: {
       name: undefined,
       folders: [],
-      ingredients: userIngredients.map((ui) => ({
-        ...ui,
-        ingredientId: ui.id,
-        weightInGrams: undefined,
-        ingredient: {
-          name: ui.name,
-          type: ui.type,
-        },
-      })),
+      ingredients: [],
       servings: 1,
     },
   });
