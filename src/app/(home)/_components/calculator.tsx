@@ -6,7 +6,6 @@ import {
   calculateIngredientRatiosNew,
   calculateIngredientWeights,
   flattenIngredients,
-  scaleIngredientsByFactor,
 } from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipeForm from "./default-recipe-form";
@@ -58,11 +57,6 @@ export default function Calculator({ recipes }: Props) {
     Object.values(selectedRecipe.ingredients).flat(),
   );
   const ingredientsWithRatios = calculateIngredientRatiosNew(flatIngredients);
-  // const scalingFactor = numOfServings / selectedRecipe.servings;
-  // const ingredientsScaled = scaleIngredientsByFactor(
-  //   ingredientsWithRatios,
-  //   scalingFactor,
-  // );
 
   return (
     <section
