@@ -24,10 +24,13 @@ const recipe = Prisma.validator<Prisma.RecipeDefaultArgs>()({
         weightInGrams: true,
         ingredient: {
           select: {
+            id: true,
             name: true,
             type: true,
             components: {
-              include: { ingredient: { include: { type: true } } },
+              include: {
+                ingredient: { select: { id: true, name: true, type: true } },
+              },
             },
           },
         },
@@ -42,7 +45,20 @@ export type Recipe = Prisma.RecipeGetPayload<typeof recipe>;
 const ingredient = Prisma.validator<Prisma.RecipeIngredientDefaultArgs>()({
   select: {
     weightInGrams: true,
-    ingredient: { select: { name: true, components: true, type: true } },
+    ingredient: {
+      select: {
+        id: true,
+        name: true,
+        components: {
+          select: {
+            weightInGrams: true,
+            parentId: true,
+            ingredient: { select: { id: true, name: true, type: true } },
+          },
+        },
+        type: true,
+      },
+    },
   },
 });
 
@@ -67,8 +83,8 @@ export type RecipeWithGroupedIngredients = Omit<
 export const ingredientComponent = z.object({
   id: z.number(),
   parentId: z.number(),
-  ingredientId: z.number(),
   ingredient: z.object({
+    id: z.number(),
     name: z.string(),
     type: z.object({
       type: z.nativeEnum(IngredientTypeName),
@@ -80,6 +96,7 @@ export const ingredientComponent = z.object({
 });
 
 const ingredientSchema = z.object({
+  id: z.number(),
   name: z.string(),
   type: z.object({
     type: z.nativeEnum(IngredientTypeName),
@@ -90,8 +107,7 @@ const ingredientSchema = z.object({
 });
 
 const recipeIngredientSchema = z.object({
-  id: z.number().optional(),
-  ingredientId: z.number(),
+  id: z.number(),
   ingredient: ingredientSchema,
   weightInGrams: z.coerce.number().positive(),
 });
@@ -136,7 +152,7 @@ export const bakersFormulaIngredientSchema = recipeIngredientSchema.extend({
 
 export const bakersFormulaSchema = z.object({
   id: z.number(),
-  userId: z.string(),
+  userId: z.string().nullish(),
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string(),

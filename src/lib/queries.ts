@@ -294,16 +294,26 @@ export async function getRecipeWithIngredientsWithFolders(recipeId: number) {
       userId: user.id,
       id: recipeId,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      notes: true,
+      servings: true,
       ingredients: {
         select: {
           weightInGrams: true,
+          id: true,
           ingredient: {
             select: {
+              id: true,
               name: true,
               type: true,
               components: {
-                include: { ingredient: { select: { name: true, type: true } } },
+                select: {
+                  parentId: true,
+                  weightInGrams: true,
+                  ingredient: { select: { id: true, name: true, type: true } },
+                },
               },
             },
           },

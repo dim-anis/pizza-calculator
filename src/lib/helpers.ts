@@ -96,39 +96,151 @@ export function roundNumTo(num: number, decimalPlaces = 1) {
   return Number.isInteger(num) ? num : Math.round(num * factor) / factor;
 }
 
-// function flattenRecipeIngredients(recipe: Recipe): FlattenedIngredient[] {
-//   const flat: FlattenedIngredient[] = [];
-//
-//   for (const i of recipe.ingredients) {
-//     const ing = i.ingredient;
-//
-//     if (ing.components.length === 0) {
-//       flat.push({
-//         id: ing.id,
-//         name: ing.name,
-//         weightInGrams: i.weightInGrams,
-//         type: ing.type.type,
-//         source: "main",
-//       });
-//     } else {
-//       const totalComponentWeight = ing.components.reduce(
-//         (sum, c) => sum + c.weightInGrams,
-//         0,
-//       );
-//
-//       for (const c of ing.components) {
-//         flat.push({
-//           id: c.ingredient.id,
-//           name: c.ingredient.name,
-//           weightInGrams:
-//             (c.weightInGrams / totalComponentWeight) * i.weightInGrams,
-//           type: c.ingredient.type.type,
-//           source: "preferment",
-//           prefermentName: ing.name, // distinguish between Poolish, Biga, etc.
-//         });
-//       }
-//     }
-//   }
-//
-//   return flat;
-// }
+export function scaleIngredients(recipeIngredients: Recipe["ingredients"]) {
+  for (const ingredient of recipeIngredients) {
+    const { ingredient: ing, weightInGrams } = ingredient;
+
+    for (const component of ing.components) {
+      const proportion =
+        component.weightInGrams /
+        ing.components.reduce((sum, c) => sum + c.weightInGrams, 0);
+      const scaledWeight = proportion * weightInGrams;
+      component.weightInGrams = scaledWeight;
+    }
+  }
+
+  return recipeIngredients;
+}
+
+export function flattenIngredients(recipeIngredients: Recipe["ingredients"]) {
+  const result = new Map<
+    string,
+    { total: number; type: string; sources: Map<string, number> }
+  >();
+
+  function addContribution(
+    name: string,
+    type: string,
+    amount: number,
+    source: string,
+  ) {
+    if (!result.has(name)) {
+      result.set(name, { total: 0, type, sources: new Map() });
+    }
+
+    const entry = result.get(name)!;
+    entry.total += amount;
+    entry.sources.set(source, (entry.sources.get(source) || 0) + amount);
+  }
+
+  function process(
+    ingredientItem: Recipe["ingredients"][number],
+    sourceName = "Final Dough Mix",
+  ) {
+    const { weightInGrams, ingredient } = ingredientItem;
+
+    addContribution(
+      ingredient.name,
+      ingredient.type.type,
+      weightInGrams,
+      sourceName,
+    );
+
+    if (ingredient.components?.length) {
+      const totalComponentWeight = ingredient.components.reduce(
+        (sum, comp) => sum + comp.weightInGrams,
+        0,
+      );
+
+      ingredient.components.forEach((component) => {
+        const scaledAmount =
+          (weightInGrams * component.weightInGrams) / totalComponentWeight;
+
+        process(
+          {
+            weightInGrams: scaledAmount,
+            ingredient: { ...component.ingredient, components: [] },
+          },
+          ingredient.name,
+        );
+      });
+    }
+  }
+
+  recipeIngredients.forEach((item) => process(item));
+
+  return Array.from(result.entries()).map(
+    ([ingredient, { total, type, sources }]) => ({
+      ingredient,
+      total,
+      type,
+      sources: Array.from(sources.entries()).map(([source, quantity]) => ({
+        source,
+        quantity,
+      })),
+    }),
+  );
+}
+
+function calculatePrefermentRatio(
+  totalFlourWeight: number,
+  flourIngredients: ReturnType<typeof flattenIngredients>,
+  prefermentIngredient: ReturnType<typeof flattenIngredients>[number],
+) {
+  return (
+    (flourIngredients.reduce(
+      (total, currFlourIngredient) =>
+        (total += currFlourIngredient.sources.reduce(
+          (totalQty, curr) =>
+            (totalQty +=
+              curr.source === prefermentIngredient.ingredient
+                ? curr.quantity
+                : 0),
+          0,
+        )),
+      0,
+    ) /
+      totalFlourWeight) *
+    100
+  );
+}
+
+export function calculateIngredientRatiosNew(
+  flattenedIngredients: ReturnType<typeof flattenIngredients>,
+) {
+  const flourIngredients = flattenedIngredients.filter(
+    (item) => item.type === "Flour",
+  );
+  const totalFlourWeight = flourIngredients.reduce(
+    (sum, item) => sum + item.total,
+    0,
+  );
+
+  return flattenedIngredients.map((item) => ({
+    ...item,
+    percentage:
+      item.type === "Preferment"
+        ? calculatePrefermentRatio(totalFlourWeight, flourIngredients, item)
+        : calculateBakersPercentage(item.total, totalFlourWeight),
+  }));
+}
+
+export function scaleIngredientsByFactor(
+  flattenedIngredients: ReturnType<typeof calculateIngredientRatiosNew>,
+  scalingFactor: number,
+) {
+  return flattenedIngredients.map((item) => {
+    const scaledTotal = item.total * scalingFactor;
+
+    const scaledSources = item.sources.map((source) => ({
+      source: source.source,
+      quantity: source.quantity * scalingFactor,
+    }));
+
+    return {
+      ...item,
+      total: scaledTotal,
+      sources: scaledSources,
+    };
+  });
+}

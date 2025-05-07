@@ -113,7 +113,6 @@ export default function IngredientForm({
     appendIngredientComponent({
       ...userIngredient,
       ingredient: userIngredient,
-      ingredientId: userIngredient.id,
       parentId: userIngredient.id,
       weightInGrams: 0,
     });
@@ -142,10 +141,7 @@ export default function IngredientForm({
           description={form.formState.errors.root?.message}
         />
       )}
-      <form
-        className="space-y-6"
-        onSubmit={form.handleSubmit(onSubmit, (err) => console.log(err))}
-      >
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="type"

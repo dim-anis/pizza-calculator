@@ -3,7 +3,11 @@
 import IngredientList from "@/components/ingredient-list";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { calculateIngredientRatios } from "@/lib/helpers";
+import {
+  calculateIngredientRatiosNew,
+  flattenIngredients,
+  scaleIngredientsByFactor,
+} from "@/lib/helpers";
 import { Recipe } from "@/lib/types";
 import { Icons } from "@/components/icons";
 
@@ -17,41 +21,14 @@ export default function RecipeDetails({ recipe }: Params) {
   function onClick(inc: number) {
     setNumOfServings(Math.max(1, numOfServings + inc));
   }
-  let totalFlourWeight = 0;
 
-  for (const ingredient of recipe.ingredients) {
-    const { ingredient: ing, weightInGrams } = ingredient;
-
-    if (ing.type.type === "Flour") {
-      totalFlourWeight += weightInGrams;
-    }
-
-    for (const component of ing.components) {
-      if (component.ingredient.type.type === "Flour") {
-        // Scale component flour by the parent ingredient's weight proportion
-        const proportion =
-          component.weightInGrams /
-          ing.components.reduce((sum, c) => sum + c.weightInGrams, 0);
-        const scaledFlour = proportion * weightInGrams;
-        totalFlourWeight += scaledFlour;
-      }
-    }
-  }
-
-  // const totalFlourWeight = recipe.ingredients.reduce(
-  //   (total, { ingredient, weightInGrams }) =>
-  //     total + (ingredient.type.type === "Flour" ? weightInGrams : 0),
-  //   0,
-  // );
-
-  const recipeWithPercentages = calculateIngredientRatios(
-    recipe.ingredients,
-    totalFlourWeight,
+  const flatIngredients = flattenIngredients(recipe.ingredients);
+  const ingredientsWithRatios = calculateIngredientRatiosNew(flatIngredients);
+  const scalingFactor = numOfServings / recipe.servings;
+  const ingredientsScaled = scaleIngredientsByFactor(
+    ingredientsWithRatios,
+    scalingFactor,
   );
-  const ingredientsAdjustedForNumServings = recipeWithPercentages.map((i) => ({
-    ...i,
-    weightInGrams: i.weightInGrams * numOfServings,
-  }));
 
   return (
     <div className="space-y-4">
@@ -82,7 +59,7 @@ export default function RecipeDetails({ recipe }: Params) {
             </Button>
           </div>
         </div>
-        <IngredientList ingredients={ingredientsAdjustedForNumServings} />
+        <IngredientList ingredients={ingredientsScaled} />
       </div>
       <div className="space-y-2">
         {recipe.notes && (

@@ -149,9 +149,10 @@ export default function EditRecipeForm({
     }
 
     appendSelectedIngredient({
-      ingredientId: ingredient.id,
+      id: ingredient.id,
       weightInGrams: 0,
       ingredient: {
+        id: ingredient.id,
         name: ingredient.name,
         type: ingredient.type,
         components: [],

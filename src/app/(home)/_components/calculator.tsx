@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import IngredientList from "@/components/ingredient-list";
-import { calculateIngredientWeights } from "@/lib/helpers";
+import {
+  calculateIngredientRatiosNew,
+  calculateIngredientWeights,
+  flattenIngredients,
+  scaleIngredientsByFactor,
+} from "@/lib/helpers";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DefaultRecipeForm from "./default-recipe-form";
 import { UseFormReset } from "react-hook-form";
@@ -48,6 +53,16 @@ export default function Calculator({ recipes }: Props) {
       resetForm(selectedRecipe);
     }
   }
+
+  const flatIngredients = flattenIngredients(
+    Object.values(selectedRecipe.ingredients).flat(),
+  );
+  const ingredientsWithRatios = calculateIngredientRatiosNew(flatIngredients);
+  // const scalingFactor = numOfServings / selectedRecipe.servings;
+  // const ingredientsScaled = scaleIngredientsByFactor(
+  //   ingredientsWithRatios,
+  //   scalingFactor,
+  // );
 
   return (
     <section
@@ -115,9 +130,7 @@ export default function Calculator({ recipes }: Props) {
                 </div>
               </CardHeader>
               <CardContent>
-                <IngredientList
-                  ingredients={Object.values(selectedRecipe.ingredients).flat()}
-                />
+                <IngredientList ingredients={ingredientsWithRatios} />
               </CardContent>
             </Card>
           </div>

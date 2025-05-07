@@ -174,7 +174,7 @@ export async function createRecipe(data: RecipeForm): Promise<ActionState> {
         name,
         ingredients: {
           create: ingredients.map((ir) => ({
-            ingredientId: ir.ingredientId,
+            ingredientId: ir.ingredient.id,
             weightInGrams: ir.weightInGrams / servings,
           })),
         },
@@ -253,7 +253,7 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
           deleteMany: {},
           createMany: {
             data: newIngredients.map((ir) => ({
-              ingredientId: ir.ingredientId,
+              ingredientId: ir.ingredient.id,
               weightInGrams: ir.weightInGrams / servings,
             })),
           },
@@ -335,7 +335,7 @@ export async function createOrUpdateIngredient(
           components: {
             deleteMany: {},
             create: ingredient.components.map((comp) => ({
-              ingredientId: comp.ingredientId,
+              ingredientId: comp.ingredient.id,
               weightInGrams: comp.weightInGrams,
             })),
           },
@@ -354,7 +354,7 @@ export async function createOrUpdateIngredient(
         await tx.ingredientComponent.createMany({
           data: ingredient.components.map((ir) => ({
             parentId: parentIngredient.id,
-            ingredientId: ir.ingredientId,
+            ingredientId: ir.ingredient.id,
             weightInGrams: ir.weightInGrams,
           })),
         });
