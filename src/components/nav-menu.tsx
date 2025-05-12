@@ -47,13 +47,12 @@ export default function NavBar({ children, items }: MainNavProps) {
           {items?.length
             ? items.map((page, index) => (
                 <NavigationMenuItem key={index}>
-                  <Link href={page.href} legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      {page.title}
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink
+                    href={page.href}
+                    className={navigationMenuTriggerStyle()}
+                  >
+                    {page.title}
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               ))
             : null}
