@@ -15,6 +15,7 @@ import {
   ingredientFormSchema,
 } from "@/lib/types";
 import { Prisma } from "@prisma/client";
+import { ratelimit } from "./limiter";
 
 export async function createOrUpdateFolder(
   folderData: FolderForm,
@@ -23,6 +24,12 @@ export async function createOrUpdateFolder(
 
   if (!user) {
     throw new Error("You are not authorized");
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
   }
 
   let folderId;
@@ -84,6 +91,12 @@ export async function deleteFolder(folderId: string): Promise<ActionState> {
     throw new Error("You are not authorized");
   }
 
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
+  }
+
   try {
     await prisma.folder.delete({
       where: {
@@ -110,6 +123,12 @@ export async function deleteIngredient(id: number): Promise<void> {
     throw new Error("You are not authorized");
   }
 
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
+  }
+
   try {
     await prisma.ingredient.delete({
       where: {
@@ -128,6 +147,12 @@ export async function deleteRecipe(id: number): Promise<void> {
 
   if (!user) {
     throw new Error("You are not authorized");
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
   }
 
   try {
@@ -149,6 +174,12 @@ export async function createRecipe(data: RecipeForm): Promise<ActionState> {
 
   if (!user) {
     throw new Error("You are not authorized");
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
   }
 
   try {
@@ -215,6 +246,12 @@ export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
 
   if (!user) {
     throw new Error("You are not authorized");
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
   }
 
   try {
@@ -296,6 +333,12 @@ export async function createOrUpdateIngredient(
 
   if (!user) {
     throw new Error("You are not authorized");
+  }
+
+  const { success } = await ratelimit.limit(user.id);
+
+  if (!success) {
+    throw new Error("Too many requests");
   }
 
   try {
