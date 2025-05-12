@@ -41,8 +41,11 @@ export default function ListItem({
   const [pending, startTransition] = useTransition();
 
   return (
-    <Link href={href}>
-      <li className="bg-card text-card-foreground flex flex-col gap-2 rounded-xl border p-4 hover:bg-muted/50">
+    <li>
+      <Link
+        href={href}
+        className="flex flex-col gap-2 rounded-xl border p-4 hover:bg-muted/50 bg-card text-card-foreground w-full h-full"
+      >
         <div className="flex justify-between items-center">
           <h4 className="font-semibold">{title}</h4>
           <div>
@@ -107,7 +110,7 @@ export default function ListItem({
             {tag.title}
           </Badge>
         ))}
-      </li>
-    </Link>
+      </Link>
+    </li>
   );
 }

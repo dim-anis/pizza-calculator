@@ -1,5 +1,5 @@
 import { getIngredients } from "@/lib/queries";
-import ListItem from "./_components/ingredient-item";
+import ListItem from "../_components/list-item";
 import { deleteIngredient } from "@/lib/actions";
 import Empty from "@/components/empty";
 import Link from "next/link";

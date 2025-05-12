@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import Empty from "@/components/empty";
 import { Folder, Recipe } from "@prisma/client";
-import ListItem from "../ingredients/_components/ingredient-item";
+import ListItem from "./list-item";
 import { deleteRecipe } from "@/lib/actions";
 
 export default async function RecipeList({
