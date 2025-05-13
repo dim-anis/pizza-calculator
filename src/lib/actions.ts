@@ -210,7 +210,7 @@ export async function createOrUpdateRecipe(
         createMany: {
           data: ingredients.map((ir) => ({
             ingredientId: ir.ingredient.id,
-            weightInGrams: ir.weightInGrams / servings,
+            weightInGrams: ir.weightInGrams,
           })),
         },
       },
