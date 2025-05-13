@@ -50,6 +50,7 @@ export default async function IngredientsPage() {
                 {
                   title: i.type.type,
                   href: `/dashboard/ingredients/${i.type.type}`,
+                  icon: "ingredient",
                 },
               ]}
             />

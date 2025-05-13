@@ -39,6 +39,7 @@ export default async function RecipeList({
               tags={recipe.folders.map((f) => ({
                 title: f.name,
                 href: `/dashboard/folders/${f.id}`,
+                icon: "folder",
               }))}
             />
           ))}

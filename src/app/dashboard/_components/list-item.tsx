@@ -26,7 +26,7 @@ type Props = {
   itemId: number;
   itemType: "Ingredient" | "Folder" | "Recipe";
   title: string;
-  tags: { title: string; href: string }[];
+  tags: { title: string; href: string; icon: keyof typeof Icons }[];
   onDeleteAction: (id: number) => Promise<void>;
 };
 
@@ -105,11 +105,21 @@ export default function ListItem({
             </Dialog>
           </div>
         </div>
-        {tags.map((tag, idx) => (
-          <Badge key={idx} variant="secondary">
-            {tag.title}
-          </Badge>
-        ))}
+        <div className="space-x-2 flex flex-wrap">
+          {tags.map((tag, idx) => {
+            const Icon = Icons[tag.icon];
+            return (
+              <Badge
+                key={idx}
+                variant="outline"
+                className="border-none p-0 hover:underline decoration-muted-foreground"
+              >
+                {Icon ? <Icon className="text-muted-foreground" /> : null}
+                <p className="text-muted-foreground">{tag.title}</p>
+              </Badge>
+            );
+          })}
+        </div>
       </Link>
     </li>
   );
