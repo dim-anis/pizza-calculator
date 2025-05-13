@@ -184,6 +184,8 @@ export async function createOrUpdateRecipe(
     throw new Error("Too many requests");
   }
 
+  let recipeId;
+
   try {
     const {
       success,
@@ -230,6 +232,8 @@ export async function createOrUpdateRecipe(
         },
         data: payload,
       });
+
+      recipeId = id;
     } else {
       await prisma.recipe.create({
         data: {
@@ -242,6 +246,8 @@ export async function createOrUpdateRecipe(
           notes,
         },
       });
+
+      recipeId = id;
     }
   } catch (e) {
     console.error(e);
@@ -263,7 +269,7 @@ export async function createOrUpdateRecipe(
   }
 
   revalidatePath("/dashboard/recipes");
-  redirect("/dashboard/recipes");
+  redirect(`/dashboard${recipeId ? `/recipes/${recipeId}` : ""}`);
 }
 
 export async function createOrUpdateIngredient(
