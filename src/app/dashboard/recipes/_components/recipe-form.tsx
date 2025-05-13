@@ -12,10 +12,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { updateRecipe } from "@/lib/actions";
+import { createOrUpdateRecipe } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldPath, useFieldArray, useForm } from "react-hook-form";
-import { Recipe, RecipeForm, recipeSchema } from "@/lib/types";
+import {
+  DefaultValues,
+  FieldPath,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
+import { type RecipeForm, recipeSchema } from "@/lib/types";
 import {
   Select,
   SelectContent,
@@ -57,34 +62,40 @@ import { Icons } from "@/components/icons";
 import { getIngredients } from "@/lib/queries";
 
 type Props = {
+  defaultValues?: DefaultValues<RecipeForm>;
   userFolders: Folder[];
   userIngredients: Omit<
     Prisma.PromiseReturnType<typeof getIngredients>,
     "components"
   >;
-  recipe: Recipe;
 };
 
-export default function EditRecipeForm({
+export default function RecipeForm({
+  defaultValues,
   userFolders,
   userIngredients,
-  recipe,
 }: Props) {
-  const [isPending, startTransition] = useTransition();
-
   const [selectIngredientsDialogOpen, setSelectIngredientsDialogOpen] =
     useState(false);
   const [selectFoldersDialogOpen, setSelectFoldersDialogOpen] = useState(false);
+
+  const [pending, startTransition] = useTransition();
 
   const router = useRouter();
 
   const form = useForm<RecipeForm>({
     mode: "onChange",
     resolver: zodResolver(recipeSchema),
-    defaultValues: {
-      ...recipe,
-      notes: recipe.notes || "",
-    },
+    ...(defaultValues
+      ? { defaultValues }
+      : {
+          defaultValues: {
+            name: undefined,
+            folders: [],
+            ingredients: [],
+            servings: 1,
+          },
+        }),
   });
 
   const {
@@ -107,7 +118,7 @@ export default function EditRecipeForm({
 
   async function onSubmit(formData: RecipeForm) {
     startTransition(async () => {
-      const result = await updateRecipe(formData);
+      const result = await createOrUpdateRecipe(formData);
 
       if (result.errors) {
         Object.entries(result.errors).forEach(([path, message]) => {
@@ -120,11 +131,11 @@ export default function EditRecipeForm({
   }
 
   function handleSelectIngredients(
-    ingredient: Prisma.PromiseReturnType<typeof getIngredients>[number],
+    userIngredient: Prisma.PromiseReturnType<typeof getIngredients>[number],
   ) {
     const selectedIngredientIndex = selectedIngredients.findIndex(
-      ({ ingredient: { name: selectedIngredientName } }) =>
-        ingredient.name === selectedIngredientName,
+      (selectedInredient) =>
+        selectedInredient.ingredient.name === userIngredient.name,
     );
 
     if (selectedIngredientIndex !== -1) {
@@ -149,12 +160,12 @@ export default function EditRecipeForm({
     }
 
     appendSelectedIngredient({
-      id: ingredient.id,
+      ...userIngredient,
       weightInGrams: 0,
       ingredient: {
-        id: ingredient.id,
-        name: ingredient.name,
-        type: ingredient.type,
+        id: userIngredient.id,
+        name: userIngredient.name,
+        type: userIngredient.type,
         components: [],
       },
     });
@@ -311,6 +322,7 @@ export default function EditRecipeForm({
                   <DialogFooter className="flex items-center border-t p-4 sm:justify-between">
                     <Button
                       // disabled={selectedFolders.length < 1}
+                      type="button"
                       onClick={() => {
                         setSelectFoldersDialogOpen(false);
                       }}
@@ -344,63 +356,60 @@ export default function EditRecipeForm({
         </Card>
         <>
           <Card>
-            <CardHeader className="flex flex-col space-y-4">
-              <h3 className="mt-12 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0">
-                Ingredients
-              </h3>
-              <FormField
-                control={form.control}
-                //@ts-expect-error display error within the form
-                name={`ingredients.root`}
-                render={() => (
-                  <FormItem>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <CardHeader className="flex flex-row items-center">
+              <div className="flex flex-col flex-grow space-y-2">
+                <h3 className="mt-12 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0">
+                  Ingredients
+                </h3>
+                <FormField
+                  control={form.control}
+                  //@ts-expect-error display error within the form
+                  name={`ingredients.root`}
+                  render={() => (
+                    <FormItem>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {selectedIngredients.map(
-                  (
-                    { id: ingredientId, ingredient: { name: ingredientName } },
-                    index,
-                  ) => (
-                    <FormField
-                      key={ingredientId}
-                      control={form.control}
-                      name={`ingredients.${index}.weightInGrams`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{ingredientName}</FormLabel>
-                          <div className="flex space-x-2 justify-center items-center">
-                            <FormControl>
-                              <Input
-                                type="text"
-                                inputMode="numeric"
-                                placeholder={`Enter the amount of ${ingredientName.toLowerCase()}`}
-                                {...field}
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <Button
-                              size={"icon"}
-                              variant={"secondary"}
-                              type="button"
-                              onClick={() => removeSelectedIngredient(index)}
-                            >
-                              <Icons.delete />
-                            </Button>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ),
-                )}
+                {selectedIngredients.map((ingredient, index) => (
+                  <FormField
+                    key={ingredient.id}
+                    control={form.control}
+                    name={`ingredients.${index}.weightInGrams`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{ingredient.ingredient.name}</FormLabel>
+                        <div className="flex space-x-2 justify-center items-center">
+                          <FormControl>
+                            <Input
+                              type="text"
+                              inputMode="numeric"
+                              placeholder={`Enter the amount of ${ingredient.ingredient.name.toLowerCase()}`}
+                              {...field}
+                              onChange={field.onChange}
+                            />
+                          </FormControl>
+                          <Button
+                            size={"icon"}
+                            variant={"secondary"}
+                            type="button"
+                            onClick={() => removeSelectedIngredient(index)}
+                          >
+                            <Icons.delete />
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
                 <Button
-                  variant={"ghost"}
                   type="button"
+                  variant={"ghost"}
                   onClick={() => setSelectIngredientsDialogOpen(true)}
                 >
                   <Icons.add className="mr-2 h-4 w-4" />
@@ -438,13 +447,11 @@ export default function EditRecipeForm({
                           </p>
                         </div>
                         {selectedIngredients.find(
-                          ({ ingredient: { name: selectedIngredientName } }) =>
-                            selectedIngredientName === userIngredient.name,
+                          ({ ingredient }) =>
+                            ingredient.name === userIngredient.name,
                         ) ? (
                           <Check className="ml-auto flex h-5 w-5 text-primary" />
-                        ) : (
-                          <Check className="ml-auto flex h-5 w-5 text-transparent" />
-                        )}
+                        ) : null}
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -452,6 +459,7 @@ export default function EditRecipeForm({
               </Command>
               <DialogFooter className="flex items-center border-t p-4 sm:justify-between">
                 <Button
+                  type="button"
                   disabled={selectedIngredients.length < 1}
                   onClick={() => {
                     setSelectIngredientsDialogOpen(false);
@@ -465,8 +473,8 @@ export default function EditRecipeForm({
         </>
         <div className="flex justify-end space-x-4">
           <Button onClick={() => router.back()}>Cancel</Button>
-          <SubmitButton type="submit" pending={isPending}>
-            Save recipe
+          <SubmitButton type="submit" pending={pending}>
+            {`${defaultValues ? "Update" : "Create"} recipe`}
           </SubmitButton>
         </div>
       </form>

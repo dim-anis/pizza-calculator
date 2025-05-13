@@ -1,5 +1,5 @@
 import { getAllFolders, getIngredients } from "@/lib/queries";
-import CreateRecipeForm from "./create-recipe-form";
+import RecipeForm from "../_components/recipe-form";
 
 export default async function CreateRecipePage() {
   const userFolders = await getAllFolders();
@@ -10,10 +10,7 @@ export default async function CreateRecipePage() {
       <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
         Create a recipe
       </h2>
-      <CreateRecipeForm
-        userFolders={userFolders}
-        userIngredients={userIngredients}
-      />
+      <RecipeForm userFolders={userFolders} userIngredients={userIngredients} />
     </>
   );
 }

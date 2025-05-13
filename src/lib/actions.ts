@@ -169,7 +169,9 @@ export async function deleteRecipe(id: number): Promise<void> {
   redirect("/dashboard/recipes");
 }
 
-export async function createRecipe(data: RecipeForm): Promise<ActionState> {
+export async function createOrUpdateRecipe(
+  data: RecipeForm,
+): Promise<ActionState> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -197,114 +199,52 @@ export async function createRecipe(data: RecipeForm): Promise<ActionState> {
       };
     }
 
-    const { name, ingredients, folders, servings, notes } = validatedData;
+    const { id, name, ingredients, folders, servings, notes } = validatedData;
 
-    await prisma.recipe.create({
-      data: {
-        user: { connect: { id: user.id } },
-        name,
-        ingredients: {
-          create: ingredients.map((ir) => ({
+    const payload = {
+      user: { connect: { id: user.id } },
+      name,
+      ingredients: {
+        deleteMany: {},
+        createMany: {
+          data: ingredients.map((ir) => ({
             ingredientId: ir.ingredient.id,
             weightInGrams: ir.weightInGrams / servings,
           })),
         },
-        servings,
-        folders: {
-          connect: folders.map((folder) => ({
-            userId_name: { userId: user.id, name: folder.name },
-          })),
-        },
-        notes,
       },
-    });
-  } catch (e) {
-    console.error(e);
-    if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      if (e.code === "P2002") {
-        // Unique constraint violation (Prisma example)
-        return {
-          success: false,
-          message: "Title must be unique",
-          errors: { name: ["Recipe title already exists"] },
-        };
-      }
-    } else {
-      return {
-        success: false,
-        message: "Unexpected error, try again",
-      };
-    }
-  }
-
-  revalidatePath("/dashboard/recipes");
-  redirect("/dashboard/recipes");
-}
-
-export async function updateRecipe(data: RecipeForm): Promise<ActionState> {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    throw new Error("You are not authorized");
-  }
-
-  const { success } = await ratelimit.limit(user.id);
-
-  if (!success) {
-    throw new Error("Too many requests");
-  }
-
-  try {
-    const {
-      success,
-      error,
-      data: validatedData,
-    } = recipeSchema.safeParse(data);
-
-    if (!success) {
-      return {
-        success: false,
-        message: "Please fix the errors in the form",
-        errors: parseZodIssues(error.issues),
-      };
-    }
-
-    const {
-      id,
-      name,
-      ingredients: newIngredients,
-      folders,
       servings,
-      notes,
-    } = validatedData;
-
-    await prisma.recipe.update({
-      where: {
-        userId: user.id,
-        id,
+      folders: {
+        set: folders.map(({ name }) => ({
+          userId_name: { userId: user.id, name },
+        })),
       },
-      data: {
-        user: { connect: { id: user.id } },
-        name,
-        ingredients: {
-          deleteMany: {},
-          createMany: {
-            data: newIngredients.map((ir) => ({
-              ingredientId: ir.ingredient.id,
-              weightInGrams: ir.weightInGrams / servings,
+      notes,
+    };
+
+    if (id) {
+      await prisma.recipe.update({
+        where: {
+          userId: user.id,
+          id,
+        },
+        data: payload,
+      });
+    } else {
+      await prisma.recipe.create({
+        data: {
+          ...payload,
+          folders: {
+            connect: folders.map((folder) => ({
+              userId_name: { userId: user.id, name: folder.name },
             })),
           },
+          notes,
         },
-        servings,
-        folders: {
-          set: folders.map(({ name }) => ({
-            userId_name: { userId: user.id, name },
-          })),
-        },
-        notes,
-      },
-    });
+      });
+    }
   } catch (e) {
+    console.error(e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
         // Unique constraint violation (Prisma example)

@@ -3,7 +3,7 @@ import {
   getIngredients,
   getRecipeWithIngredientsWithFolders,
 } from "@/lib/queries";
-import EditRecipeForm from "./edit-recipe-form";
+import RecipeForm from "../../_components/recipe-form";
 
 type Params = {
   params: Promise<{ recipeId: string }>;
@@ -20,8 +20,8 @@ export default async function EditRecipePage({ params }: Params) {
       <h2 className="text-2xl font-bold tracking-tight lg:text-3xl">
         Edit recipe
       </h2>
-      <EditRecipeForm
-        recipe={recipe}
+      <RecipeForm
+        defaultValues={recipe}
         userFolders={userFolders}
         userIngredients={userIngredients}
       />
