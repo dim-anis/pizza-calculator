@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
@@ -187,8 +188,12 @@ export default function RecipeForm({
         <Card>
           <CardHeader>
             <h3 className="mt-12 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0">
-              Recipe info
+              Recipe details
             </h3>
+            <CardDescription>
+              Give your recipe a name, servings, and any notes or folders you’d
+              like to associate it with.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -361,6 +366,10 @@ export default function RecipeForm({
                 <h3 className="mt-12 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0">
                   Ingredients
                 </h3>
+                <CardDescription>
+                  Select the ingredients for your recipe. At least one flour is
+                  required to calculate baker’s percentages.{" "}
+                </CardDescription>
                 <FormField
                   control={form.control}
                   //@ts-expect-error display error within the form
