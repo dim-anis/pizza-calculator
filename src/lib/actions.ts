@@ -207,7 +207,6 @@ export async function createOrUpdateRecipe(
       user: { connect: { id: user.id } },
       name,
       ingredients: {
-        deleteMany: {},
         createMany: {
           data: ingredients.map((ir) => ({
             ingredientId: ir.ingredient.id,
@@ -230,7 +229,10 @@ export async function createOrUpdateRecipe(
           userId: user.id,
           id,
         },
-        data: payload,
+        data: {
+          ...payload,
+          ingredients: { deleteMany: {}, ...payload.ingredients },
+        },
       });
 
       recipeId = id;
