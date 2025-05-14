@@ -94,8 +94,8 @@ model Ingredient {
   id            Int                   @id @default(autoincrement())
   name          String
   typeId        Int
-  userId        String
-  user          User                  @relation(fields: [userId], references: [id])
+  userId        String?
+  user          User?                 @relation(fields: [userId], references: [id])
   type          IngredientType        @relation(fields: [typeId], references: [id])
   recipes       RecipeIngredient[]
   components    IngredientComponent[] @relation("IngredientComponents")
