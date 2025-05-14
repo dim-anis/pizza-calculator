@@ -148,6 +148,7 @@ export default function DefaultRecipeForm({
                       inputMode="numeric"
                       placeholder={`Select serving weight`}
                       {...field}
+                      value={roundNumTo(field.value, 1)}
                     />
                   </FormControl>
                   <FormMessage />
