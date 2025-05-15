@@ -1,27 +1,66 @@
-import { prisma } from "@/lib/prisma";
-import { defaultPizzaRecipes, customRecipes } from "../public/recipes";
+import { prisma } from "../src/lib/prisma";
+import { defaultRecipes, defaultIngredients } from "../public/recipes";
+
+async function createDefaultIngredients() {
+  const ingredientTypes = await prisma.ingredientType.findMany();
+  const nameToIdMap = new Map<string, number>();
+
+  for (const ing of defaultIngredients) {
+    const res = await prisma.ingredient.create({
+      data: {
+        name: ing.name,
+        typeId: ingredientTypes.find((it) => it.type === ing.type)!.id,
+      },
+    });
+
+    nameToIdMap.set(ing.name, res.id);
+  }
+
+  for (const ing of defaultIngredients) {
+    if (ing.components?.length) {
+      const parentId = nameToIdMap.get(ing.name)!;
+
+      for (const comp of ing.components) {
+        const componentId = nameToIdMap.get(comp.name);
+
+        if (!componentId) {
+          console.warn(
+            `Component ${comp.name} not found for ingredient ${ing.name}`,
+          );
+          continue;
+        }
+
+        await prisma.ingredientComponent.create({
+          data: {
+            ingredientId: componentId,
+            parentId,
+            weightInGrams: comp.weightInGrams,
+          },
+        });
+      }
+    }
+  }
+
+  return nameToIdMap;
+}
 
 async function createDefaultRecipes() {
-  const ingredients = await prisma.ingredient.findMany();
+  const ingredients = await createDefaultIngredients();
 
   await Promise.all(
-    defaultPizzaRecipes.map((recipe) =>
+    defaultRecipes.map((recipe) =>
       prisma.recipe.create({
         data: {
-          user: undefined,
           name: recipe.name,
           ingredients: {
-            create: recipe.ingredients.map((ir) => ({
-              ingredientId: ingredients.find((i) => i.name === ir.name).id,
-              percentage: ir.percentage,
-            })),
-          },
-          recipeServing: {
-            create: {
-              weight: recipe.settings.weight_per_pizza,
-              quantity: recipe.settings.number_of_pizzas,
+            createMany: {
+              data: recipe.ingredients.map((ir) => ({
+                ingredientId: ingredients.get(ir.name)!,
+                weightInGrams: ir.weightInGrams,
+              })),
             },
           },
+          servings: recipe.servings,
         },
       }),
     ),
@@ -29,8 +68,9 @@ async function createDefaultRecipes() {
 }
 
 async function main() {
+  await prisma.ingredient.deleteMany({ where: { userId: null } });
+  await prisma.recipe.deleteMany({ where: { userId: null } });
   await createDefaultRecipes();
-
   // const DATABASE_VERSION = 2;
   //
   // // await prisma.$executeRawUnsafe(`PRAGMA user_version = ${DATABASE_VERSION}`);
