@@ -88,7 +88,7 @@ export default function Calculator({ recipes }: Props) {
               />
             </TabsContent>
             <Separator orientation="vertical" />
-            <Card className="border-none shadow-none">
+            <Card className="border-none shadow-none min-w-0">
               <CardHeader>
                 <div className="flex flex-row justify-between truncate">
                   <h2 className="text-xl font-bold tracking-tight text-slate-900 lg:text-2xl truncate">
