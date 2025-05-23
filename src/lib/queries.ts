@@ -90,9 +90,11 @@ export async function getRecipesGroupedByFolder() {
 export async function getDefaultRecipes(): Promise<
   RecipeWithGroupedIngredients[]
 > {
+  const user = await getCurrentUser();
+
   const recipes = await prisma.recipe.findMany({
     where: {
-      userId: null,
+      OR: [{ userId: null }, { userId: user?.id }],
     },
     include: {
       ingredients: {
